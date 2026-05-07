@@ -1,0 +1,13 @@
+{
+  "appId": "com.example.plugin",
+  "appName": "capacitor-app",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#ffffffff",
+      "showSpinner": true
+    }
+  }
+}

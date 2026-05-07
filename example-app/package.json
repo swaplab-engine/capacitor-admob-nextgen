@@ -1,0 +1,28 @@
+{
+  "name": "example-app-admob-nextgen",
+  "version": "1.0.0",
+  "description": "Internal testing environment for Capacitor AdMob Next-Gen Plugin",
+  "type": "module",
+  "keywords": [
+    "capacitor",
+    "mobile"
+  ],
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/core": "latest",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/splash-screen": "^8.0.1",
+    "capacitor-admob-nextgen": "file:.."
+  },
+  "devDependencies": {
+    "@capacitor/cli": "latest",
+    "vite": "^7.3.1"
+  },
+  "author": "EMI INDO",
+  "license": "MIT"
+}

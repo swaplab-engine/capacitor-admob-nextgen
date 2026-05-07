@@ -1,0 +1,75 @@
+# ---------------------------------------------------
+# Node & Capacitor Core
+# ---------------------------------------------------
+node_modules/
+dist/
+npm-debug.log*
+yarn-error.log*
+.npm/
+
+# ---------------------------------------------------
+# Example App Built Artifacts (CRITICAL TO IGNORE)
+# ---------------------------------------------------
+example-app/node_modules/
+example-app/dist/
+example-app/.npm/
+
+# ---------------------------------------------------
+# Android Build Files (Both Plugin & Example App)
+# ---------------------------------------------------
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+build/
+local.properties
+proguard/
+*.log
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+android/build/
+example-app/android/.gradle/
+example-app/android/app/build/
+example-app/android/capacitor-cordova-android-plugins/
+
+# ---------------------------------------------------
+# iOS Build Files (Both Plugin & Example App)
+# ---------------------------------------------------
+Pods/
+Podfile.lock
+Package.resolved
+Build/
+xcuserdata/
+/.build/
+/Packages/
+DerivedData/
+.swiftpm/configuration/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+example-app/ios/App/Pods/
+example-app/ios/App/Podfile.lock
+example-app/ios/App/build/
+example-app/ios/App/DerivedData/
+example-app/ios/capacitor-cordova-ios-plugins/
+
+# ---------------------------------------------------
+# IDE & OS Specific
+# ---------------------------------------------------
+.DS_Store
+*.DS_Store
+.AppleDouble
+.LSOverride
+*.iml
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
