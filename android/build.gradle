@@ -59,5 +59,7 @@ dependencies {
 
     // GMA Next-Gen SDK: https://developers.google.com/admob/android/next-gen/rel-notes
     implementation 'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.0.1'
+    // https://developers.google.com/admob/android/privacy/release-notes
+    implementation("com.google.android.ump:user-messaging-platform:4.0.0")
 
 }

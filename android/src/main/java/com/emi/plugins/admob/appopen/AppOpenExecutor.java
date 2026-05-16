@@ -1,4 +1,4 @@
-package com.emi.plugins.admob.interstitial;
+package com.emi.plugins.admob.appopen;
 
 import android.app.Activity;
 import androidx.annotation.NonNull;
@@ -8,23 +8,40 @@ import com.getcapacitor.PluginCall;
 import com.emi.plugins.admob.AdMobNextGenPlugin;
 import com.emi.plugins.admob.ActionCallback;
 
+import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAd;
+import com.google.android.libraries.ads.mobile.sdk.appopen.AppOpenAdEventCallback;
 import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback;
 import com.google.android.libraries.ads.mobile.sdk.common.AdRequest;
 import com.google.android.libraries.ads.mobile.sdk.common.AdValue;
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError;
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError;
-import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd;
-import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback;
 
-public class InterstitialExecutor {
+import java.util.Date;
+
+public class AppOpenExecutor {
 
     private final AdMobNextGenPlugin plugin;
-    private InterstitialAd mInterstitialAd;
+    private AppOpenAd appOpenAd;
     private String currentAdUnitId = "";
-    private long lastLoadTime = 0; 
 
-    public InterstitialExecutor(AdMobNextGenPlugin plugin) {
+    private boolean isLoadingAd = false;
+    private boolean isShowingAd = false;
+    private long loadTime = 0;
+
+    private long lastRequestTime = 0;
+
+    public AppOpenExecutor(AdMobNextGenPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    private boolean wasLoadTimeLessThanNHoursAgo(long numHours) {
+        long dateDifference = new Date().getTime() - loadTime;
+        long numMilliSecondsPerHour = 3600000L;
+        return dateDifference < (numMilliSecondsPerHour * numHours);
+    }
+
+    private boolean isAdAvailable() {
+        return appOpenAd != null && wasLoadTimeLessThanNHoursAgo(4);
     }
 
     public void load(Activity activity, PluginCall call, final ActionCallback callback) {
@@ -38,36 +55,45 @@ public class InterstitialExecutor {
         long minLoadInterval = (retryOpt != null) ? retryOpt.longValue() : 5000L;
         long currentTime = System.currentTimeMillis();
 
-        if ((currentTime - lastLoadTime) < minLoadInterval) {
+        if ((currentTime - lastRequestTime) < minLoadInterval) {
             callback.onError("Request too fast. Please wait " + minLoadInterval + "ms to prevent invalid traffic.");
             return;
         }
 
-        this.currentAdUnitId = adUnitId; 
+        if (isLoadingAd || isAdAvailable()) {
+            callback.onError("App open ad is already loading or available.");
+            return;
+        }
+
+        this.currentAdUnitId = adUnitId;
+        this.lastRequestTime = currentTime;
+        isLoadingAd = true;
 
         activity.runOnUiThread(() -> {
-            InterstitialAd.load(
+            AppOpenAd.load(
                     new AdRequest.Builder(adUnitId).build(),
-                    new AdLoadCallback<InterstitialAd>() {
+                    new AdLoadCallback<AppOpenAd>() {
                         @Override
-                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                            mInterstitialAd = interstitialAd;
-                            lastLoadTime = System.currentTimeMillis(); 
+                        public void onAdLoaded(@NonNull AppOpenAd ad) {
+                            appOpenAd = ad;
+                            isLoadingAd = false;
+                            loadTime = new Date().getTime(); 
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
-                            plugin.notifyListeners("onInterstitialAdLoaded", ret);
+                            plugin.notifyListeners("onAppOpenAdLoaded", ret);
 
                             callback.onSuccess();
                         }
 
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                            mInterstitialAd = null;
+                            isLoadingAd = false;
+                            appOpenAd = null;
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
-                            plugin.notifyListeners("onInterstitialAdFailedToLoad", ret);
+                            plugin.notifyListeners("onAppOpenAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());
                         }
@@ -77,40 +103,48 @@ public class InterstitialExecutor {
     }
 
     public void show(Activity activity, ActionCallback callback) {
-        if (mInterstitialAd == null) {
-            callback.onError("The interstitial ad is not ready yet.");
+        if (isShowingAd) {
+            callback.onError("App open ad is already showing.");
+            return;
+        }
+
+        if (!isAdAvailable()) {
+            callback.onError("App open ad is not ready or has expired.");
             return;
         }
 
         activity.runOnUiThread(() -> {
-            mInterstitialAd.setAdEventCallback(new InterstitialAdEventCallback() {
+            appOpenAd.setAdEventCallback(new AppOpenAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onInterstitialAdShowed", new JSObject());
+                    plugin.notifyListeners("onAppOpenAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    mInterstitialAd = null; 
-                    plugin.notifyListeners("onInterstitialAdDismissed", new JSObject());
+                    appOpenAd = null; 
+                    isShowingAd = false;
+                    plugin.notifyListeners("onAppOpenAdDismissed", new JSObject());
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
-                    mInterstitialAd = null; 
+                    appOpenAd = null; 
+                    isShowingAd = false;
+
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onInterstitialAdFailedToShow", ret);
+                    plugin.notifyListeners("onAppOpenAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onInterstitialAdImpression", new JSObject());
+                    plugin.notifyListeners("onAppOpenAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onInterstitialAdClicked", new JSObject());
+                    plugin.notifyListeners("onAppOpenAdClicked", new JSObject());
                 }
 
                 @Override
@@ -120,11 +154,12 @@ public class InterstitialExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onInterstitialAdPaid", ret);
+                    plugin.notifyListeners("onAppOpenAdPaid", ret);
                 }
             });
 
-            mInterstitialAd.show(activity);
+            isShowingAd = true;
+            appOpenAd.show(activity);
             callback.onSuccess();
         });
     }

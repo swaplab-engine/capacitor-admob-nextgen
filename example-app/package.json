@@ -2,6 +2,9 @@
   "name": "example-app-admob-nextgen",
   "version": "1.0.0",
   "description": "Internal testing environment for Capacitor AdMob Next-Gen Plugin",
+  "admob": {
+    "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+  },
   "type": "module",
   "keywords": [
     "capacitor",
@@ -10,7 +13,8 @@
   "scripts": {
     "start": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",

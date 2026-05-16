@@ -1,4 +1,4 @@
-package com.emi.plugins.admob.interstitial;
+package com.emi.plugins.admob.rewardedinterstitial;
 
 import android.app.Activity;
 import androidx.annotation.NonNull;
@@ -13,17 +13,19 @@ import com.google.android.libraries.ads.mobile.sdk.common.AdRequest;
 import com.google.android.libraries.ads.mobile.sdk.common.AdValue;
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError;
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError;
-import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAd;
-import com.google.android.libraries.ads.mobile.sdk.interstitial.InterstitialAdEventCallback;
+import com.google.android.libraries.ads.mobile.sdk.rewardedinterstitial.RewardedInterstitialAd;
+import com.google.android.libraries.ads.mobile.sdk.rewardedinterstitial.RewardedInterstitialAdEventCallback;
+import com.google.android.libraries.ads.mobile.sdk.rewarded.RewardItem;
+import com.google.android.libraries.ads.mobile.sdk.rewarded.OnUserEarnedRewardListener;
 
-public class InterstitialExecutor {
+public class RewardedInterstitialExecutor {
 
     private final AdMobNextGenPlugin plugin;
-    private InterstitialAd mInterstitialAd;
+    private RewardedInterstitialAd mRewardedInterstitialAd;
     private String currentAdUnitId = "";
     private long lastLoadTime = 0; 
 
-    public InterstitialExecutor(AdMobNextGenPlugin plugin) {
+    public RewardedInterstitialExecutor(AdMobNextGenPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -43,31 +45,31 @@ public class InterstitialExecutor {
             return;
         }
 
-        this.currentAdUnitId = adUnitId; 
+        this.currentAdUnitId = adUnitId;
 
         activity.runOnUiThread(() -> {
-            InterstitialAd.load(
+            RewardedInterstitialAd.load(
                     new AdRequest.Builder(adUnitId).build(),
-                    new AdLoadCallback<InterstitialAd>() {
+                    new AdLoadCallback<RewardedInterstitialAd>() {
                         @Override
-                        public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                            mInterstitialAd = interstitialAd;
+                        public void onAdLoaded(@NonNull RewardedInterstitialAd ad) {
+                            mRewardedInterstitialAd = ad;
                             lastLoadTime = System.currentTimeMillis(); 
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
-                            plugin.notifyListeners("onInterstitialAdLoaded", ret);
+                            plugin.notifyListeners("onRewardedInterstitialAdLoaded", ret);
 
                             callback.onSuccess();
                         }
 
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                            mInterstitialAd = null;
+                            mRewardedInterstitialAd = null;
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
-                            plugin.notifyListeners("onInterstitialAdFailedToLoad", ret);
+                            plugin.notifyListeners("onRewardedInterstitialAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());
                         }
@@ -77,40 +79,40 @@ public class InterstitialExecutor {
     }
 
     public void show(Activity activity, ActionCallback callback) {
-        if (mInterstitialAd == null) {
-            callback.onError("The interstitial ad is not ready yet.");
+        if (mRewardedInterstitialAd == null) {
+            callback.onError("The rewarded interstitial ad is not ready yet.");
             return;
         }
 
         activity.runOnUiThread(() -> {
-            mInterstitialAd.setAdEventCallback(new InterstitialAdEventCallback() {
+            mRewardedInterstitialAd.setAdEventCallback(new RewardedInterstitialAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onInterstitialAdShowed", new JSObject());
+                    plugin.notifyListeners("onRewardedInterstitialAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    mInterstitialAd = null; 
-                    plugin.notifyListeners("onInterstitialAdDismissed", new JSObject());
+                    mRewardedInterstitialAd = null; 
+                    plugin.notifyListeners("onRewardedInterstitialAdDismissed", new JSObject());
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
-                    mInterstitialAd = null; 
+                    mRewardedInterstitialAd = null; 
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onInterstitialAdFailedToShow", ret);
+                    plugin.notifyListeners("onRewardedInterstitialAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onInterstitialAdImpression", new JSObject());
+                    plugin.notifyListeners("onRewardedInterstitialAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onInterstitialAdClicked", new JSObject());
+                    plugin.notifyListeners("onRewardedInterstitialAdClicked", new JSObject());
                 }
 
                 @Override
@@ -120,11 +122,21 @@ public class InterstitialExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onInterstitialAdPaid", ret);
+
+                    plugin.notifyListeners("onRewardedInterstitialAdPaid", ret);
                 }
             });
 
-            mInterstitialAd.show(activity);
+            mRewardedInterstitialAd.show(activity, new OnUserEarnedRewardListener() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    JSObject ret = new JSObject();
+                    ret.put("amount", rewardItem.getAmount());
+                    ret.put("type", rewardItem.getType());
+                    plugin.notifyListeners("onRewardedInterstitialAdReward", ret);
+                }
+            });
+
             callback.onSuccess();
         });
     }
