@@ -62,21 +62,21 @@ public class AppOpenPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", loadAdError.getMessage());
-                plugin.notifyListeners("onAppOpenPreloadFailed", ret);
+                plugin.notifyPluginListeners("onAppOpenPreloadFailed", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyListeners("onAppOpenPreloadExhausted", ret);
+                plugin.notifyPluginListeners("onAppOpenPreloadExhausted", ret);
             }
 
             @Override
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyListeners("onAppOpenPreloaded", ret);
+                plugin.notifyPluginListeners("onAppOpenPreloaded", ret);
             }
         };
 
@@ -102,29 +102,29 @@ public class AppOpenPreloadExecutor {
             ad.setAdEventCallback(new AppOpenAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onAppOpenAdShowed", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    plugin.notifyListeners("onAppOpenAdDismissed", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdDismissed", new JSObject());
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onAppOpenAdFailedToShow", ret);
+                    plugin.notifyPluginListeners("onAppOpenAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onAppOpenAdImpression", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onAppOpenAdClicked", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdClicked", new JSObject());
                 }
 
                 @Override
@@ -134,7 +134,7 @@ public class AppOpenPreloadExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onAppOpenAdPaid", ret);
+                    plugin.notifyPluginListeners("onAppOpenAdPaid", ret);
                 }
             });
 

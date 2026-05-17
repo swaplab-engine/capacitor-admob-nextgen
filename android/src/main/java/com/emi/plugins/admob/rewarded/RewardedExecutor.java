@@ -58,7 +58,7 @@ public class RewardedExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
-                            plugin.notifyListeners("onRewardedAdLoaded", ret);
+                            plugin.notifyPluginListeners("onRewardedAdLoaded", ret);
 
                             callback.onSuccess();
                         }
@@ -69,7 +69,7 @@ public class RewardedExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
-                            plugin.notifyListeners("onRewardedAdFailedToLoad", ret);
+                            plugin.notifyPluginListeners("onRewardedAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());
                         }
@@ -88,13 +88,13 @@ public class RewardedExecutor {
             mRewardedAd.setAdEventCallback(new RewardedAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onRewardedAdShowed", new JSObject());
+                    plugin.notifyPluginListeners("onRewardedAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     mRewardedAd = null; 
-                    plugin.notifyListeners("onRewardedAdDismissed", new JSObject());
+                    plugin.notifyPluginListeners("onRewardedAdDismissed", new JSObject());
                 }
 
                 @Override
@@ -102,17 +102,17 @@ public class RewardedExecutor {
                     mRewardedAd = null; 
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onRewardedAdFailedToShow", ret);
+                    plugin.notifyPluginListeners("onRewardedAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onRewardedAdImpression", new JSObject());
+                    plugin.notifyPluginListeners("onRewardedAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onRewardedAdClicked", new JSObject());
+                    plugin.notifyPluginListeners("onRewardedAdClicked", new JSObject());
                 }
 
                 @Override
@@ -122,7 +122,7 @@ public class RewardedExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onRewardedAdPaid", ret);
+                    plugin.notifyPluginListeners("onRewardedAdPaid", ret);
                 }
             });
 
@@ -132,7 +132,7 @@ public class RewardedExecutor {
                     JSObject ret = new JSObject();
                     ret.put("amount", rewardItem.getAmount());
                     ret.put("type", rewardItem.getType());
-                    plugin.notifyListeners("onRewardedAdReward", ret);
+                    plugin.notifyPluginListeners("onRewardedAdReward", ret);
                 }
             });
             callback.onSuccess();

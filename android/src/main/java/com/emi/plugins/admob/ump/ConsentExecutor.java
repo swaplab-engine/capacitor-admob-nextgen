@@ -74,7 +74,7 @@ public class ConsentExecutor {
                     activity,
                     params,
                     () -> {
-                        plugin.notifyListeners("onConsentInfoUpdated", new JSObject());
+                        plugin.notifyPluginListeners("onConsentInfoUpdated", new JSObject());
 
                         UserMessagingPlatform.loadAndShowConsentFormIfRequired(
                                 activity,
@@ -83,7 +83,7 @@ public class ConsentExecutor {
                                         sendErrorEvent(loadAndShowError);
                                         call.reject(loadAndShowError.getMessage());
                                     } else {
-                                        plugin.notifyListeners("onConsentFormDismissed", new JSObject());
+                                        plugin.notifyPluginListeners("onConsentFormDismissed", new JSObject());
                                         sendConsentStatus(call);
                                     }
                                 }
@@ -107,7 +107,7 @@ public class ConsentExecutor {
                             sendErrorEvent(formError);
                             call.reject(formError.getMessage());
                         } else {
-                            plugin.notifyListeners("onConsentFormDismissed", new JSObject());
+                            plugin.notifyPluginListeners("onConsentFormDismissed", new JSObject());
                             sendConsentStatus(call);
                         }
                     }
@@ -171,7 +171,7 @@ public class ConsentExecutor {
         result.put("isPrivacyOptionsRequired", requirementStatus == ConsentInformation.PrivacyOptionsRequirementStatus.REQUIRED);
         result.put("consentStatus", consentInformation.getConsentStatus());
 
-        plugin.notifyListeners("onConsentStatusChange", result);
+        plugin.notifyPluginListeners("onConsentStatusChange", result);
 
         if (call != null) {
             call.resolve(result);
@@ -182,7 +182,7 @@ public class ConsentExecutor {
         JSObject errData = new JSObject();
         errData.put("code", error.getErrorCode());
         errData.put("message", error.getMessage());
-        plugin.notifyListeners("onConsentError", errData);
+        plugin.notifyPluginListeners("onConsentError", errData);
     }
 
     private String getDeviceId(Context context) {

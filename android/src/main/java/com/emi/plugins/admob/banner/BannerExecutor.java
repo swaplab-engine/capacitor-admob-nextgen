@@ -226,7 +226,7 @@ public class BannerExecutor {
                         ret.put("heightPixels", adSize.getHeightInPixels(activity));
                         ret.put("isCollapsible", bannerAd.isCollapsible());
 
-                        plugin.notifyListeners("onBannerAdLoaded", ret);
+                        plugin.notifyPluginListeners("onBannerAdLoaded", ret);
                         call.resolve();
                     });
                 }
@@ -242,7 +242,7 @@ public class BannerExecutor {
 
                         JSObject ret = new JSObject();
                         ret.put("error", adError.getMessage());
-                        plugin.notifyListeners("onBannerAdFailedToLoad", ret);
+                        plugin.notifyPluginListeners("onBannerAdFailedToLoad", ret);
                         call.reject("Banner failed to load: " + adError.getMessage());
                     });
                 }
@@ -278,24 +278,23 @@ public class BannerExecutor {
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
 
-            int screenHeightInPx = getScreenHeightInPx();
-
             if (!isBannerVisible || isOverlapping) {
-                params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+
                 params.topMargin = 0;
                 params.bottomMargin = 0;
             } else {
                 if ("TOP".equals(currentPosition)) {
+
                     params.topMargin = lastAdHeight;
                     params.bottomMargin = 0;
-                    params.height = screenHeightInPx;
                 } else {
-                    int finalBottom = lastAdHeight;
+
                     params.topMargin = 0;
-                    params.bottomMargin = 0;
-                    params.height = screenHeightInPx - finalBottom;
+                    params.bottomMargin = lastAdHeight;
                 }
             }
+
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
 
             webViewView.setLayoutParams(params);
             webViewView.requestLayout();
@@ -357,21 +356,21 @@ public class BannerExecutor {
     private void setupBannerCallbacks(BannerAd bannerAd) {
         bannerAd.setAdEventCallback(new BannerAdEventCallback() {
             @Override public void onAdImpression() {
-                plugin.notifyListeners("onBannerAdImpression", new JSObject());
+                plugin.notifyPluginListeners("onBannerAdImpression", new JSObject());
             }
             @Override public void onAdClicked() {
-                plugin.notifyListeners("onBannerAdClicked", new JSObject());
+                plugin.notifyPluginListeners("onBannerAdClicked", new JSObject());
             }
             @Override public void onAdShowedFullScreenContent() {
-                plugin.notifyListeners("onBannerAdShowedFullScreen", new JSObject());
+                plugin.notifyPluginListeners("onBannerAdShowedFullScreen", new JSObject());
             }
             @Override public void onAdDismissedFullScreenContent() {
-                plugin.notifyListeners("onBannerAdDismissedFullScreen", new JSObject());
+                plugin.notifyPluginListeners("onBannerAdDismissedFullScreen", new JSObject());
             }
             @Override public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                 JSObject ret = new JSObject();
                 ret.put("error", error.getMessage());
-                plugin.notifyListeners("onBannerAdFailedToShowFullScreen", ret);
+                plugin.notifyPluginListeners("onBannerAdFailedToShowFullScreen", ret);
             }
             @Override public void onAdPaid(@NonNull AdValue value) {
                 JSObject ret = new JSObject();
@@ -379,17 +378,17 @@ public class BannerExecutor {
                 ret.put("valueMicros", value.getValueMicros());
                 ret.put("currencyCode", value.getCurrencyCode());
                 ret.put("precisionType", value.getPrecisionType().name());
-                plugin.notifyListeners("onBannerAdPaid", ret);
+                plugin.notifyPluginListeners("onBannerAdPaid", ret);
             }
         });
         bannerAd.setBannerAdRefreshCallback(new BannerAdRefreshCallback() {
             @Override public void onAdRefreshed() {
-                plugin.notifyListeners("onBannerAdRefreshed", new JSObject());
+                plugin.notifyPluginListeners("onBannerAdRefreshed", new JSObject());
             }
             @Override public void onAdFailedToRefresh(@NonNull LoadAdError error) {
                 JSObject ret = new JSObject();
                 ret.put("error", error.getMessage());
-                plugin.notifyListeners("onBannerAdFailedToRefresh", ret);
+                plugin.notifyPluginListeners("onBannerAdFailedToRefresh", ret);
             }
         });
     }

@@ -68,21 +68,21 @@ public class InterstitialPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", adError.getMessage());
-                plugin.notifyListeners("onInterstitialPreloadFailed", ret);
+                plugin.notifyPluginListeners("onInterstitialPreloadFailed", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyListeners("onInterstitialPreloadExhausted", ret);
+                plugin.notifyPluginListeners("onInterstitialPreloadExhausted", ret);
             }
 
             @Override
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyListeners("onInterstitialPreloaded", ret);
+                plugin.notifyPluginListeners("onInterstitialPreloaded", ret);
             }
         };
 
@@ -108,29 +108,29 @@ public class InterstitialPreloadExecutor {
             ad.setAdEventCallback(new InterstitialAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onInterstitialAdShowed", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    plugin.notifyListeners("onInterstitialAdDismissed", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdDismissed", new JSObject());
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onInterstitialAdFailedToShow", ret);
+                    plugin.notifyPluginListeners("onInterstitialAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onInterstitialAdImpression", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onInterstitialAdClicked", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdClicked", new JSObject());
                 }
 
                 @Override
@@ -140,7 +140,7 @@ public class InterstitialPreloadExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onInterstitialAdPaid", ret);
+                    plugin.notifyPluginListeners("onInterstitialAdPaid", ret);
                 }
             });
 

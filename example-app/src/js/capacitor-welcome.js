@@ -348,7 +348,8 @@ window.customElements.define(
           // Using a different test ID for Banner to avoid overlapping with App Open
           await AdMobNextGen.createBanner({
             adUnitId: 'ca-app-pub-3940256099942544/9214589741',
-            position: pos, adSize: 'ADAPTIVE',
+            position: pos, 
+            adSize: 'ADAPTIVE',
             isAutoShow: auto, 
             isOverlap: overlap, 
             isCollapsible: collaps

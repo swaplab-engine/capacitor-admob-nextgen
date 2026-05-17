@@ -475,4 +475,11 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
         rewardedInterstitialPreloadExecutor.checkAvailability(call);
     }
 
+    /**
+     * Public wrapper to allow executor classes to trigger Capacitor events.
+     */
+    public void notifyPluginListeners(String eventName, JSObject data) {
+        notifyListeners(eventName, data);
+    }
+
 }

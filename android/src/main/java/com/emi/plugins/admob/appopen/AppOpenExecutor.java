@@ -81,7 +81,7 @@ public class AppOpenExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
-                            plugin.notifyListeners("onAppOpenAdLoaded", ret);
+                            plugin.notifyPluginListeners("onAppOpenAdLoaded", ret);
 
                             callback.onSuccess();
                         }
@@ -93,7 +93,7 @@ public class AppOpenExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
-                            plugin.notifyListeners("onAppOpenAdFailedToLoad", ret);
+                            plugin.notifyPluginListeners("onAppOpenAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());
                         }
@@ -117,14 +117,14 @@ public class AppOpenExecutor {
             appOpenAd.setAdEventCallback(new AppOpenAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onAppOpenAdShowed", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     appOpenAd = null; 
                     isShowingAd = false;
-                    plugin.notifyListeners("onAppOpenAdDismissed", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdDismissed", new JSObject());
                 }
 
                 @Override
@@ -134,17 +134,17 @@ public class AppOpenExecutor {
 
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onAppOpenAdFailedToShow", ret);
+                    plugin.notifyPluginListeners("onAppOpenAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onAppOpenAdImpression", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onAppOpenAdClicked", new JSObject());
+                    plugin.notifyPluginListeners("onAppOpenAdClicked", new JSObject());
                 }
 
                 @Override
@@ -154,7 +154,7 @@ public class AppOpenExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onAppOpenAdPaid", ret);
+                    plugin.notifyPluginListeners("onAppOpenAdPaid", ret);
                 }
             });
 

@@ -56,7 +56,7 @@ public class InterstitialExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
-                            plugin.notifyListeners("onInterstitialAdLoaded", ret);
+                            plugin.notifyPluginListeners("onInterstitialAdLoaded", ret);
 
                             callback.onSuccess();
                         }
@@ -67,7 +67,7 @@ public class InterstitialExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
-                            plugin.notifyListeners("onInterstitialAdFailedToLoad", ret);
+                            plugin.notifyPluginListeners("onInterstitialAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());
                         }
@@ -86,13 +86,13 @@ public class InterstitialExecutor {
             mInterstitialAd.setAdEventCallback(new InterstitialAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyListeners("onInterstitialAdShowed", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdShowed", new JSObject());
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     mInterstitialAd = null; 
-                    plugin.notifyListeners("onInterstitialAdDismissed", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdDismissed", new JSObject());
                 }
 
                 @Override
@@ -100,17 +100,17 @@ public class InterstitialExecutor {
                     mInterstitialAd = null; 
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
-                    plugin.notifyListeners("onInterstitialAdFailedToShow", ret);
+                    plugin.notifyPluginListeners("onInterstitialAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyListeners("onInterstitialAdImpression", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdImpression", new JSObject());
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyListeners("onInterstitialAdClicked", new JSObject());
+                    plugin.notifyPluginListeners("onInterstitialAdClicked", new JSObject());
                 }
 
                 @Override
@@ -120,7 +120,7 @@ public class InterstitialExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
-                    plugin.notifyListeners("onInterstitialAdPaid", ret);
+                    plugin.notifyPluginListeners("onInterstitialAdPaid", ret);
                 }
             });
 
