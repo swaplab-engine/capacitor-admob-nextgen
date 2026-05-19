@@ -76,6 +76,7 @@ This plugin is regularly updated to support the latest standards.
 > 
 > Using this plugin on Capacitor 7+ (API 35) or below may not yield expected results, as the layout engine is strictly tailored for the Capacitor 8 architecture.
 
+- [Example video](https://github.com/swaplab-engine/capacitor-admob-nextgen/releases/tag/v1.0.1)
 - **Smart WebView Push:** Dynamically adjusts WebView margins when Banner Ads are displayed to prevent UI overlap.
 - **Isolated OS Branching:** Uses distinct native logic for Android 15+ (Edge-to-Edge) and Android 14 or below to guarantee layout stability.
 - **Immersive Fullscreen Support:** Automatically detects and adapts perfectly whether the app is in normal or immersive fullscreen mode.
