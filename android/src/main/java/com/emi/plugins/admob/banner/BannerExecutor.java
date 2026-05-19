@@ -432,4 +432,30 @@ public class BannerExecutor {
         if ("PORTRAIT_INLINE_ADAPTIVE".equalsIgnoreCase(sizeStr)) return AdSize.getPortraitInlineAdaptiveBannerAdSize(activity, getAdWidth(activity));
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, getAdWidth(activity));
     }
+
+    public void onPause() {
+
+    }
+
+    public void onResume() {
+
+    }
+
+    public void onDestroy() {
+        if (adView != null) {
+            plugin.getActivity().runOnUiThread(() -> {
+                adView.destroy();
+                adView = null;
+            });
+        }
+        if (capacitorAdLayout != null) {
+            plugin.getActivity().runOnUiThread(() -> {
+                if (capacitorAdLayout.getParent() != null) {
+                    ((ViewGroup) capacitorAdLayout.getParent()).removeView(capacitorAdLayout);
+                }
+                capacitorAdLayout = null;
+            });
+        }
+    }
+
 }

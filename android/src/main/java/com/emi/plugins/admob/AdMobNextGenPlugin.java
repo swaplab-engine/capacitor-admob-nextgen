@@ -70,6 +70,27 @@ public class AdMobNextGenPlugin extends Plugin {
         }
     }
 
+    @Override
+    protected void handleOnPause() {
+        super.handleOnPause();
+        if (bannerExecutor != null) bannerExecutor.onPause();
+        if (bannerPreloadExecutor != null) bannerPreloadExecutor.onPause();
+    }
+
+    @Override
+    protected void handleOnResume() {
+        super.handleOnResume();
+        if (bannerExecutor != null) bannerExecutor.onResume();
+        if (bannerPreloadExecutor != null) bannerPreloadExecutor.onResume();
+    }
+
+    @Override
+    protected void handleOnDestroy() {
+        if (bannerExecutor != null) bannerExecutor.onDestroy();
+        if (bannerPreloadExecutor != null) bannerPreloadExecutor.onDestroy();
+        super.handleOnDestroy();
+    }
+
     private static void applyAdMobAPI35WorkaroundIfNeeded(Application application) {
         if (Build.VERSION.SDK_INT < 35) {
             return;
@@ -475,9 +496,6 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
         rewardedInterstitialPreloadExecutor.checkAvailability(call);
     }
 
-    /**
-     * Public wrapper to allow executor classes to trigger Capacitor events.
-     */
     public void notifyPluginListeners(String eventName, JSObject data) {
         notifyListeners(eventName, data);
     }

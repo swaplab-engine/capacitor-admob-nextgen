@@ -375,4 +375,16 @@ public class BannerPreloadExecutor {
         if ("PORTRAIT_INLINE_ADAPTIVE".equalsIgnoreCase(sizeStr)) return AdSize.getPortraitInlineAdaptiveBannerAdSize(activity, getAdWidth(activity));
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, getAdWidth(activity));
     }
+
+    public void onPause() {
+
+    }
+
+    public void onResume() {
+
+    }
+
+    public void onDestroy() {
+        plugin.getActivity().runOnUiThread(this::destroyCurrentAdInternal);
+    }
 }
