@@ -64,12 +64,24 @@ This plugin is regularly updated to support the latest standards.
 
 ## ✨ Key Features
 
-- **Next-Gen Preloading API:** Introduces continuous background ad buffering. Say goodbye to loading spinners! Pull ads instantly with zero latency.
+### 🚀 Core & Performance
+- **Next-Gen Preloading API:** Introduces continuous background ad buffering. Pull ads instantly with zero latency.
 - **Classic Single-Load API:** Fully supports traditional ad loading methods for backwards compatibility.
-- **Android 15 Edge-to-Edge Ready:** Includes an automated, background lifecycle workaround to prevent full-screen ad close buttons ("X") from being hidden under the status bar or navigation bar.
-- **Smart Caching & Rate Limiting:** Built-in anti-spam protections to safeguard your AdMob account from Invalid Traffic penalties caused by accidental continuous requests.
+- **Smart Caching & Rate Limiting:** Built-in anti-spam protections to safeguard AdMob accounts from Invalid Traffic penalties.
 - **Automated Native Setup:** Effortlessly inject App IDs into `AndroidManifest.xml` and `Info.plist` using Capacitor CLI Hooks.
 - **Integrated UMP:** Full support for Google's User Messaging Platform for GDPR and App Tracking Transparency (ATT) compliance.
+
+### 🧩 Banner Ads
+> **IMPORTANT:** The Smart WebView Push and Adaptive Layout handling is exclusively designed, thoroughly tested, and handled specifically for **Capacitor 8+ (API 36)**.
+> 
+> Using this plugin on Capacitor 7+ (API 35) or below may not yield expected results, as the layout engine is strictly tailored for the Capacitor 8 architecture.
+
+- **Smart WebView Push:** Dynamically adjusts WebView margins when Banner Ads are displayed to prevent UI overlap.
+- **Isolated OS Branching:** Uses distinct native logic for Android 15+ (Edge-to-Edge) and Android 14 or below to guarantee layout stability.
+- **Immersive Fullscreen Support:** Automatically detects and adapts perfectly whether the app is in normal or immersive fullscreen mode.
+
+### 📱 Full-Screen Ads (Interstitial, Rewarded, App Open)
+- **Safe Area Workaround:** Includes an automated background lifecycle fix to prevent full-screen ad close buttons ("X") from being hidden under system bars on Android 15+.
 
 ---
 

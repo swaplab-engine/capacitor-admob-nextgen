@@ -1,6 +1,6 @@
 {
   "name": "example-app-admob-nextgen",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Internal testing environment for Capacitor AdMob Next-Gen Plugin",
   "admob": {
     "androidAppId": "ca-app-pub-3940256099942544~3347511713"

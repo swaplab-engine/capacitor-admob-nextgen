@@ -251,6 +251,12 @@ public class BannerExecutor {
     }
 
     private void updateBannerLayout() {
+
+        if (Build.VERSION.SDK_INT < 35) {
+            updateBannerLayoutLegacy();
+            return;
+        }
+
         if (adView == null || capacitorAdLayout == null) return;
 
         FrameLayout.LayoutParams bannerParams = new FrameLayout.LayoutParams(
@@ -260,17 +266,75 @@ public class BannerExecutor {
 
         if ("TOP".equals(currentPosition)) {
             bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, systemSafeTop, 0, 0); 
+            bannerParams.setMargins(0, systemSafeTop, 0, 0);
         } else {
             bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, 0, 0, systemSafeBottom); 
+            bannerParams.setMargins(0, 0, 0, systemSafeBottom);
         }
 
         adView.setLayoutParams(bannerParams);
         capacitorAdLayout.requestLayout();
     }
 
-    private void updateWebViewMargins() {
+    private void updateBannerLayoutLegacy() {
+
+        if (adView == null || capacitorAdLayout == null) return;
+
+        FrameLayout.LayoutParams bannerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        Activity activity = plugin.getActivity();
+        int topMargin = 0;
+        int bottomMargin = 0;
+
+        if (activity != null && activity.getWindow() != null) {
+            View decorView = activity.getWindow().getDecorView();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+                android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                if (insets != null) {
+                    boolean isStatusVisible = insets.isVisible(android.view.WindowInsets.Type.statusBars());
+                    boolean isNavVisible = insets.isVisible(android.view.WindowInsets.Type.navigationBars());
+
+                    topMargin = isStatusVisible ? insets.getInsets(android.view.WindowInsets.Type.statusBars()).top : 0;
+                    bottomMargin = isNavVisible ? insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom : 0;
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                if (insets != null) {
+                    topMargin = insets.getSystemWindowInsetTop();
+                    bottomMargin = insets.getSystemWindowInsetBottom();
+
+                    int uiOptions = decorView.getSystemUiVisibility();
+                    if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0) topMargin = 0;
+                    if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) bottomMargin = 0;
+                }
+            } else {
+
+                int uiOptions = decorView.getSystemUiVisibility();
+                if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) topMargin = getRealStatusBarHeight();
+                if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) bottomMargin = getRealNavigationBarHeight();
+            }
+        }
+
+        if ("TOP".equals(currentPosition)) {
+            bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+            bannerParams.setMargins(0, topMargin, 0, 0);
+        } else {
+            bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            bannerParams.setMargins(0, 0, 0, bottomMargin);
+        }
+
+        adView.setLayoutParams(bannerParams);
+        capacitorAdLayout.requestLayout();
+    }
+
+    private void updateWebViewMarginsLegacy() {
+
         View webViewView = plugin.getBridge().getWebView();
         if (webViewView == null) return;
 
@@ -279,23 +343,53 @@ public class BannerExecutor {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
 
             if (!isBannerVisible || isOverlapping) {
+                params.topMargin = 0;
+                params.bottomMargin = 0;
+            } else {
 
+                if ("TOP".equals(currentPosition)) {
+                    params.topMargin = lastAdHeight; 
+                    params.bottomMargin = 0;
+                } else {
+                    params.topMargin = 0;
+                    params.bottomMargin = lastAdHeight; 
+                }
+            }
+
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            webViewView.setLayoutParams(params);
+            webViewView.requestLayout();
+        }
+    }
+
+    private void updateWebViewMargins() {
+
+        if (Build.VERSION.SDK_INT < 35) {
+            updateWebViewMarginsLegacy();
+            return;
+        }
+
+        View webViewView = plugin.getBridge().getWebView();
+        if (webViewView == null) return;
+
+        ViewGroup.LayoutParams lp = webViewView.getLayoutParams();
+        if (lp instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
+
+            if (!isBannerVisible || isOverlapping) {
                 params.topMargin = 0;
                 params.bottomMargin = 0;
             } else {
                 if ("TOP".equals(currentPosition)) {
-
                     params.topMargin = lastAdHeight;
                     params.bottomMargin = 0;
                 } else {
-
                     params.topMargin = 0;
                     params.bottomMargin = lastAdHeight;
                 }
             }
 
             params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-
             webViewView.setLayoutParams(params);
             webViewView.requestLayout();
         }
@@ -417,6 +511,28 @@ public class BannerExecutor {
         } else {
             return (int) (displayMetrics.widthPixels / displayMetrics.density);
         }
+    }
+
+    @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
+    private int getRealNavigationBarHeight() {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return 0;
+        int resourceId = activity.getResources().getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return activity.getResources().getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
+
+    @SuppressLint({"DiscouragedApi", "InternalInsetResource"})
+    private int getRealStatusBarHeight() {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return 0;
+        int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return activity.getResources().getDimensionPixelSize(resourceId);
+        }
+        return 0;
     }
 
     private AdSize getAdSize(Activity activity, String sizeStr) {

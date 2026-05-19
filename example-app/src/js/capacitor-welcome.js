@@ -1,5 +1,7 @@
 import { AdMobNextGen } from 'capacitor-admob-nextgen';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { SystemBars } from '@capacitor/core';
+
 
 window.customElements.define(
   'capacitor-welcome',
@@ -116,6 +118,7 @@ window.customElements.define(
             <div class="section full-width">
               <h3 class="section-title">1. System Setup</h3>
               <div class="btn-row">
+              <button class="btn btn-sys" id="btn-fullscreen">Fullscreen</button>
                 <button class="btn btn-sys" id="btn-consent">Consent</button>
                 <button class="btn btn-sys" id="btn-privacy">Privacy</button>
                 <button class="btn btn-sys" id="btn-tcdata">TCData</button>
@@ -249,6 +252,9 @@ window.customElements.define(
 
       SplashScreen.hide();
 
+      this.isSystemBarsHidden = false;
+      
+
       this.terminal = this.shadowRoot.getElementById('terminal');
       this.sdkStatusBadge = this.shadowRoot.getElementById('sdk-status');
       this.setupEventListeners();
@@ -300,6 +306,32 @@ window.customElements.define(
           this.logToTerminal(`Consent: canRequestAds=${result.canRequestAds}`);
         } catch (error) {
           this.logToTerminal(`Consent Error: ${error.message || error}`, 'ERROR');
+        }
+      });
+
+      getById('btn-fullscreen').addEventListener('click', async () => {
+        try {
+          const btn = getById('btn-fullscreen');
+          
+          if (!this.isSystemBarsHidden) {
+            this.logToTerminal('Toggling SystemBars (Fullscreen)...', 'SYS');
+            
+            await SystemBars.hide();
+            
+            this.isSystemBarsHidden = true;
+            btn.innerText = 'Show SystemBars'; // Update UI label
+            this.logToTerminal('Fullscreen Mode Active', 'SUCCESS');
+          } else {
+            this.logToTerminal('Restoring SystemBars (Normal)...', 'SYS');
+            
+            await SystemBars.show();
+            
+            this.isSystemBarsHidden = false;
+            btn.innerText = 'Fullscreen'; // Reset UI label
+            this.logToTerminal('Normal Mode Active', 'SUCCESS');
+          }
+        } catch (error) {
+          this.logToTerminal(`Fullscreen Error: ${error.message || error}`, 'ERROR');
         }
       });
 
