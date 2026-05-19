@@ -6,6 +6,7 @@ import android.provider.Settings;
 
 import com.getcapacitor.Logger;
 import com.google.android.libraries.ads.mobile.sdk.MobileAds;
+import com.google.android.libraries.ads.mobile.sdk.common.AgeRestrictedTreatment;
 import com.google.android.libraries.ads.mobile.sdk.initialization.InitializationConfig;
 import com.google.android.libraries.ads.mobile.sdk.common.RequestConfiguration;
 
@@ -24,22 +25,22 @@ public class AdMobNextGen {
         if (maxRating != null && !maxRating.isEmpty()) {
             switch (maxRating.toUpperCase()) {
                 case "G": configBuilder.setMaxAdContentRating(RequestConfiguration.MaxAdContentRating.MAX_AD_CONTENT_RATING_G);
-                break;
+                    break;
                 case "PG": configBuilder.setMaxAdContentRating(RequestConfiguration.MaxAdContentRating.MAX_AD_CONTENT_RATING_PG);
-                break;
+                    break;
                 case "T": configBuilder.setMaxAdContentRating(RequestConfiguration.MaxAdContentRating.MAX_AD_CONTENT_RATING_T);
-                break;
+                    break;
                 case "MA": configBuilder.setMaxAdContentRating(RequestConfiguration.MaxAdContentRating.MAX_AD_CONTENT_RATING_MA);
-                break;
+                    break;
             }
         }
 
-        if (childTag != null) {
-            configBuilder.setTagForChildDirectedTreatment(childTag ? RequestConfiguration.TagForChildDirectedTreatment.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE : RequestConfiguration.TagForChildDirectedTreatment.TAG_FOR_CHILD_DIRECTED_TREATMENT_FALSE);
-        }
-
-        if (underAgeTag != null) {
-            configBuilder.setTagForUnderAgeOfConsent(underAgeTag ? RequestConfiguration.TagForUnderAgeOfConsent.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE : RequestConfiguration.TagForUnderAgeOfConsent.TAG_FOR_UNDER_AGE_OF_CONSENT_FALSE);
+        if (childTag != null && childTag) {
+            configBuilder.setAgeRestrictedTreatment(AgeRestrictedTreatment.CHILD);
+        } else if (underAgeTag != null && underAgeTag) {
+            configBuilder.setAgeRestrictedTreatment(AgeRestrictedTreatment.TEEN);
+        } else if ((childTag != null && !childTag) || (underAgeTag != null && !underAgeTag)) {
+            configBuilder.setAgeRestrictedTreatment(AgeRestrictedTreatment.UNSPECIFIED);
         }
 
         if (isTesting != null && isTesting) {
@@ -70,7 +71,7 @@ public class AdMobNextGen {
 
     private String getDeviceId(Context context) {
         try {
-            @SuppressLint("HardwareIds") 
+            @SuppressLint("HardwareIds")
             String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
             if (androidId == null || androidId.isEmpty()) return null;
             return md5(androidId).toUpperCase(Locale.getDefault());
