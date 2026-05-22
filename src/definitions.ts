@@ -241,82 +241,70 @@ export interface AdMobNextGenPlugin {
 
   /**
    * Listens for Ad events triggered by the native SDK.
+   * * 💡 **NOTE ON PRELOADING:** If you are using the Next-Gen Preloading API, standard ad events 
+   * (like Loaded, FailedToLoad, Impression, Paid, etc.) will include an additional property: 
+   * `{ source: "preloader" }`. This allows you to easily distinguish them from Classic API events using a single listener.
    * * ### Interstitial Events
-   * - `onInterstitialAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string }.
-   * - `onInterstitialAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string }.
+   * - `onInterstitialAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string, source?: string }.
+   * - `onInterstitialAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string, source?: string }.
    * - `onInterstitialAdShowed`: Fired when an ad is displayed.
    * - `onInterstitialAdDismissed`: Fired when an ad is closed by the user.
-   * - `onInterstitialAdFailedToShow`: Fired when an ad fails to display. Returns { error: string }.
+   * - `onInterstitialAdFailedToShow`: Fired when an ad fails to display. Returns { error: string, source?: string }.
    * - `onInterstitialAdImpression`: Fired when an ad impression is recorded.
    * - `onInterstitialAdClicked`: Fired when an ad is clicked.
    * - `onInterstitialAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Rewarded Events
-   * - `onRewardedAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string }.
-   * - `onRewardedAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string }.
+   * - `onRewardedAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string, source?: string }.
+   * - `onRewardedAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string, source?: string }.
    * - `onRewardedAdShowed`: Fired when an ad is displayed.
    * - `onRewardedAdDismissed`: Fired when an ad is closed.
-   * - `onRewardedAdFailedToShow`: Fired when an ad fails to display. Returns { error: string }.
+   * - `onRewardedAdFailedToShow`: Fired when an ad fails to display. Returns { error: string, source?: string }.
    * - `onRewardedAdImpression`: Fired when an ad impression is recorded.
    * - `onRewardedAdClicked`: Fired when an ad is clicked.
-   * - `onRewardedAdReward`: Fired when the user earns a reward. Returns { amount: number, type: string }.
+   * - `onRewardedAdReward`: Fired when the user earns a reward. Returns { amount: number, type: string, source?: string }.
    * - `onRewardedAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Rewarded Interstitial Events
-   * - `onRewardedInterstitialAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string }.
-   * - `onRewardedInterstitialAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string }.
+   * - `onRewardedInterstitialAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string, source?: string }.
+   * - `onRewardedInterstitialAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string, source?: string }.
    * - `onRewardedInterstitialAdShowed`: Fired when an ad is displayed.
    * - `onRewardedInterstitialAdDismissed`: Fired when an ad is closed.
-   * - `onRewardedInterstitialAdFailedToShow`: Fired when an ad fails to display. Returns { error: string }.
+   * - `onRewardedInterstitialAdFailedToShow`: Fired when an ad fails to display. Returns { error: string, source?: string }.
    * - `onRewardedInterstitialAdImpression`: Fired when an ad impression is recorded.
    * - `onRewardedInterstitialAdClicked`: Fired when an ad is clicked.
-   * - `onRewardedInterstitialAdReward`: Fired when the user earns a reward. Returns { amount: number, type: string }.
+   * - `onRewardedInterstitialAdReward`: Fired when the user earns a reward. Returns { amount: number, type: string, source?: string }.
    * - `onRewardedInterstitialAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### App Open Events
-   * - `onAppOpenAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string }.
-   * - `onAppOpenAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string }.
+   * - `onAppOpenAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string, source?: string }.
+   * - `onAppOpenAdFailedToLoad`: Fired when an ad fails to load. Returns { error: string, source?: string }.
    * - `onAppOpenAdShowed`: Fired when an ad is displayed.
    * - `onAppOpenAdDismissed`: Fired when an ad is closed.
-   * - `onAppOpenAdFailedToShow`: Fired when an ad fails to display. Returns { error: string }.
+   * - `onAppOpenAdFailedToShow`: Fired when an ad fails to display. Returns { error: string, source?: string }.
    * - `onAppOpenAdImpression`: Fired when an ad impression is recorded.
    * - `onAppOpenAdClicked`: Fired when an ad is clicked.
    * - `onAppOpenAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Banner Events
-   * - `onBannerAdLoaded`: Fired when a banner is loaded. Returns { adUnitId: string, width: number, height: number, widthPixels: number, heightPixels: number, isCollapsible: boolean }.
-   * - `onBannerAdFailedToLoad`: Fired when a banner fails to load. Returns { error: string }.
+   * - `onBannerAdLoaded`: Fired when a banner is loaded. Returns { adUnitId: string, width: number, height: number, widthPixels: number, heightPixels: number, isCollapsible: boolean, source?: string }.
+   * - `onBannerAdFailedToLoad`: Fired when a banner fails to load. Returns { error: string, source?: string }.
    * - `onBannerAdImpression`: Fired when a banner impression is recorded.
    * - `onBannerAdClicked`: Fired when a banner is clicked.
    * - `onBannerAdShowedFullScreen`: Fired when a banner opens an overlay (e.g., user clicked it).
    * - `onBannerAdDismissedFullScreen`: Fired when the banner overlay is closed.
-   * - `onBannerAdFailedToShowFullScreen`: Fired when the banner overlay fails to open. Returns { error: string }.
+   * - `onBannerAdFailedToShowFullScreen`: Fired when the banner overlay fails to open. Returns { error: string, source?: string }.
    * - `onBannerAdRefreshed`: Fired when the banner auto-refreshes.
-   * - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string }.
+   * - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
    * - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Consent (UMP) Events
    * - `onConsentInfoUpdated`: Fired when consent info is successfully updated.
    * - `onConsentFormDismissed`: Fired when the consent form overlay is closed.
    * - `onConsentStatusChange`: Fired when consent status changes. Returns ConsentStatusResult.
    * - `onConsentError`: Fired when a UMP error occurs. Returns { code: number, message: string }.
-   * * ### Next-Gen Preloading Events
-   * **App Open Preload**
-   * - `onAppOpenPreloaded`: Fired when an ad is cached in the buffer. Returns { adUnitId: string }.
-   * - `onAppOpenPreloadFailed`: Fired when caching fails. Returns { adUnitId: string, error: string }.
-   * - `onAppOpenPreloadExhausted`: Fired when the buffer is empty. Returns { adUnitId: string }.
-   * * **Interstitial Preload**
-   * - `onInterstitialPreloaded`: Fired when an ad is cached in the buffer. Returns { adUnitId: string }.
-   * - `onInterstitialPreloadFailed`: Fired when caching fails. Returns { adUnitId: string, error: string }.
-   * - `onInterstitialPreloadExhausted`: Fired when the buffer is empty. Returns { adUnitId: string }.
-   * * **Rewarded Preload**
-   * - `onRewardedPreloaded`: Fired when an ad is cached in the buffer. Returns { adUnitId: string }.
-   * - `onRewardedPreloadFailed`: Fired when caching fails. Returns { adUnitId: string, error: string }.
-   * - `onRewardedPreloadExhausted`: Fired when the buffer is empty. Returns { adUnitId: string }.
-   * * **Rewarded Interstitial Preload**
-   * - `onRewardedInterstitialPreloaded`: Fired when an ad is cached in the buffer. Returns { adUnitId: string }.
-   * - `onRewardedInterstitialPreloadFailed`: Fired when caching fails. Returns { adUnitId: string, error: string }.
-   * - `onRewardedInterstitialPreloadExhausted`: Fired when the buffer is empty. Returns { adUnitId: string }.
-   * * **Banner Preload**
-   * - `onBannerPreloaded`: Fired when a banner is cached in the buffer. Returns { adUnitId: string }.
-   * - `onBannerPreloadFailed`: Fired when caching fails. Returns { adUnitId: string, error: string }.
-   * - `onBannerPreloadExhausted`: Fired when the buffer is empty. Returns { adUnitId: string }.
-   * - `onBannerPreloadShown`: Fired when a preloaded banner is rendered on screen. Returns { adUnitId: string, isCollapsible: boolean }.
+   * * ### Next-Gen Buffer Events (Exhausted)
+   * These events are uniquely fired by the Preloading API when the background buffer runs out of cached ads.
+   * - `onAppOpenAdPreloadExhausted`: Fired when the App Open buffer is empty. Returns { adUnitId: string, source: "preloader" }.
+   * - `onInterstitialAdPreloadExhausted`: Fired when the Interstitial buffer is empty. Returns { adUnitId: string, source: "preloader" }.
+   * - `onRewardedAdPreloadExhausted`: Fired when the Rewarded buffer is empty. Returns { adUnitId: string, source: "preloader" }.
+   * - `onRewardedInterstitialAdPreloadExhausted`: Fired when the Rewarded Interstitial buffer is empty. Returns { adUnitId: string, source: "preloader" }.
+   * - `onBannerAdPreloadExhausted`: Fired when the Banner buffer is empty. Returns { adUnitId: string, source: "preloader" }.
    * * @param eventName The name of the event to listen for.
    * @param listenerFunc The callback function handling the event data.
    */

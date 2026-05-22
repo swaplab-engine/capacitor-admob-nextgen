@@ -62,6 +62,7 @@ public class RewardedInterstitialExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("adUnitId", currentAdUnitId);
+                            ret.put("source", "preloader");
                             plugin.notifyPluginListeners("onRewardedInterstitialAdLoaded", ret);
 
                             callback.onSuccess();
@@ -73,6 +74,7 @@ public class RewardedInterstitialExecutor {
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
+                            ret.put("source", "preloader");
                             plugin.notifyPluginListeners("onRewardedInterstitialAdFailedToLoad", ret);
 
                             callback.onError(adError.getMessage());

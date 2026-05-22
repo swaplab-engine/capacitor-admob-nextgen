@@ -455,7 +455,7 @@ window.customElements.define(
           this.logToTerminal('Starting Interstitial Buffer...', 'NEXTGEN');
           await AdMobNextGen.startPreloadInterstitial({ 
             adUnitId: 'ca-app-pub-3940256099942544/1033173712',
-            bufferSize: 2 
+            bufferSize: 2 // Default: 1, maximum 3
           });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });
@@ -493,7 +493,7 @@ window.customElements.define(
           this.logToTerminal('Starting Rewarded Buffer...', 'NEXTGEN');
           await AdMobNextGen.startPreloadRewarded({ 
             adUnitId: 'ca-app-pub-3940256099942544/5224354917',
-            bufferSize: 2 
+            bufferSize: 2 // Default: 1, maximum 3
           });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });
@@ -531,7 +531,7 @@ window.customElements.define(
           this.logToTerminal('Starting Rewarded Int Buffer...', 'NEXTGEN');
           await AdMobNextGen.startPreloadRewardedInterstitial({ 
             adUnitId: 'ca-app-pub-3940256099942544/5354046379',
-            bufferSize: 2 
+            bufferSize: 2 // Default: 1, maximum 3
           });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });
@@ -599,6 +599,11 @@ window.customElements.define(
         });
       };
 
+      /*
+      Unified Events & Preloader Exclusives
+      To streamline development, the Preloader triggers the exact same lifecycle events as the Classic mode 
+      (e.g., onBannerAdLoaded, onBannerAdPaid). You only need to write one event listener for both modes.
+      */
       ['onConsentInfoUpdated', 'onConsentFormDismissed', 'onConsentStatusChange', 'onConsentError'].forEach(e => bindEvent(e));
       ['onBannerAdLoaded', 'onBannerAdFailedToLoad', 'onBannerAdImpression', 'onBannerAdClicked', 'onBannerAdPaid'].forEach(e => bindEvent(e));
       ['onInterstitialAdLoaded', 'onInterstitialAdFailedToLoad', 'onInterstitialAdShowed', 'onInterstitialAdDismissed', 'onInterstitialAdPaid'].forEach(e => bindEvent(e));
@@ -606,12 +611,30 @@ window.customElements.define(
       ['onRewardedInterstitialAdLoaded', 'onRewardedInterstitialAdFailedToLoad', 'onRewardedInterstitialAdShowed', 'onRewardedInterstitialAdDismissed', 'onRewardedInterstitialAdReward', 'onRewardedInterstitialAdPaid'].forEach(e => bindEvent(e));
       ['onAppOpenAdLoaded', 'onAppOpenAdFailedToLoad', 'onAppOpenAdShowed', 'onAppOpenAdDismissed', 'onAppOpenAdPaid'].forEach(e => bindEvent(e));
       
+      // Preloader Exclusive Event: The only event strictly unique to the Preloader is the exhausted event. 
+      // This fires when the buffer pool is completely empty and the SDK stops trying to fetch new ads.
       // Next-Gen Preload Events
-      ['onBannerPreloadFailed', 'onBannerPreloadExhausted', 'onBannerPreloaded', 'onBannerPreloadShown'].forEach(e => bindEvent(e, 'NEXTGEN'));
-      ['onAppOpenPreloadFailed', 'onAppOpenPreloadExhausted', 'onAppOpenPreloaded'].forEach(e => bindEvent(e, 'NEXTGEN'));
-      ['onInterstitialPreloadFailed', 'onInterstitialPreloadExhausted', 'onInterstitialPreloaded'].forEach(e => bindEvent(e, 'NEXTGEN'));
-      ['onRewardedPreloadFailed', 'onRewardedPreloadExhausted', 'onRewardedPreloaded'].forEach(e => bindEvent(e, 'NEXTGEN'));
-      ['onRewardedInterstitialPreloadFailed', 'onRewardedInterstitialPreloadExhausted', 'onRewardedInterstitialPreloaded'].forEach(e => bindEvent(e, 'NEXTGEN'));
+      ['onBannerPreloadExhausted'].forEach(e => bindEvent(e, 'NEXTGEN'));
+      ['onAppOpenPreloadExhausted'].forEach(e => bindEvent(e, 'NEXTGEN'));
+      ['onInterstitialPreloadExhausted'].forEach(e => bindEvent(e, 'NEXTGEN'));
+      ['onRewardedPreloadExhausted'].forEach(e => bindEvent(e, 'NEXTGEN'));
+      ['onRewardedInterstitialPreloadExhausted'].forEach(e => bindEvent(e, 'NEXTGEN'));
+
+      /*
+       Optional: Checking the Event Source If you need to execute specific conditional logic for the preloader, 
+       you can check data.source. (Remember: This flag is Android-only).
+       
+       AdMobNextGen.addListener("onBannerAdLoaded", (data) => {
+          let data = e.data || e;
+          if (data && data.source === "preloader") {
+              console.log("Ad loaded via Android Preloader Engine");
+            } else {
+           console.log("Ad loaded via Classic Engine (or iOS)");
+          }
+        });
+       */
+
+        
     }
   }
 );

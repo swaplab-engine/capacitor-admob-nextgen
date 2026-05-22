@@ -117,13 +117,15 @@ public class BannerPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", adError.getMessage());
-                plugin.notifyPluginListeners("onBannerPreloadFailed", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdFailedToLoad", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onBannerPreloadExhausted", ret);
             }
 
@@ -131,7 +133,8 @@ public class BannerPreloadExecutor {
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyPluginListeners("onBannerPreloaded", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdLoaded", ret);
             }
         };
 
@@ -180,7 +183,8 @@ public class BannerPreloadExecutor {
             JSObject ret = new JSObject();
             ret.put("adUnitId", currentAdUnitId);
             ret.put("isCollapsible", currentBannerAd.isCollapsible());
-            plugin.notifyPluginListeners("onBannerPreloadShown", ret);
+            ret.put("source", "preloader");
+            plugin.notifyPluginListeners("onBannerShown", ret);
 
             callback.onSuccess();
         });
@@ -405,27 +409,50 @@ public class BannerPreloadExecutor {
 
     private void setupBannerCallbacks(BannerAd bannerAd) {
         bannerAd.setAdEventCallback(new BannerAdEventCallback() {
-            @Override public void onAdImpression() { plugin.notifyPluginListeners("onBannerAdImpression", new JSObject()); }
-            @Override public void onAdClicked() { plugin.notifyPluginListeners("onBannerAdClicked", new JSObject()); }
-            @Override public void onAdShowedFullScreenContent() { plugin.notifyPluginListeners("onBannerAdShowedFullScreen", new JSObject()); }
-            @Override public void onAdDismissedFullScreenContent() { plugin.notifyPluginListeners("onBannerAdDismissedFullScreen", new JSObject()); }
+            @Override public void onAdImpression() {
+                JSObject ret = new JSObject();
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdImpression", ret);
+            }
+            @Override public void onAdClicked() {
+                JSObject ret = new JSObject();
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdClicked", ret);
+            }
+            @Override public void onAdShowedFullScreenContent() {
+                JSObject ret = new JSObject();
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdShowedFullScreen", ret);
+            }
+            @Override public void onAdDismissedFullScreenContent() {
+                JSObject ret = new JSObject();
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdDismissedFullScreen", ret);
+            }
             @Override public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                 JSObject ret = new JSObject();
                 ret.put("error", error.getMessage());
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onBannerAdFailedToShowFullScreen", ret);
             }
             @Override public void onAdPaid(@NonNull AdValue value) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", currentAdUnitId);
                 ret.put("valueMicros", value.getValueMicros());
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onBannerAdPaid", ret);
             }
         });
         bannerAd.setBannerAdRefreshCallback(new BannerAdRefreshCallback() {
-            @Override public void onAdRefreshed() { plugin.notifyPluginListeners("onBannerAdRefreshed", new JSObject()); }
+            @Override public void onAdRefreshed() {
+                JSObject ret = new JSObject();
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onBannerAdRefreshed", ret);
+            }
             @Override public void onAdFailedToRefresh(@NonNull LoadAdError error) {
                 JSObject ret = new JSObject();
                 ret.put("error", error.getMessage());
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onBannerAdFailedToRefresh", ret);
             }
         });

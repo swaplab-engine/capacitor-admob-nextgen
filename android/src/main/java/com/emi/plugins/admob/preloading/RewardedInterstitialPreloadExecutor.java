@@ -55,16 +55,23 @@ public class RewardedInterstitialPreloadExecutor {
         this.lastLoadTime = currentTime;
 
         this.currentAdUnitId = adUnitId;
-        Integer bufferSize = call.getInt("bufferSize");
+
+        Integer bufferSizeOpt = call.getInt("bufferSize");
+        int finalBufferSize = 1; 
+
+        if (bufferSizeOpt != null) {
+            if (bufferSizeOpt > 3) {
+                finalBufferSize = 3; 
+            } else if (bufferSizeOpt < 1) {
+                finalBufferSize = 1; 
+            } else {
+                finalBufferSize = bufferSizeOpt;
+            }
+        }
 
         AdRequest adRequest = new AdRequest.Builder(adUnitId).build();
-        PreloadConfiguration preloadConfig;
 
-        if (bufferSize != null && bufferSize > 0) {
-            preloadConfig = new PreloadConfiguration(adRequest, bufferSize);
-        } else {
-            preloadConfig = new PreloadConfiguration(adRequest);
-        }
+        PreloadConfiguration preloadConfig = new PreloadConfiguration(adRequest, finalBufferSize);
 
         PreloadCallback preloadCallback = new PreloadCallback() {
             @Override
@@ -72,13 +79,15 @@ public class RewardedInterstitialPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", adError.getMessage());
-                plugin.notifyPluginListeners("onRewardedInterstitialPreloadFailed", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onRewardedInterstitialAdFailedToLoad", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onRewardedInterstitialPreloadExhausted", ret);
             }
 
@@ -86,7 +95,8 @@ public class RewardedInterstitialPreloadExecutor {
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyPluginListeners("onRewardedInterstitialPreloaded", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onRewardedInterstitialAdLoaded", ret);
             }
         };
 
@@ -115,29 +125,38 @@ public class RewardedInterstitialPreloadExecutor {
             ad.setAdEventCallback(new RewardedInterstitialAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyPluginListeners("onRewardedInterstitialAdShowed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedInterstitialAdShowed", ret);
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    plugin.notifyPluginListeners("onRewardedInterstitialAdDismissed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedInterstitialAdDismissed", ret);
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedInterstitialAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyPluginListeners("onRewardedInterstitialAdImpression", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedInterstitialAdImpression", ret);
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyPluginListeners("onRewardedInterstitialAdClicked", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedInterstitialAdClicked", ret);
                 }
 
                 @Override
@@ -147,6 +166,7 @@ public class RewardedInterstitialPreloadExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedInterstitialAdPaid", ret);
                 }
             });
@@ -157,6 +177,7 @@ public class RewardedInterstitialPreloadExecutor {
                     JSObject ret = new JSObject();
                     ret.put("amount", rewardItem.getAmount());
                     ret.put("type", rewardItem.getType());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedInterstitialAdReward", ret);
                 }
             });

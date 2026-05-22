@@ -56,16 +56,23 @@ public class RewardedPreloadExecutor {
         this.lastLoadTime = currentTime;
 
         this.currentAdUnitId = adUnitId;
-        Integer bufferSize = call.getInt("bufferSize");
+
+        Integer bufferSizeOpt = call.getInt("bufferSize");
+        int finalBufferSize = 1; 
+
+        if (bufferSizeOpt != null) {
+            if (bufferSizeOpt > 3) {
+                finalBufferSize = 3; 
+            } else if (bufferSizeOpt < 1) {
+                finalBufferSize = 1; 
+            } else {
+                finalBufferSize = bufferSizeOpt;
+            }
+        }
 
         AdRequest adRequest = new AdRequest.Builder(adUnitId).build();
-        PreloadConfiguration preloadConfig;
 
-        if (bufferSize != null && bufferSize > 0) {
-            preloadConfig = new PreloadConfiguration(adRequest, bufferSize);
-        } else {
-            preloadConfig = new PreloadConfiguration(adRequest);
-        }
+        PreloadConfiguration preloadConfig = new PreloadConfiguration(adRequest, finalBufferSize);
 
         PreloadCallback preloadCallback = new PreloadCallback() {
             @Override
@@ -73,13 +80,15 @@ public class RewardedPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", adError.getMessage());
-                plugin.notifyPluginListeners("onRewardedPreloadFailed", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onRewardedAdFailedToLoad", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onRewardedPreloadExhausted", ret);
             }
 
@@ -87,7 +96,8 @@ public class RewardedPreloadExecutor {
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyPluginListeners("onRewardedPreloaded", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onRewardedAdLoaded", ret);
             }
         };
 
@@ -116,29 +126,38 @@ public class RewardedPreloadExecutor {
             ad.setAdEventCallback(new RewardedAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyPluginListeners("onRewardedAdShowed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedAdShowed", ret);
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    plugin.notifyPluginListeners("onRewardedAdDismissed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedAdDismissed", ret);
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyPluginListeners("onRewardedAdImpression", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedAdImpression", ret);
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyPluginListeners("onRewardedAdClicked", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onRewardedAdClicked", ret);
                 }
 
                 @Override
@@ -148,6 +167,7 @@ public class RewardedPreloadExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedAdPaid", ret);
                 }
             });
@@ -158,6 +178,7 @@ public class RewardedPreloadExecutor {
                     JSObject ret = new JSObject();
                     ret.put("amount", rewardItem.getAmount());
                     ret.put("type", rewardItem.getType());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onRewardedAdReward", ret);
                 }
             });

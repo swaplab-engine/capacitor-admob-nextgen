@@ -66,13 +66,15 @@ public class AppOpenPreloadExecutor {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
                 ret.put("error", loadAdError.getMessage());
-                plugin.notifyPluginListeners("onAppOpenPreloadFailed", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onAppOpenAdFailedToLoad", ret);
             }
 
             @Override
             public void onAdsExhausted(@NonNull String preloadId) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
+                ret.put("source", "preloader");
                 plugin.notifyPluginListeners("onAppOpenPreloadExhausted", ret);
             }
 
@@ -80,7 +82,8 @@ public class AppOpenPreloadExecutor {
             public void onAdPreloaded(@NonNull String preloadId, @NonNull ResponseInfo responseInfo) {
                 JSObject ret = new JSObject();
                 ret.put("adUnitId", adUnitId);
-                plugin.notifyPluginListeners("onAppOpenPreloaded", ret);
+                ret.put("source", "preloader");
+                plugin.notifyPluginListeners("onAppOpenAdLoaded", ret);
             }
         };
 
@@ -110,29 +113,38 @@ public class AppOpenPreloadExecutor {
             ad.setAdEventCallback(new AppOpenAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
-                    plugin.notifyPluginListeners("onAppOpenAdShowed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onAppOpenAdShowed", ret);
                 }
 
                 @Override
                 public void onAdDismissedFullScreenContent() {
-                    plugin.notifyPluginListeners("onAppOpenAdDismissed", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onAppOpenAdDismissed", ret);
                 }
 
                 @Override
                 public void onAdFailedToShowFullScreenContent(@NonNull FullScreenContentError error) {
                     JSObject ret = new JSObject();
                     ret.put("error", error.getMessage());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onAppOpenAdFailedToShow", ret);
                 }
 
                 @Override
                 public void onAdImpression() {
-                    plugin.notifyPluginListeners("onAppOpenAdImpression", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onAppOpenAdImpression", ret);
                 }
 
                 @Override
                 public void onAdClicked() {
-                    plugin.notifyPluginListeners("onAppOpenAdClicked", new JSObject());
+                    JSObject ret = new JSObject();
+                    ret.put("source", "preloader");
+                    plugin.notifyPluginListeners("onAppOpenAdClicked", ret);
                 }
 
                 @Override
@@ -142,6 +154,7 @@ public class AppOpenPreloadExecutor {
                     ret.put("valueMicros", value.getValueMicros());
                     ret.put("currencyCode", value.getCurrencyCode());
                     ret.put("precisionType", value.getPrecisionType().name());
+                    ret.put("source", "preloader");
                     plugin.notifyPluginListeners("onAppOpenAdPaid", ret);
                 }
             });
