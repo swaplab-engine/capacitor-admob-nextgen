@@ -47,6 +47,12 @@ public class AdMobNextGenPlugin extends Plugin {
     private RewardedPreloadExecutor rewardedPreloadExecutor;
     private RewardedInterstitialPreloadExecutor rewardedInterstitialPreloadExecutor;
 
+    private volatile boolean isInitialized = false;
+
+    public boolean isInitialized() {
+        return isInitialized;
+    }
+
     @Override
     public void load() {
         super.load();
@@ -175,6 +181,7 @@ public class AdMobNextGenPlugin extends Plugin {
                 tagForUnderAgeOfConsent,
                 isTesting,
                 () -> {
+                    this.isInitialized = true;
                     JSObject result = new JSObject();
                     result.put("status", "INITIALIZED_SUCCESSFULLY");
                     call.resolve(result);

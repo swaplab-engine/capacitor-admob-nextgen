@@ -33,6 +33,10 @@ public class RewardedInterstitialPreloadExecutor {
     }
 
     public void startPreload(PluginCall call, ActionCallback callback) {
+        if (!plugin.isInitialized()) {
+            callback.onError("Google Mobile Ads SDK has not been initialized. Please call initialize() first.");
+            return;
+        }
         String adUnitId = call.getString("adUnitId");
         if (adUnitId == null || adUnitId.isEmpty()) {
             callback.onError("Ad Unit ID is required.");
@@ -91,6 +95,10 @@ public class RewardedInterstitialPreloadExecutor {
     }
 
     public void pollAndShow(Activity activity, ActionCallback callback) {
+        if (!plugin.isInitialized()) {
+            callback.onError("Google Mobile Ads SDK has not been initialized. Please call initialize() first.");
+            return;
+        }
         if (currentAdUnitId.isEmpty()) {
             callback.onError("Preload has not been started. No AdUnit ID found.");
             return;

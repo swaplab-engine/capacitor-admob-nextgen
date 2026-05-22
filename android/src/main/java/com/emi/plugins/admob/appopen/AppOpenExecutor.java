@@ -45,6 +45,10 @@ public class AppOpenExecutor {
     }
 
     public void load(Activity activity, PluginCall call, final ActionCallback callback) {
+        if (!plugin.isInitialized()) {
+            callback.onError("Google Mobile Ads SDK has not been initialized. Please call initialize() first.");
+            return;
+        }
         String adUnitId = call.getString("adUnitId");
         if (adUnitId == null || adUnitId.isEmpty()) {
             callback.onError("Ad Unit ID is required.");

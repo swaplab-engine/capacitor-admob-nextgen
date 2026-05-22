@@ -60,6 +60,10 @@ public class BannerExecutor {
     }
 
     public void createBanner(final PluginCall call) {
+        if (!plugin.isInitialized()) {
+            call.reject("Google Mobile Ads SDK has not been initialized. Please call initialize() first.");
+            return;
+        }
         String adUnitId = call.getString("adUnitId");
         if (adUnitId == null || adUnitId.isEmpty()) {
             call.reject("Ad Unit ID is required", "ERR_MISSING_ID");
