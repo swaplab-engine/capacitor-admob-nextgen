@@ -32,15 +32,13 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
     <td align="center"><strong>Banner (Adaptive)</strong></td>
     <td align="center"><strong>Banner (Large Adaptive)</strong></td>
     <td align="center"><strong>Banner (Collapsible Adaptive)</strong></td>
-    <td align="center"><strong>🚀 Next-Gen Ready</strong></td>
+    <td align="center"><strong>IOS UMP ATT</strong></td>
   </tr>
   <tr>
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/d3d8dd18-9c99-448a-b407-61c819a556bf" alt="Adaptive Banner" /></td>
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/54044007-0468-4a68-be35-0502491ceb52" alt="Large Anchored Banner" /></td>
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/1c947811-188f-48d2-85d2-0658914377b5" alt="Collapsible Banner" /></td>
-    <td align="center">
-      <em><br>Zero Latency.<br><br>No Loading Spinners.<br><br>Maximized eCPM.<br></em>
-    </td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/044154ea-4f4d-4b5d-a447-74154c71a858" alt="IOS UMP ATT" /></td>
   </tr>
 </table>
 
