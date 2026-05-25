@@ -366,6 +366,16 @@ window.customElements.define(
       });
 
       // ==========================================
+      // ATT IOS
+      // ==========================================
+
+      /*
+      const { status } = await AdMobNextGen.requestTrackingAuthorization();
+            if (status === 'authorized') {
+      }
+      */
+
+      // ==========================================
       // 2. BANNER
       // ==========================================
       getById('btn-banner-create').addEventListener('click', async () => {
