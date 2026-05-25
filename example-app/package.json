@@ -3,7 +3,9 @@
   "version": "1.0.2",
   "description": "Internal testing environment for Capacitor AdMob Next-Gen Plugin",
   "admob": {
-    "androidAppId": "ca-app-pub-3940256099942544~3347511713"
+    "androidAppId": "ca-app-pub-3940256099942544~3347511713",
+    "iosAppId": "ca-app-pub-3940256099942544~1458002511", 
+    "userTrackingDescription": "This identifier will be used to deliver personalized ads to you."
   },
   "type": "module",
   "keywords": [

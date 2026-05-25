@@ -48,7 +48,7 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
 
 
 ### 📦 Current SDK Versions (Maintained & Up-to-Date)
-- IOS: Next release (BETA) implementation
+- IOS: github only BETA release
 This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |
@@ -121,8 +121,8 @@ Avoid manual XML editing. This plugin provides a Capacitor CLI Hook to automatic
   "name": "your-app-name",
   "admob": {
     "androidAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy",
-    "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz", ( IOS Next release)
-    "userTrackingDescription": "This identifier will be used to deliver personalized ads to you." ( IOS Next release)
+    "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz",
+    "userTrackingDescription": "This identifier will be used to deliver personalized ads to you." 
   }
 }
 ```
@@ -188,6 +188,7 @@ npx cap sync
 
 <docgen-index>
 
+* [`requestTrackingAuthorization()`](#requesttrackingauthorization)
 * [`requestConsentInfo(...)`](#requestconsentinfo)
 * [`showPrivacyOptionsForm()`](#showprivacyoptionsform)
 * [`getTCData()`](#gettcdata)
@@ -239,6 +240,22 @@ To comply with Google's policies (GDPR, COPPA, etc.), you MUST follow this exact
 3. **Load Ads**: e.g., `await AdMobNextGen.loadInterstitial(...)`
 4. **Show Ads**: e.g., `await AdMobNextGen.showInterstitial()`
 * ---
+
+### requestTrackingAuthorization()
+
+```typescript
+requestTrackingAuthorization() => Promise<TrackingAuthorizationResult>
+```
+
+Requests App Tracking Transparency (ATT) authorization from the user.
+This is explicitly required for iOS 14.5+ to display personalized ads.
+On Android and Web, it automatically returns { status: 'authorized' }.
+* @returns A promise resolving to the authorization status.
+
+**Returns:** <code>Promise&lt;<a href="#trackingauthorizationresult">TrackingAuthorizationResult</a>&gt;</code>
+
+--------------------
+
 
 ### requestConsentInfo(...)
 
@@ -788,6 +805,13 @@ These events are uniquely fired by the Preloading API when the background buffer
 
 
 ### Interfaces
+
+
+#### TrackingAuthorizationResult
+
+| Prop         | Type                                                                                  | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **`status`** | <code>'authorized' \| 'denied' \| 'notDetermined' \| 'restricted' \| 'unknown'</code> | The current status of the App Tracking Transparency (ATT) authorization. - `authorized`: The user authorized access to app-related data for tracking. - `denied`: The user denied authorization to access app-related data for tracking. - `notDetermined`: The user has not yet received an authorization request. - `restricted`: The authorization to access app-related data is restricted. - `unknown`: Platform does not support ATT (e.g., Android, Web, or older iOS). |
 
 
 #### ConsentStatusResult

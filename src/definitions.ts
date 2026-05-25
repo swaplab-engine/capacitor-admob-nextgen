@@ -19,6 +19,14 @@ export interface AdMobNextGenPlugin {
   // ==========================================
 
   /**
+   * Requests App Tracking Transparency (ATT) authorization from the user.
+   * This is explicitly required for iOS 14.5+ to display personalized ads.
+   * On Android and Web, it automatically returns { status: 'authorized' }.
+   * * @returns A promise resolving to the authorization status.
+   */
+  requestTrackingAuthorization(): Promise<TrackingAuthorizationResult>;
+
+  /**
    * Requests consent information update and shows the consent form if required (UMP SDK).
    * MUST be called before `initialize()`.
    */
@@ -317,6 +325,18 @@ export interface AdMobNextGenPlugin {
 // ==========================================
 // INTERFACES & TYPES
 // ==========================================
+
+export interface TrackingAuthorizationResult {
+  /**
+   * The current status of the App Tracking Transparency (ATT) authorization.
+   * - `authorized`: The user authorized access to app-related data for tracking.
+   * - `denied`: The user denied authorization to access app-related data for tracking.
+   * - `notDetermined`: The user has not yet received an authorization request.
+   * - `restricted`: The authorization to access app-related data is restricted.
+   * - `unknown`: Platform does not support ATT (e.g., Android, Web, or older iOS).
+   */
+  status: 'authorized' | 'denied' | 'notDetermined' | 'restricted' | 'unknown';
+}
 
 export interface ConsentOptions {
   /**

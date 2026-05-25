@@ -2,6 +2,7 @@ import { WebPlugin } from '@capacitor/core';
 
 import type {
   AdMobNextGenPlugin,
+  TrackingAuthorizationResult,
   ConsentOptions,
   ConsentStatusResult,
   TCDataResult,
@@ -19,6 +20,12 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
   // ==========================================
   // CONSENT (UMP)
   // ==========================================
+
+  async requestTrackingAuthorization(): Promise<TrackingAuthorizationResult> {
+    console.log('requestTrackingAuthorization is only applicable for iOS. Auto-resolving with authorized status on web.');
+    return { status: 'authorized' };
+  }
+
   async requestConsentInfo(_options?: ConsentOptions): Promise<ConsentStatusResult> {
     return {
       canRequestAds: true,
