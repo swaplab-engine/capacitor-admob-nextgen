@@ -23,10 +23,10 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
     <td align="center"><strong>Rewarded</strong></td>
   </tr>
   <tr>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/b947c8be-0f12-4d52-b6b6-e2ae56d79d12" alt="Consent UMP Popup" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/c9883f69-b63d-4e5c-9864-1118c815e7dd" alt="App Open Preload" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/7908cad7-bf4e-4962-8b52-c5001a1c101b" alt="Interstitial Preload" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/809331e7-0cce-4d62-9f35-415e9b756f96" alt="Rewarded Preload" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/85544f57-2abd-4507-9bc9-6a6b032d4314" alt="Consent UMP Popup" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/ccbb9244-2a80-4b87-9eab-41ce088c2a1f" alt="App Open Preload" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/013fbdae-0db6-47af-bc62-faedb52bfeb7" alt="Interstitial Preload" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/f2b98490-bb00-4949-a842-7f309d920c1c" alt="Rewarded Preload" /></td>
   </tr>
   <tr>
     <td align="center"><strong>Banner (Adaptive)</strong></td>
@@ -35,9 +35,9 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
     <td align="center"><strong>🚀 Next-Gen Ready</strong></td>
   </tr>
   <tr>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/40614413-45f1-45b8-9754-2a4e569a3b5e" alt="Adaptive Banner" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/db3967d0-eebf-4e52-915d-f862b1c752b8" alt="Large Anchored Banner" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/1ada659b-14db-443b-a76a-868bdd787ad4" alt="Collapsible Banner" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/d3d8dd18-9c99-448a-b407-61c819a556bf" alt="Adaptive Banner" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/54044007-0468-4a68-be35-0502491ceb52" alt="Large Anchored Banner" /></td>
+    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/1c947811-188f-48d2-85d2-0658914377b5" alt="Collapsible Banner" /></td>
     <td align="center">
       <em><br>Zero Latency.<br><br>No Loading Spinners.<br><br>Maximized eCPM.<br></em>
     </td>
