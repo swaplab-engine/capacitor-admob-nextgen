@@ -1,6 +1,6 @@
-import Foundation
-import Capacitor
 import AppTrackingTransparency
+import Capacitor
+import Foundation
 
 @objc public class TrackingExecutor: NSObject {
 
