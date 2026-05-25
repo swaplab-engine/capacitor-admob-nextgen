@@ -1,5 +1,5 @@
-import Foundation
 import Capacitor
+import Foundation
 
 @objc(AdMobNextGenPlugin)
 public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
@@ -13,33 +13,57 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
         CAPPluginMethod(name: "initialize", returnType: CAPPluginReturnPromise),
 
-        CAPPluginMethod(name: "requestTrackingAuthorization", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(
+            name: "requestTrackingAuthorization",
+            returnType: CAPPluginReturnPromise
+        ),
 
-        CAPPluginMethod(name: "requestConsentInfo", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "showPrivacyOptionsForm", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "getTCData", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(
+            name: "requestConsentInfo",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showPrivacyOptionsForm",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(name: "getTCData", returnType: CAPPluginReturnPromise),
+
+        CAPPluginMethod(
+            name: "loadAppOpen",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showAppOpen",
+            returnType: CAPPluginReturnPromise
+        ),
     ]
 
     private var consentExecutor: ConsentExecutor!
-    private var trackingExecutor: TrackingExecutor! 
+    private var trackingExecutor: TrackingExecutor!  
     private let coreImplementation = AdMobNextGen()
+
+    private var appOpenExecutor: AppOpenExecutor!
 
     override public func load() {
         super.load()
         self.consentExecutor = ConsentExecutor(plugin: self)
-        self.trackingExecutor = TrackingExecutor(plugin: self) 
+        self.trackingExecutor = TrackingExecutor(plugin: self)
+        self.appOpenExecutor = AppOpenExecutor(plugin: self)
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
         let maxAdContentRating = call.getString("maxAdContentRating", "")
 
         var childDirected: NSNumber? = nil
-        if let hasChildOpt = call.options["tagForChildDirectedTreatment"] as? Bool {
+        if let hasChildOpt = call.options["tagForChildDirectedTreatment"]
+            as? Bool
+        {
             childDirected = NSNumber(value: hasChildOpt)
         }
 
         var underAge: NSNumber? = nil
-        if let hasUnderAgeOpt = call.options["tagForUnderAgeOfConsent"] as? Bool {
+        if let hasUnderAgeOpt = call.options["tagForUnderAgeOfConsent"] as? Bool
+        {
             underAge = NSNumber(value: hasUnderAgeOpt)
         }
 
@@ -72,5 +96,13 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func getTCData(_ call: CAPPluginCall) {
         consentExecutor.getTCData(call)
+    }
+
+    @objc func loadAppOpen(_ call: CAPPluginCall) {
+        appOpenExecutor.loadAd(call)
+    }
+
+    @objc func showAppOpen(_ call: CAPPluginCall) {
+        appOpenExecutor.showAd(call)
     }
 }

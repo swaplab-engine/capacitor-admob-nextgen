@@ -1,5 +1,5 @@
-import Foundation
 import Capacitor
+import Foundation
 import UserMessagingPlatform
 
 @objc public class ConsentExecutor: NSObject {
@@ -15,7 +15,10 @@ import UserMessagingPlatform
         DispatchQueue.main.async {
             let debugMode = call.getBool("debug", false)
             let resetConsent = call.getBool("reset", false)
-            let tagForUnderAgeOfConsent = call.getBool("tagForUnderAgeOfConsent", false)
+            let tagForUnderAgeOfConsent = call.getBool(
+                "tagForUnderAgeOfConsent",
+                false
+            )
             let manualTestDeviceId = call.getString("testDeviceId", "")
 
             if resetConsent {
@@ -39,7 +42,8 @@ import UserMessagingPlatform
                 parameters.debugSettings = debugSettings
             }
 
-            ConsentInformation.shared.requestConsentInfoUpdate(with: parameters) { [weak self] error in
+            ConsentInformation.shared.requestConsentInfoUpdate(with: parameters)
+            { [weak self] error in
                 guard let self = self else { return }
 
                 if let error = error {
@@ -50,17 +54,22 @@ import UserMessagingPlatform
 
                 self.plugin?.notifyListeners("onConsentInfoUpdated", data: [:])
 
-                guard let viewController = self.plugin?.bridge?.viewController else {
+                guard let viewController = self.plugin?.bridge?.viewController
+                else {
                     call.reject("ViewController is null")
                     return
                 }
 
-                ConsentForm.loadAndPresentIfRequired(from: viewController) { loadAndShowError in
+                ConsentForm.loadAndPresentIfRequired(from: viewController) {
+                    loadAndShowError in
                     if let error = loadAndShowError {
                         self.sendErrorEvent(error)
                         call.reject(error.localizedDescription)
                     } else {
-                        self.plugin?.notifyListeners("onConsentFormDismissed", data: [:])
+                        self.plugin?.notifyListeners(
+                            "onConsentFormDismissed",
+                            data: [:]
+                        )
                         self.sendConsentStatus(call)
                     }
                 }
@@ -70,19 +79,24 @@ import UserMessagingPlatform
 
     @objc func showPrivacyOptionsForm(_ call: CAPPluginCall) {
         DispatchQueue.main.async {
-            guard let viewController = self.plugin?.bridge?.viewController else {
+            guard let viewController = self.plugin?.bridge?.viewController
+            else {
                 call.reject("ViewController is null")
                 return
             }
 
-            ConsentForm.presentPrivacyOptionsForm(from: viewController) { [weak self] formError in
+            ConsentForm.presentPrivacyOptionsForm(from: viewController) {
+                [weak self] formError in
                 guard let self = self else { return }
 
                 if let error = formError {
                     self.sendErrorEvent(error)
                     call.reject(error.localizedDescription)
                 } else {
-                    self.plugin?.notifyListeners("onConsentFormDismissed", data: [:])
+                    self.plugin?.notifyListeners(
+                        "onConsentFormDismissed",
+                        data: [:]
+                    )
                     self.sendConsentStatus(call)
                 }
             }
@@ -92,8 +106,10 @@ import UserMessagingPlatform
     @objc func getTCData(_ call: CAPPluginCall) {
         let defaults = UserDefaults.standard
         let tcString = defaults.string(forKey: "IABTCF_TCString") ?? ""
-        let purposeConsents = defaults.string(forKey: "IABTCF_PurposeConsents") ?? ""
-        let vendorConsents = defaults.string(forKey: "IABTCF_VendorConsents") ?? ""
+        let purposeConsents =
+            defaults.string(forKey: "IABTCF_PurposeConsents") ?? ""
+        let vendorConsents =
+            defaults.string(forKey: "IABTCF_VendorConsents") ?? ""
         let gdprApplies = defaults.integer(forKey: "IABTCF_gdprApplies")
 
         var isPersonalizedAllowed = false
@@ -101,19 +117,23 @@ import UserMessagingPlatform
 
         if gdprApplies == 0 {
             isPersonalizedAllowed = true
-            statusMessage = "Not GDPR region. Personalized Ads allowed by default."
+            statusMessage =
+                "Not GDPR region. Personalized Ads allowed by default."
         } else {
             if !purposeConsents.isEmpty {
                 if purposeConsents.first == "1" {
                     isPersonalizedAllowed = true
-                    statusMessage = "Purpose 1 Granted. Personalized Ads allowed."
+                    statusMessage =
+                        "Purpose 1 Granted. Personalized Ads allowed."
                 } else {
                     isPersonalizedAllowed = false
-                    statusMessage = "Purpose 1 Denied. Non-Personalized / Limited Ads only."
+                    statusMessage =
+                        "Purpose 1 Denied. Non-Personalized / Limited Ads only."
                 }
             } else {
                 isPersonalizedAllowed = false
-                statusMessage = "No consent data found (User hasn't answered yet)."
+                statusMessage =
+                    "No consent data found (User hasn't answered yet)."
             }
         }
 

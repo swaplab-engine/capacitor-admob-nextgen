@@ -14,7 +14,9 @@ import GoogleMobileAds
         let requestConfiguration = MobileAds.shared.requestConfiguration
 
         if !maxAdContentRating.isEmpty {
-            requestConfiguration.maxAdContentRating = GADMaxAdContentRating(rawValue: maxAdContentRating)
+            requestConfiguration.maxAdContentRating = GADMaxAdContentRating(
+                rawValue: maxAdContentRating
+            )
         }
 
         if let childDirected = tagForChildDirectedTreatment {
