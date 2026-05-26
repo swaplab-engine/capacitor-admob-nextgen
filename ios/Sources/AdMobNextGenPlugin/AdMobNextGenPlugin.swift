@@ -36,6 +36,15 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
             name: "showAppOpen",
             returnType: CAPPluginReturnPromise
         ),
+
+        CAPPluginMethod(
+            name: "loadInterstitial",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showInterstitial",
+            returnType: CAPPluginReturnPromise
+        ),
     ]
 
     private var consentExecutor: ConsentExecutor!
@@ -43,12 +52,14 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
     private let coreImplementation = AdMobNextGen()
 
     private var appOpenExecutor: AppOpenExecutor!
+    private var interstitialExecutor: InterstitialExecutor!
 
     override public func load() {
         super.load()
         self.consentExecutor = ConsentExecutor(plugin: self)
         self.trackingExecutor = TrackingExecutor(plugin: self)
         self.appOpenExecutor = AppOpenExecutor(plugin: self)
+        self.interstitialExecutor = InterstitialExecutor(plugin: self)
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
@@ -104,5 +115,13 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func showAppOpen(_ call: CAPPluginCall) {
         appOpenExecutor.showAd(call)
+    }
+
+    @objc func loadInterstitial(_ call: CAPPluginCall) {
+        interstitialExecutor.loadAd(call)
+    }
+
+    @objc func showInterstitial(_ call: CAPPluginCall) {
+        interstitialExecutor.showAd(call)
     }
 }
