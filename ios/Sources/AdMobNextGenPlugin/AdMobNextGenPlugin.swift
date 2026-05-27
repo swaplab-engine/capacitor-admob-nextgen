@@ -45,14 +45,34 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
             name: "showInterstitial",
             returnType: CAPPluginReturnPromise
         ),
+
+        CAPPluginMethod(
+            name: "loadRewarded",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showRewarded",
+            returnType: CAPPluginReturnPromise
+        ),
+
+        CAPPluginMethod(
+            name: "loadRewardedInterstitial",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showRewardedInterstitial",
+            returnType: CAPPluginReturnPromise
+        ),
     ]
 
     private var consentExecutor: ConsentExecutor!
-    private var trackingExecutor: TrackingExecutor!  
+    private var trackingExecutor: TrackingExecutor!
     private let coreImplementation = AdMobNextGen()
 
     private var appOpenExecutor: AppOpenExecutor!
     private var interstitialExecutor: InterstitialExecutor!
+    private var rewardedExecutor: RewardedExecutor!
+    private var rewardedInterstitialExecutor: RewardedInterstitialExecutor!
 
     override public func load() {
         super.load()
@@ -60,6 +80,10 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         self.trackingExecutor = TrackingExecutor(plugin: self)
         self.appOpenExecutor = AppOpenExecutor(plugin: self)
         self.interstitialExecutor = InterstitialExecutor(plugin: self)
+        self.rewardedExecutor = RewardedExecutor(plugin: self)
+        self.rewardedInterstitialExecutor = RewardedInterstitialExecutor(
+            plugin: self
+        )
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
@@ -123,5 +147,21 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func showInterstitial(_ call: CAPPluginCall) {
         interstitialExecutor.showAd(call)
+    }
+
+    @objc func loadRewarded(_ call: CAPPluginCall) {
+        rewardedExecutor.loadAd(call)
+    }
+
+    @objc func showRewarded(_ call: CAPPluginCall) {
+        rewardedExecutor.showAd(call)
+    }
+
+    @objc func loadRewardedInterstitial(_ call: CAPPluginCall) {
+        rewardedInterstitialExecutor.loadAd(call)
+    }
+
+    @objc func showRewardedInterstitial(_ call: CAPPluginCall) {
+        rewardedInterstitialExecutor.showAd(call)
     }
 }

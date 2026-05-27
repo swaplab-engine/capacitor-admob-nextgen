@@ -152,6 +152,20 @@ If you prefer total manual control, simply do not add the script to your `packag
 <key>NSUserTrackingUsageDescription</key>
 <string>This identifier will be used to deliver personalized ads to you.</string>
 ```
+---
+
+## Note: IOS
+Capacitor 8 Recommendation: Swift Package Manager (SPM).
+When a dependency is missing, open the project in Xcode 26+
+- click File at the top, and select Package > Reset Package Caches.
+This will download all dependencies in Package.swift.
+
+- Because CocoaPods remains available as an alternative.
+`cd ios`
+```
+pod install --repo-update
+```
+
 
 ---
 
