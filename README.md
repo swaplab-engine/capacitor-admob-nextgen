@@ -46,7 +46,6 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
 
 
 ### 📦 Current SDK Versions (Maintained & Up-to-Date)
-- IOS: github only BETA release
 This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |

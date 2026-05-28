@@ -38,6 +38,17 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         ),
 
         CAPPluginMethod(
+            name: "createBanner",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(name: "showBanner", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "hideBanner", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(
+            name: "destroyBanner",
+            returnType: CAPPluginReturnPromise
+        ),
+
+        CAPPluginMethod(
             name: "loadInterstitial",
             returnType: CAPPluginReturnPromise
         ),
@@ -70,6 +81,7 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
     private let coreImplementation = AdMobNextGen()
 
     private var appOpenExecutor: AppOpenExecutor!
+    private var bannerExecutor: BannerExecutor!
     private var interstitialExecutor: InterstitialExecutor!
     private var rewardedExecutor: RewardedExecutor!
     private var rewardedInterstitialExecutor: RewardedInterstitialExecutor!
@@ -79,6 +91,7 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         self.consentExecutor = ConsentExecutor(plugin: self)
         self.trackingExecutor = TrackingExecutor(plugin: self)
         self.appOpenExecutor = AppOpenExecutor(plugin: self)
+        self.bannerExecutor = BannerExecutor(plugin: self)
         self.interstitialExecutor = InterstitialExecutor(plugin: self)
         self.rewardedExecutor = RewardedExecutor(plugin: self)
         self.rewardedInterstitialExecutor = RewardedInterstitialExecutor(
@@ -139,6 +152,19 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func showAppOpen(_ call: CAPPluginCall) {
         appOpenExecutor.showAd(call)
+    }
+
+    @objc func createBanner(_ call: CAPPluginCall) {
+        bannerExecutor.createBanner(call)
+    }
+    @objc func showBanner(_ call: CAPPluginCall) {
+        bannerExecutor.showBanner(call)
+    }
+    @objc func hideBanner(_ call: CAPPluginCall) {
+        bannerExecutor.hideBanner(call)
+    }
+    @objc func destroyBanner(_ call: CAPPluginCall) {
+        bannerExecutor.destroyBanner(call)
     }
 
     @objc func loadInterstitial(_ call: CAPPluginCall) {
