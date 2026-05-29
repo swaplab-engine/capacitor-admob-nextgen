@@ -238,6 +238,20 @@ window.customElements.define(
               </div>
             </div>
 
+            <div class="section full-width" style="border: 1px solid #3880ff;">
+              <h3 class="section-title">8. Native Ads</h3>
+              <div class="controls">
+                <label>Template: <select id="native-template"><option value="small">Small</option><option value="medium">Medium</option></select></label>
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-show ad-action" id="btn-native-show" disabled>Show Native</button>
+                <button class="btn btn-alt ad-action" id="btn-native-hide" disabled>Hide Native</button>
+              </div>
+              <div id="native-anchor" class="native-ad-placeholder">
+                NATIVE AD WILL APPEAR OVER THIS AREA
+              </div>
+            </div>
+
           </div> <div class="terminal-wrapper">
             <div class="terminal-header">
               <span>Real-time Event Log</span>
@@ -594,7 +608,58 @@ window.customElements.define(
           await AdMobNextGen.pollAndShowAppOpen();
         } catch (error) { this.logToTerminal(`Preload Poll Error: ${error}`, 'ERROR'); }
       });
+
+     // ==========================================
+      // 8. NATIVE ADS
+      // ==========================================
+      getById('btn-native-show').addEventListener('click', async () => {
+        try {
+          const template = getById('native-template').value;
+          const anchor = getById('native-anchor');
+          
+          if (!anchor) return;
+          
+          const rect = anchor.getBoundingClientRect();
+          
+          this.logToTerminal(`Showing Native Ad (${template})...`, 'SYS');
+          
+          // MUST use Math.round() so that JS does not send decimal numbers to Java
+          const result = await AdMobNextGen.showNativeAd({ 
+            adUnitId: 'ca-app-pub-3940256099942544/2247696110', 
+            template: template,
+            x: Math.round(rect.left + (window.scrollX || 0)),
+            y: Math.round(rect.top + (window.scrollY || 0)),
+            width: Math.round(rect.width)
+          });
+
+          // === Responsive HTML Container ===
+          if (result && result.height) {
+            anchor.innerHTML = ''; 
+            anchor.style.boxSizing = 'border-box';
+            
+            // Force HTML height to match the height returned from Native Android/iOS
+            anchor.style.height = result.height + 'px';
+            
+            this.logToTerminal(`Native Ad Rendered. Height: ${result.height}px`, 'SUCCESS');
+          }
+
+        } catch (error) { 
+          this.logToTerminal(`Native Show Error: ${error}`, 'ERROR'); 
+        }
+      });
+
+      getById('btn-native-hide').addEventListener('click', async () => {
+        try {
+          await AdMobNextGen.hideNativeAd();
+          this.logToTerminal('Native Ad Hidden/Destroyed.', 'SYS');
+        } catch (error) {
+          this.logToTerminal(`Native Hide Error: ${error}`, 'ERROR');
+        }
+      });
+
     }
+
+    
 
     // ==========================================
     // GLOBAL PLUGIN EVENT LISTENERS
@@ -620,6 +685,8 @@ window.customElements.define(
       ['onRewardedAdLoaded', 'onRewardedAdFailedToLoad', 'onRewardedAdShowed', 'onRewardedAdDismissed', 'onRewardedAdReward', 'onRewardedAdPaid'].forEach(e => bindEvent(e));
       ['onRewardedInterstitialAdLoaded', 'onRewardedInterstitialAdFailedToLoad', 'onRewardedInterstitialAdShowed', 'onRewardedInterstitialAdDismissed', 'onRewardedInterstitialAdReward', 'onRewardedInterstitialAdPaid'].forEach(e => bindEvent(e));
       ['onAppOpenAdLoaded', 'onAppOpenAdFailedToLoad', 'onAppOpenAdShowed', 'onAppOpenAdDismissed', 'onAppOpenAdPaid'].forEach(e => bindEvent(e));
+      // Native Ads Events
+      ['onNativeAdLoaded', 'onNativeAdFailedToLoad', 'onNativeAdShowed', 'onNativeAdDismissed', 'onNativeAdFailedToShow', 'onNativeAdImpression', 'onNativeAdClicked', 'onNativeAdPaid'].forEach(e => bindEvent(e));
       
       // Preloader Exclusive Event: The only event strictly unique to the Preloader is the exhausted event. 
       // This fires when the buffer pool is completely empty and the SDK stops trying to fetch new ads.

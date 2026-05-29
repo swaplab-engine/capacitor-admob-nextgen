@@ -23,6 +23,7 @@ import com.emi.plugins.admob.preloading.RewardedInterstitialPreloadExecutor;
 import com.emi.plugins.admob.preloading.RewardedPreloadExecutor;
 import com.emi.plugins.admob.rewarded.RewardedExecutor;
 import com.emi.plugins.admob.rewardedinterstitial.RewardedInterstitialExecutor;
+import com.emi.plugins.admob.nativead.NativeExecutor;
 import com.emi.plugins.admob.ump.ConsentExecutor;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -40,6 +41,7 @@ public class AdMobNextGenPlugin extends Plugin {
     private InterstitialExecutor interstitialExecutor;
     private RewardedExecutor rewardedExecutor;
     private RewardedInterstitialExecutor rewardedInterstitialExecutor;
+    private NativeExecutor nativeExecutor;
 
     private BannerPreloadExecutor bannerPreloadExecutor;
     private AppOpenPreloadExecutor appOpenPreloadExecutor;
@@ -64,6 +66,7 @@ public class AdMobNextGenPlugin extends Plugin {
         interstitialExecutor = new InterstitialExecutor(this);
         rewardedExecutor = new RewardedExecutor(this);
         rewardedInterstitialExecutor = new RewardedInterstitialExecutor(this);
+        nativeExecutor = new NativeExecutor(this);
 
         bannerPreloadExecutor = new BannerPreloadExecutor(this);
         appOpenPreloadExecutor = new AppOpenPreloadExecutor(this);
@@ -94,6 +97,7 @@ public class AdMobNextGenPlugin extends Plugin {
     protected void handleOnDestroy() {
         if (bannerExecutor != null) bannerExecutor.onDestroy();
         if (bannerPreloadExecutor != null) bannerPreloadExecutor.onDestroy();
+        if (nativeExecutor != null) nativeExecutor.onDestroy();
         super.handleOnDestroy();
     }
 
@@ -501,6 +505,16 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
     @PluginMethod
     public void isRewardedInterstitialPreloadAvailable(PluginCall call) {
         rewardedInterstitialPreloadExecutor.checkAvailability(call);
+    }
+
+    @PluginMethod
+    public void showNativeAd(PluginCall call) {
+        nativeExecutor.showNativeAd(call);
+    }
+
+    @PluginMethod
+    public void hideNativeAd(PluginCall call) {
+        nativeExecutor.hideNativeAd(call);
     }
 
     public void notifyPluginListeners(String eventName, JSObject data) {

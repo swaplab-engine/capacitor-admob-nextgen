@@ -40,6 +40,16 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/1c947811-188f-48d2-85d2-0658914377b5" alt="Collapsible Banner" /></td>
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/044154ea-4f4d-4b5d-a447-74154c71a858" alt="IOS UMP ATT" /></td>
   </tr>
+  <tr>
+    <td align="center"><strong>Video: Native Ad</strong></td>
+    <td align="center"><strong>Video: edge to edge (cp 8+ api 36 android 16) </strong></td>
+    <td align="center"><strong>Video: edge to edge (cp 8+ api 36 android 14) </strong></td>
+  </tr>
+  <tr>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a" alt="Native Ad" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/159c1ee7-2599-4b32-beb7-b97db495546a" alt="api 36 android 16" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/352ece1e-4702-4329-93c1-1bae96641546" alt="api 36 android 14" /></td>
+  </tr>
 </table>
 
 ---
@@ -152,6 +162,35 @@ If you prefer total manual control, simply do not add the script to your `packag
 ```
 ---
 
+### 🧩 Native Ads Setup (Opt-In Feature): Only Android BETA
+
+Unlike standard Banner or Interstitial ads, Native Ads require specific UI template files (`.xml` for Android, `.xib` for iOS) and additional layout dependencies (such as Android's `ConstraintLayout`). 
+
+To maintain a clean architecture, keep the plugin extremely lightweight, and prevent potential XML resource conflicts with other plugins in your project, Native Ads are strictly **OPT-IN**. The necessary templates and dependencies are dynamically injected via a Capacitor hook **only if you explicitly enable them**.
+
+To enable Native Ads, update your app's root `package.json`:
+
+1. Add `"enableNativeAds": true` inside your `"admob"` configuration.
+2. Chain the `admob-native.js` script to your existing `capacitor:sync:after` (or `before`) hook.
+
+```json
+{
+  "name": "your-app-name",
+  "admob": {
+    "androidAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy",
+    "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz",
+    "enableNativeAds": true
+  },
+  "scripts": {
+    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/admob-native.js"
+  }
+}
+```
+
+💡 Transparency Note: If you do not need Native Ads, simply set `"enableNativeAds": false` (or remove it) and do not run the `admob-native.js` script. All Native Ad UI templates and the `ConstraintLayout` dependency will be completely excluded and ignored during your native app compilation.
+
+---
+
 ## Note: IOS
 Capacitor 8 Recommendation: Swift Package Manager (SPM).
 When a dependency is missing, open the project in Xcode 26+
@@ -171,6 +210,125 @@ pod install --repo-update
 
 Check out the comprehensive, interactive dashboard example to see how to implement UMP, classic loading, and the new Preloading API:
 👉 **[capacitor-welcome.js Example Project](https://github.com/swaplab-engine/capacitor-admob-nextgen/blob/main/example-app/src/js/capacitor-welcome.js)**
+
+<details>
+<summary>👉 Click to view: Use this `css/style` to test native ads, so the body can be scrolled</summary>
+
+  
+```bash
+  <style>
+          :host {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: block;
+            width: 100vw;
+            min-height: 100vh; /* Let it grow down */
+            margin: 0;
+            padding: 0;
+            background-color: #000; 
+          }
+
+          .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f5f8;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            box-sizing: border-box;
+          }
+
+          .debug-header, .debug-footer {
+            background: repeating-linear-gradient(45deg, #ffc409, #ffc409 10px, #e0ab08 10px, #e0ab08 20px);
+            color: #000; text-align: center; font-weight: 900; font-size: 12px; padding: 8px 0;
+            text-transform: uppercase; letter-spacing: 2px; flex-shrink: 0; z-index: 10;
+          }
+
+          .debug-header { position: sticky; top: 0; }
+          .debug-footer { position: sticky; bottom: 0; }
+
+          .scroll-area {
+            padding: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px;
+            align-content: start;
+          }
+
+          .section {
+            background: white; border-radius: 8px; padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; gap: 6px;
+          }
+          .section.full-width { grid-column: 1 / -1; }
+          .section-title { font-size: 13px; font-weight: bold; color: #3880ff; text-align: center; margin: 0 0 4px 0; }
+          
+          .controls {
+            background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 6px; padding: 6px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 4px; font-size: 11px; align-items: center;
+          }
+          .controls label { display: flex; justify-content: space-between; align-items: center; }
+          .controls select, .controls input { padding: 2px; margin: 0; }
+
+          .btn-row { display: flex; gap: 6px; }
+          .btn {
+            flex: 1; border: none; border-radius: 4px; padding: 8px 4px;
+            font-size: 11px; font-weight: bold; color: white; cursor: pointer; text-align: center;
+            transition: all 0.2s ease;
+          }
+          .btn:active { opacity: 0.8; transform: scale(0.98); }
+          
+          .btn-sys { background-color: #3880ff; } 
+          .btn-load { background-color: #eb445a; } 
+          .btn-show { background-color: #2dd36f; } 
+          .btn-preload { background-color: #8e24aa; } 
+          .btn-alt { background-color: #92949c; } 
+          
+          .btn:disabled { 
+            background-color: #cccccc !important; 
+            color: #888888 !important;
+            cursor: not-allowed; 
+            transform: none;
+            opacity: 0.7;
+          }
+
+          .terminal-wrapper {
+            height: 32vh; 
+            background-color: #222428;
+            display: flex; flex-direction: column;
+            border-top: 2px solid #111;
+          }
+          .terminal-header {
+            background: #1a1b1e; color: #fff; font-size: 10px; padding: 4px 10px; font-weight: bold;
+            display: flex; justify-content: space-between;
+          }
+          .status-badge { color: #eb445a; }
+          .status-badge.ready { color: #2dd36f; }
+
+          #terminal {
+            flex: 1; overflow-y: auto; padding: 8px 10px;
+            color: #2fdf75; font-family: monospace; font-size: 11px; word-wrap: break-word;
+          }
+          .log-time { color: #888; font-size: 9px; margin-right: 4px; }
+
+          .native-ad-placeholder {
+            width: 100%;
+            height: 150px; 
+            border: 2px dashed #92949c;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #92949c;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            background-color: rgba(146, 148, 156, 0.1);
+          }
+         </style>
+```
+</details>
+
 
 ---
 
@@ -215,6 +373,8 @@ npx cap sync
 * [`showRewarded()`](#showrewarded)
 * [`loadRewardedInterstitial(...)`](#loadrewardedinterstitial)
 * [`showRewardedInterstitial()`](#showrewardedinterstitial)
+* [`showNativeAd(...)`](#shownativead)
+* [`hideNativeAd()`](#hidenativead)
 * [`startPreloadAppOpen(...)`](#startpreloadappopen)
 * [`pollAndShowAppOpen()`](#pollandshowappopen)
 * [`isAppOpenPreloadAvailable(...)`](#isappopenpreloadavailable)
@@ -479,6 +639,37 @@ showRewardedInterstitial() => Promise<void>
 ```
 
 Shows the loaded Rewarded Interstitial Ad.
+
+--------------------
+
+
+### showNativeAd(...)
+
+```typescript
+showNativeAd(options: NativeAdOptions) => Promise<{ width: number; height: number; }>
+```
+
+Loads and displays a Native Ad at the specified screen coordinates using predefined templates.
+* 💡 **NOTE:** To use this, you must set `"enableNativeAds": true` in your app's `package.json` 
+under the `"admob"` configuration, and run `npx cap sync`.
+* @param options The configuration and layout parameters for the Native Ad.
+
+| Param         | Type                                                        |
+| ------------- | ----------------------------------------------------------- |
+| **`options`** | <code><a href="#nativeadoptions">NativeAdOptions</a></code> |
+
+**Returns:** <code>Promise&lt;{ width: number; height: number; }&gt;</code>
+
+--------------------
+
+
+### hideNativeAd()
+
+```typescript
+hideNativeAd() => Promise<void>
+```
+
+Hides and destroys the currently displayed Native Ad.
 
 --------------------
 
@@ -790,6 +981,15 @@ Listens for Ad events triggered by the native SDK.
 - `onBannerAdRefreshed`: Fired when the banner auto-refreshes.
 - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
 - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
+* ### Native Events
+- `onNativeAdLoaded`: Fired when a native ad is successfully loaded and rendered. Returns { width: number, height: number }.
+- `onNativeAdFailedToLoad`: Fired when a native ad fails to load from the network. Returns { message: string }.
+- `onNativeAdShowed`: Fired when the native ad opens an overlay (e.g., user clicked to view full content).
+- `onNativeAdDismissed`: Fired when the native ad overlay is closed.
+- `onNativeAdFailedToShow`: Fired when the native ad fails to show full-screen content. Returns { message: string }.
+- `onNativeAdImpression`: Fired when a native ad impression is recorded.
+- `onNativeAdClicked`: Fired when a native ad is clicked by the user.
+- `onNativeAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
 * ### Consent (UMP) Events
 - `onConsentInfoUpdated`: Fired when consent info is successfully updated.
 - `onConsentFormDismissed`: Fired when the consent form overlay is closed.
@@ -916,6 +1116,19 @@ These events are uniquely fired by the Preloading API when the background buffer
 | ------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | **`adUnitId`**      | <code>string</code> |                                                                                                                                         |
 | **`retryInterval`** | <code>number</code> | Minimum time (in milliseconds) before the next ad request is allowed. Prevents spam requests and invalid traffic bans. Default is 5000. |
+
+
+#### NativeAdOptions
+
+| Prop                | Type                             | Description                                                                                                                                                                                                                                                      |
+| ------------------- | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`adUnitId`**      | <code>string</code>              |                                                                                                                                                                                                                                                                  |
+| **`template`**      | <code>'small' \| 'medium'</code> | The name of the template to use (e.g., "small" or "medium"). Default is "small".                                                                                                                                                                                 |
+| **`x`**             | <code>number</code>              | The X coordinate on the screen where the ad should appear. ⚠️ IMPORTANT: Must be an integer (whole number). If calculating from DOM elements, use `Math.round()`. Default is 0.                                                                                  |
+| **`y`**             | <code>number</code>              | The Y coordinate on the screen where the ad should appear. ⚠️ IMPORTANT: Must be an integer (whole number). If calculating from DOM elements, use `Math.round()`. Default is 0.                                                                                  |
+| **`width`**         | <code>number</code>              | The width of the ad in density-independent pixels (dp/pt). ⚠️ IMPORTANT: Must be an integer (whole number). Use `Math.round()` if getting width from `getBoundingClientRect()`. If not provided, it defaults to matching the parent view's width (MATCH_PARENT). |
+| **`height`**        | <code>number</code>              | The height of the ad in density-independent pixels (dp/pt). Note: The height is usually constrained by the template type (e.g., Small is ~120, Medium is ~350). Default is WRAP_CONTENT.                                                                         |
+| **`retryInterval`** | <code>number</code>              | Minimum time (in milliseconds) before the next ad request is allowed. Prevents spam requests and invalid traffic bans. Default is 5000.                                                                                                                          |
 
 
 #### PluginListenerHandle

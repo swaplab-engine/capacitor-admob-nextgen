@@ -27,6 +27,12 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    sourceSets {
+        main {
+            // ADMOB_NATIVE_RES_START
+            // ADMOB_NATIVE_RES_END
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -61,5 +67,7 @@ dependencies {
     implementation 'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.1.1'
     // https://developers.google.com/admob/android/privacy/release-notes
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
+    // ADMOB_NATIVE_DEPENDENCIES_START
+    // ADMOB_NATIVE_DEPENDENCIES_END
 
 }

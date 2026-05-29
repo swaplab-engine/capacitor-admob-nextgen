@@ -1,6 +1,6 @@
 {
   "name": "capacitor-admob-nextgen",
-  "version": "1.0.4-bata.1",
+  "version": "1.0.4-bata.2",
   "description": "Google Mobile Ads Next Gen SDK for Capacitor. High performance and modular architecture.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

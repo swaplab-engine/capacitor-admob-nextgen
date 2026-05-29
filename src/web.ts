@@ -12,7 +12,8 @@ import type {
   BannerOptions,
   InterstitialOptions,
   RewardedOptions,
-  RewardedInterstitialOptions
+  RewardedInterstitialOptions,
+  NativeAdOptions
 } from './definitions';
 
 export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
@@ -85,6 +86,18 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     // No-op for web
   }
   async destroyBanner(): Promise<void> {
+    // No-op for web
+  }
+
+  // ==========================================
+  // NATIVE ADS
+  // ==========================================
+  async showNativeAd(_options: NativeAdOptions): Promise<{ width: number; height: number }> {
+    console.warn('Native Ads are not supported on the web platform.');
+    return { width: 0, height: 0 };
+  }
+
+  async hideNativeAd(): Promise<void> {
     // No-op for web
   }
 

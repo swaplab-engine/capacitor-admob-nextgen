@@ -134,6 +134,23 @@ export interface AdMobNextGenPlugin {
    */
   
   showRewardedInterstitial(): Promise<void>;
+
+  // ==========================================
+  // NATIVE ADS
+  // ==========================================
+
+  /**
+   * Loads and displays a Native Ad at the specified screen coordinates using predefined templates.
+   * * 💡 **NOTE:** To use this, you must set `"enableNativeAds": true` in your app's `package.json` 
+   * under the `"admob"` configuration, and run `npx cap sync`.
+   * * @param options The configuration and layout parameters for the Native Ad.
+   */
+  showNativeAd(options: NativeAdOptions): Promise<{ width: number; height: number }>;
+
+  /**
+   * Hides and destroys the currently displayed Native Ad.
+   */
+  hideNativeAd(): Promise<void>;
    
   
   /**
@@ -301,6 +318,15 @@ export interface AdMobNextGenPlugin {
    * - `onBannerAdRefreshed`: Fired when the banner auto-refreshes.
    * - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
    * - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
+   * * ### Native Events
+   * - `onNativeAdLoaded`: Fired when a native ad is successfully loaded and rendered. Returns { width: number, height: number }.
+   * - `onNativeAdFailedToLoad`: Fired when a native ad fails to load from the network. Returns { message: string }.
+   * - `onNativeAdShowed`: Fired when the native ad opens an overlay (e.g., user clicked to view full content).
+   * - `onNativeAdDismissed`: Fired when the native ad overlay is closed.
+   * - `onNativeAdFailedToShow`: Fired when the native ad fails to show full-screen content. Returns { message: string }.
+   * - `onNativeAdImpression`: Fired when a native ad impression is recorded.
+   * - `onNativeAdClicked`: Fired when a native ad is clicked by the user.
+   * - `onNativeAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Consent (UMP) Events
    * - `onConsentInfoUpdated`: Fired when consent info is successfully updated.
    * - `onConsentFormDismissed`: Fired when the consent form overlay is closed.
@@ -520,6 +546,50 @@ export interface BannerOptions {
    */
   isCollapsible?: boolean;
   
+  /**
+   * Minimum time (in milliseconds) before the next ad request is allowed.
+   * Prevents spam requests and invalid traffic bans. Default is 5000.
+   */
+  retryInterval?: number;
+}
+
+export interface NativeAdOptions {
+  adUnitId: string;
+  
+  /**
+   * The name of the template to use (e.g., "small" or "medium").
+   * Default is "small".
+   */
+  template?: 'small' | 'medium';
+
+  /**
+   * The X coordinate on the screen where the ad should appear.
+   * ⚠️ IMPORTANT: Must be an integer (whole number). If calculating from DOM elements, use `Math.round()`.
+   * Default is 0.
+   */
+  x?: number;
+
+  /**
+   * The Y coordinate on the screen where the ad should appear.
+   * ⚠️ IMPORTANT: Must be an integer (whole number). If calculating from DOM elements, use `Math.round()`.
+   * Default is 0.
+   */
+  y?: number;
+
+  /**
+   * The width of the ad in density-independent pixels (dp/pt).
+   * ⚠️ IMPORTANT: Must be an integer (whole number). Use `Math.round()` if getting width from `getBoundingClientRect()`.
+   * If not provided, it defaults to matching the parent view's width (MATCH_PARENT).
+   */
+  width?: number;
+
+  /**
+   * The height of the ad in density-independent pixels (dp/pt).
+   * Note: The height is usually constrained by the template type (e.g., Small is ~120, Medium is ~350).
+   * Default is WRAP_CONTENT.
+   */
+  height?: number;
+
   /**
    * Minimum time (in milliseconds) before the next ad request is allowed.
    * Prevents spam requests and invalid traffic bans. Default is 5000.
