@@ -14,6 +14,7 @@ import GoogleMobileAds
     private var currentPosition: String = "BOTTOM"
     private var lastPosition: String = "BOTTOM"
     private var lastAdSize: AdSize = AdSizeBanner
+    private var lastOrientation: UIDeviceOrientation = .unknown
 
     private var isBannerVisible: Bool = false
     private var isLoading: Bool = false
@@ -32,7 +33,7 @@ import GoogleMobileAds
 
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(layoutViews),
+            selector: #selector(handleOrientationChange),
             name: UIDevice.orientationDidChangeNotification,
             object: nil
         )
@@ -226,6 +227,30 @@ import GoogleMobileAds
         return currentOrientationAnchoredAdaptiveBanner(width: viewWidth)
     }
 
+    @objc private func handleOrientationChange() {
+        let currentOrientation = UIDevice.current.orientation
+
+        guard currentOrientation.isValidInterfaceOrientation,
+            currentOrientation != self.lastOrientation
+        else {
+            return
+        }
+
+        self.lastOrientation = currentOrientation
+        self.layoutViews()  
+
+        if !self.lastAdUnitId.isEmpty {
+            var ret = JSObject()
+            ret["adUnitId"] = self.lastAdUnitId
+            ret["orientation"] =
+                currentOrientation.isLandscape ? "LANDSCAPE" : "PORTRAIT"
+            self.plugin?.notifyListeners(
+                "onBannerOrientationChanged",
+                data: ret
+            )
+        }
+    }
+
     @objc private func layoutViews() {
         DispatchQueue.main.async {
             guard let rootVC = self.plugin?.bridge?.viewController,
@@ -319,17 +344,6 @@ import GoogleMobileAds
             if self.isBannerVisible, let bannerView = self.bannerView {
                 rootVC.view.bringSubviewToFront(bannerView)
             }
-
-            var ret = JSObject()
-            ret["adUnitId"] = self.lastAdUnitId
-
-            let isLandscape = screenW > screenH
-            ret["orientation"] = isLandscape ? "LANDSCAPE" : "PORTRAIT"
-
-            self.plugin?.notifyListeners(
-                "onBannerOrientationChanged",
-                data: ret
-            )
         }
     }
 

@@ -267,13 +267,13 @@ window.customElements.define(
       SplashScreen.hide();
 
       this.isSystemBarsHidden = false;
-      
+
 
       this.terminal = this.shadowRoot.getElementById('terminal');
       this.sdkStatusBadge = this.shadowRoot.getElementById('sdk-status');
       this.setupEventListeners();
       this.registerPluginEvents();
-      
+
       this.logToTerminal('App Loaded. Please run Consent then Init SDK.', 'SYS');
     }
 
@@ -281,23 +281,23 @@ window.customElements.define(
       const now = new Date();
       const timeStr = String(now.getSeconds()).padStart(2, '0') + '.' + String(now.getMilliseconds()).padStart(3, '0');
       const logElement = document.createElement('div');
-      
+
       let color = '#2fdf75'; // Green
       if (type === 'ERROR') color = '#eb445a';
       if (type === 'EVENT') color = '#3dc2ff';
       if (type === 'SYS') color = '#ffce00';
       if (type === 'SUCCESS') color = '#2dd36f';
       if (type === 'NEXTGEN') color = '#e040fb'; // Purple for next-gen
-      
+
       logElement.innerHTML = `<span class="log-time">[${timeStr}]</span> <span style="color: ${color}">${message}</span>`;
       this.terminal.appendChild(logElement);
-      this.terminal.scrollTop = this.terminal.scrollHeight; 
+      this.terminal.scrollTop = this.terminal.scrollHeight;
     }
 
     unlockAdButtons() {
       const adButtons = this.shadowRoot.querySelectorAll('.ad-action');
       adButtons.forEach(btn => btn.removeAttribute('disabled'));
-      
+
       this.sdkStatusBadge.innerText = 'SDK READY';
       this.sdkStatusBadge.classList.add('ready');
       this.logToTerminal('✅ SDK Initialized! All Ad Buttons Unlocked.', 'SUCCESS');
@@ -312,7 +312,7 @@ window.customElements.define(
       getById('btn-consent').addEventListener('click', async () => {
         try {
           this.logToTerminal('Requesting Consent Info...', 'SYS');
-          const result = await AdMobNextGen.requestConsentInfo({ 
+          const result = await AdMobNextGen.requestConsentInfo({
             debug: true,  // default: false
             reset: false, // default: false
             tagForUnderAgeOfConsent: false // default: false
@@ -326,20 +326,20 @@ window.customElements.define(
       getById('btn-fullscreen').addEventListener('click', async () => {
         try {
           const btn = getById('btn-fullscreen');
-          
+
           if (!this.isSystemBarsHidden) {
             this.logToTerminal('Toggling SystemBars (Fullscreen)...', 'SYS');
-            
+
             await SystemBars.hide();
-            
+
             this.isSystemBarsHidden = true;
             btn.innerText = 'Show SystemBars'; // Update UI label
             this.logToTerminal('Fullscreen Mode Active', 'SUCCESS');
           } else {
             this.logToTerminal('Restoring SystemBars (Normal)...', 'SYS');
-            
+
             await SystemBars.show();
-            
+
             this.isSystemBarsHidden = false;
             btn.innerText = 'Fullscreen'; // Reset UI label
             this.logToTerminal('Normal Mode Active', 'SUCCESS');
@@ -350,7 +350,7 @@ window.customElements.define(
       });
 
       getById('btn-privacy').addEventListener('click', async () => {
-        try { await AdMobNextGen.showPrivacyOptionsForm(); } 
+        try { await AdMobNextGen.showPrivacyOptionsForm(); }
         catch (error) { this.logToTerminal(`Privacy Form Error: ${error}`, 'ERROR'); }
       });
 
@@ -370,9 +370,9 @@ window.customElements.define(
             tagForChildDirectedTreatment: false, // default: null
             tagForUnderAgeOfConsent: false // default: null
           });
-          
+
           if (result.status) {
-             this.unlockAdButtons();
+            this.unlockAdButtons();
           }
         } catch (error) {
           this.logToTerminal(`Init Error: ${error}`, 'ERROR');
@@ -400,14 +400,14 @@ window.customElements.define(
           const auto = getById('banner-auto').checked;
 
           this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}]`, 'SYS');
-          
+
           // Using a different test ID for Banner to avoid overlapping with App Open
           await AdMobNextGen.createBanner({
             adUnitId: 'ca-app-pub-3940256099942544/9214589741',
-            position: pos, 
+            position: pos,
             adSize: 'ADAPTIVE',
-            isAutoShow: auto, 
-            isOverlap: overlap, 
+            isAutoShow: auto,
+            isOverlap: overlap,
             isCollapsible: collaps
           });
         } catch (error) { this.logToTerminal(`Banner Error: ${error}`, 'ERROR'); }
@@ -430,12 +430,12 @@ window.customElements.define(
           const collaps = getById('banner-col').checked;
 
           this.logToTerminal('Starting Banner Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadBanner({ 
+          await AdMobNextGen.startPreloadBanner({
             adUnitId: 'ca-app-pub-3940256099942544/9214589741',
             position: pos,
             isOverlap: overlap,
             isCollapsible: collaps,
-            bufferSize: 2 
+            bufferSize: 2
           });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });
@@ -477,7 +477,7 @@ window.customElements.define(
       getById('btn-int-preload-start').addEventListener('click', async () => {
         try {
           this.logToTerminal('Starting Interstitial Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadInterstitial({ 
+          await AdMobNextGen.startPreloadInterstitial({
             adUnitId: 'ca-app-pub-3940256099942544/1033173712',
             bufferSize: 2 // Default: 1, maximum 3
           });
@@ -515,7 +515,7 @@ window.customElements.define(
       getById('btn-rew-preload-start').addEventListener('click', async () => {
         try {
           this.logToTerminal('Starting Rewarded Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadRewarded({ 
+          await AdMobNextGen.startPreloadRewarded({
             adUnitId: 'ca-app-pub-3940256099942544/5224354917',
             bufferSize: 2 // Default: 1, maximum 3
           });
@@ -553,7 +553,7 @@ window.customElements.define(
       getById('btn-rewint-preload-start').addEventListener('click', async () => {
         try {
           this.logToTerminal('Starting Rewarded Int Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadRewardedInterstitial({ 
+          await AdMobNextGen.startPreloadRewardedInterstitial({
             adUnitId: 'ca-app-pub-3940256099942544/5354046379',
             bufferSize: 2 // Default: 1, maximum 3
           });
@@ -609,23 +609,23 @@ window.customElements.define(
         } catch (error) { this.logToTerminal(`Preload Poll Error: ${error}`, 'ERROR'); }
       });
 
-     // ==========================================
+      // ==========================================
       // 8. NATIVE ADS
       // ==========================================
       getById('btn-native-show').addEventListener('click', async () => {
         try {
           const template = getById('native-template').value;
           const anchor = getById('native-anchor');
-          
+
           if (!anchor) return;
-          
+
           const rect = anchor.getBoundingClientRect();
-          
+
           this.logToTerminal(`Showing Native Ad (${template})...`, 'SYS');
-          
+
           // MUST use Math.round() so that JS does not send decimal numbers to Java
-          const result = await AdMobNextGen.showNativeAd({ 
-            adUnitId: 'ca-app-pub-3940256099942544/2247696110', 
+          const result = await AdMobNextGen.showNativeAd({
+            adUnitId: 'ca-app-pub-3940256099942544/2247696110',
             template: template,
             x: Math.round(rect.left + (window.scrollX || 0)),
             y: Math.round(rect.top + (window.scrollY || 0)),
@@ -634,17 +634,17 @@ window.customElements.define(
 
           // === Responsive HTML Container ===
           if (result && result.height) {
-            anchor.innerHTML = ''; 
+            anchor.innerHTML = '';
             anchor.style.boxSizing = 'border-box';
-            
+
             // Force HTML height to match the height returned from Native Android/iOS
             anchor.style.height = result.height + 'px';
-            
+
             this.logToTerminal(`Native Ad Rendered. Height: ${result.height}px`, 'SUCCESS');
           }
 
-        } catch (error) { 
-          this.logToTerminal(`Native Show Error: ${error}`, 'ERROR'); 
+        } catch (error) {
+          this.logToTerminal(`Native Show Error: ${error}`, 'ERROR');
         }
       });
 
@@ -659,7 +659,6 @@ window.customElements.define(
 
     }
 
-    
 
     // ==========================================
     // GLOBAL PLUGIN EVENT LISTENERS
@@ -674,6 +673,39 @@ window.customElements.define(
         });
       };
 
+
+
+      // (Banner Event Optional )
+      // Variable to hold the loop
+      let resizeTimeout;
+
+      AdMobNextGen.addListener("onBannerOrientationChanged", async (data) => {
+        console.log(`Device rotated to: ${data.orientation} - Active Unit: ${data.adUnitId}`);
+
+        // 1. Clear timeout to prevent double calling if the user rotates the screen wildly
+        clearTimeout(resizeTimeout);
+
+        // 2. Please allow 300ms for the OS UI (Notch/Safe Area) to finish transitioning.
+        resizeTimeout = setTimeout(async () => {
+          try {
+            await AdMobNextGen.destroyBanner();
+
+            await AdMobNextGen.createBanner({
+              adUnitId: data.adUnitId,
+              position: 'BOTTOM',
+              adSize: 'ADAPTIVE',
+              isAutoShow: true,
+              isOverlap: false,
+              retryInterval: 0  // <--- IMPORTANT KEY: 5 second Anti-Spam Bypass specifically for rotation
+            });
+          } catch (error) {
+            console.error("Failed to reload banner on orientation change:", error);
+          }
+        }, 300);
+      });
+
+
+
       /*
       Unified Events & Preloader Exclusives
       To streamline development, the Preloader triggers the exact same lifecycle events as the Classic mode 
@@ -687,7 +719,7 @@ window.customElements.define(
       ['onAppOpenAdLoaded', 'onAppOpenAdFailedToLoad', 'onAppOpenAdShowed', 'onAppOpenAdDismissed', 'onAppOpenAdPaid'].forEach(e => bindEvent(e));
       // Native Ads Events
       ['onNativeAdLoaded', 'onNativeAdFailedToLoad', 'onNativeAdShowed', 'onNativeAdDismissed', 'onNativeAdFailedToShow', 'onNativeAdImpression', 'onNativeAdClicked', 'onNativeAdPaid'].forEach(e => bindEvent(e));
-      
+
       // Preloader Exclusive Event: The only event strictly unique to the Preloader is the exhausted event. 
       // This fires when the buffer pool is completely empty and the SDK stops trying to fetch new ads.
       // Next-Gen Preload Events
@@ -711,7 +743,7 @@ window.customElements.define(
         });
        */
 
-        
+
     }
   }
 );
