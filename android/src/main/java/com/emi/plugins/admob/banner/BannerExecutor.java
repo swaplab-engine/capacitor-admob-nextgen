@@ -54,6 +54,7 @@ public class BannerExecutor {
     private AdSize lastAdSize = null;
     private String lastPosition = "BOTTOM";
     private long lastLoadTime = 0;
+    private int lastOrientation = -1;
 
     public BannerExecutor(AdMobNextGenPlugin plugin) {
         this.plugin = plugin;
@@ -150,6 +151,20 @@ public class BannerExecutor {
                 capacitorAdLayout = new FrameLayout(activity);
                 capacitorAdLayout.setTag("emi_banner_layout");
                 capacitorAdLayout.setBackgroundColor(Color.TRANSPARENT);
+
+                lastOrientation = activity.getResources().getConfiguration().orientation;
+                capacitorAdLayout.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    int currentOrientation = activity.getResources().getConfiguration().orientation;
+                    if (currentOrientation != lastOrientation) {
+                        lastOrientation = currentOrientation;
+
+                        JSObject ret = new JSObject();
+                        ret.put("adUnitId", currentAdUnitId);
+                        ret.put("orientation", currentOrientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE ? "LANDSCAPE" : "PORTRAIT");
+
+                        plugin.notifyPluginListeners("onBannerOrientationChanged", ret);
+                    }
+                });
 
                 FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,

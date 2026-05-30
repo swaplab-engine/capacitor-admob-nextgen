@@ -5,7 +5,9 @@ import GoogleMobileAds
 @objc public class BannerExecutor: NSObject, BannerViewDelegate {
 
     private weak var plugin: AdMobNextGenPlugin?
+
     private var bannerView: BannerView?
+    private var pendingBannerView: BannerView?
 
     private var lastAdUnitId: String = ""
     private var lastSizeStr: String = ""
@@ -134,7 +136,6 @@ import GoogleMobileAds
         sizeStr: String,
         call: CAPPluginCall
     ) {
-        self.destroyBannerInternal()
 
         self.isLoading = true
         self.lastLoadTime = Date().timeIntervalSince1970
@@ -150,17 +151,14 @@ import GoogleMobileAds
         let adSize = self.getAdSize(sizeStr: sizeStr)
         self.lastAdSize = adSize
 
-        self.bannerView = BannerView(adSize: adSize)
-        guard let bannerView = self.bannerView else { return }
+        let pendingView = BannerView(adSize: adSize)
+        pendingView.translatesAutoresizingMaskIntoConstraints = true
+        pendingView.adUnitID = adUnitId
+        pendingView.rootViewController = rootViewController
+        pendingView.delegate = self
+        pendingView.isHidden = true  
 
-        bannerView.translatesAutoresizingMaskIntoConstraints = true
-
-        bannerView.adUnitID = adUnitId
-        bannerView.rootViewController = rootViewController
-        bannerView.delegate = self
-        bannerView.isHidden = true  
-
-        bannerView.paidEventHandler = { [weak self] value in
+        pendingView.paidEventHandler = { [weak self] value in
             guard let self = self else { return }
             var ret = JSObject()
             ret["adUnitId"] = self.lastAdUnitId
@@ -170,7 +168,8 @@ import GoogleMobileAds
             self.plugin?.notifyListeners("onBannerAdPaid", data: ret)
         }
 
-        rootViewController.view.addSubview(bannerView)
+        self.pendingBannerView = pendingView
+        rootViewController.view.addSubview(pendingView)
 
         let request = Request()
 
@@ -181,16 +180,13 @@ import GoogleMobileAds
             request.register(extras)
         }
 
-        bannerView.load(request)
+        pendingView.load(request)
         call.resolve(["status": "Banner creation initiated."])
     }
 
     private func getAdSize(sizeStr: String) -> AdSize {
-
         guard let rootViewController = self.plugin?.bridge?.viewController
-        else {
-            return AdSizeBanner
-        }
+        else { return AdSizeBanner }
 
         var frame = rootViewController.view.frame
         if #available(iOS 11.0, *) {
@@ -271,11 +267,8 @@ import GoogleMobileAds
                 let bX = (screenW - bW) / 2.0
 
                 if self.currentPosition == "TOP" {
-
                     if !self.isOverlapping {
-
                         let totalTopOffset = safeArea.top + bH
-
                         var newWebFrame = fullScreenRect
                         newWebFrame.origin.y = totalTopOffset
                         newWebFrame.size.height = screenH - totalTopOffset
@@ -288,11 +281,8 @@ import GoogleMobileAds
                             width: bW,
                             height: bH
                         )
-
                     } else {
-
                         webView.frame = fullScreenRect
-
                         let bY = safeArea.top
                         bannerView.frame = CGRect(
                             x: bX,
@@ -304,7 +294,6 @@ import GoogleMobileAds
                     bannerView.isHidden = false
 
                 } else {
-
                     let bY = screenH - safeArea.bottom - bH
                     bannerView.frame = CGRect(
                         x: bX,
@@ -330,6 +319,17 @@ import GoogleMobileAds
             if self.isBannerVisible, let bannerView = self.bannerView {
                 rootVC.view.bringSubviewToFront(bannerView)
             }
+
+            var ret = JSObject()
+            ret["adUnitId"] = self.lastAdUnitId
+
+            let isLandscape = screenW > screenH
+            ret["orientation"] = isLandscape ? "LANDSCAPE" : "PORTRAIT"
+
+            self.plugin?.notifyListeners(
+                "onBannerOrientationChanged",
+                data: ret
+            )
         }
     }
 
@@ -348,11 +348,17 @@ import GoogleMobileAds
     }
 
     private func destroyBannerInternal() {
+
+        if let pending = self.pendingBannerView {
+            pending.removeFromSuperview()
+            pending.delegate = nil
+            self.pendingBannerView = nil
+        }
+
         if let bannerView = self.bannerView {
             self.isBannerVisible = false
             self.activeBannerHeight = 0
-
-            self.layoutViews()  
+            self.layoutViews()
 
             bannerView.removeFromSuperview()
             bannerView.delegate = nil
@@ -394,10 +400,8 @@ import GoogleMobileAds
     ) {
         var ret = JSObject()
         ret["adUnitId"] = self.lastAdUnitId
-
         ret["width"] = Double(adSize.size.width)
         ret["height"] = Double(adSize.size.height)
-
         ret["isCollapsible"] = isCollapsible
 
         if isRefresh {
@@ -407,37 +411,69 @@ import GoogleMobileAds
         }
     }
 
-    public func bannerViewDidReceiveAd(_ bannerView: BannerView) {
-        let isRefresh = !self.isLoading
-        self.isLoading = false
+    public func bannerViewDidReceiveAd(_ incomingBannerView: BannerView) {
 
-        self.activeBannerHeight = bannerView.adSize.size.height
-        if self.activeBannerHeight == 0 {
-            self.activeBannerHeight = self.lastAdSize.size.height
+        if incomingBannerView == self.pendingBannerView {
+            self.isLoading = false
+
+            self.bannerView?.removeFromSuperview()
+            self.bannerView?.delegate = nil
+
+            self.bannerView = self.pendingBannerView
+            self.pendingBannerView = nil
+
+            self.activeBannerHeight = incomingBannerView.adSize.size.height
+            if self.activeBannerHeight == 0 {
+                self.activeBannerHeight = self.lastAdSize.size.height
+            }
+
+            self.sendLoadedEvent(
+                adSize: self.lastAdSize,
+                isCollapsible: self.isCollapsible,
+                isRefresh: false
+            )
+
+            if self.isAutoShow && !self.isBannerVisible {
+                self.showBannerInternal()
+            } else {
+                self.layoutViews()
+            }
         }
 
-        self.sendLoadedEvent(
-            adSize: self.lastAdSize,
-            isCollapsible: self.isCollapsible,
-            isRefresh: isRefresh
-        )
-
-        if self.isAutoShow && !self.isBannerVisible {
-            self.showBannerInternal()
-        } else {
-            self.layoutViews()
+        else if incomingBannerView == self.bannerView {
+            self.sendLoadedEvent(
+                adSize: incomingBannerView.adSize,
+                isCollapsible: self.isCollapsible,
+                isRefresh: true
+            )
+            self.layoutViews()  
         }
     }
 
     public func bannerView(
-        _ bannerView: BannerView,
+        _ incomingBannerView: BannerView,
         didFailToReceiveAdWithError error: Error
     ) {
-        self.isLoading = false
-        var ret = JSObject()
-        ret["adUnitId"] = self.lastAdUnitId
-        ret["error"] = error.localizedDescription
-        self.plugin?.notifyListeners("onBannerAdFailedToLoad", data: ret)
+
+        if incomingBannerView == self.pendingBannerView {
+            self.isLoading = false
+
+            incomingBannerView.removeFromSuperview()
+            incomingBannerView.delegate = nil
+            self.pendingBannerView = nil
+
+            var ret = JSObject()
+            ret["adUnitId"] = self.lastAdUnitId
+            ret["error"] = error.localizedDescription
+            self.plugin?.notifyListeners("onBannerAdFailedToLoad", data: ret)
+        }
+
+        else if incomingBannerView == self.bannerView {
+            var ret = JSObject()
+            ret["adUnitId"] = self.lastAdUnitId
+            ret["error"] = error.localizedDescription
+            self.plugin?.notifyListeners("onBannerAdFailedToRefresh", data: ret)
+        }
     }
 
     public func bannerViewDidRecordImpression(_ bannerView: BannerView) {

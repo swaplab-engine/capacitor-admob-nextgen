@@ -981,6 +981,7 @@ Listens for Ad events triggered by the native SDK.
 - `onBannerAdRefreshed`: Fired when the banner auto-refreshes.
 - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
 - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
+- `onBannerOrientationChanged`: Fired when the device orientation changes while a banner is visible. Returns { adUnitId: string, orientation: "LANDSCAPE" | "PORTRAIT" }.
 * ### Native Events
 - `onNativeAdLoaded`: Fired when a native ad is successfully loaded and rendered. Returns { width: number, height: number }.
 - `onNativeAdFailedToLoad`: Fired when a native ad fails to load from the network. Returns { message: string }.

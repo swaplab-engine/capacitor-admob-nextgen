@@ -680,7 +680,7 @@ window.customElements.define(
       (e.g., onBannerAdLoaded, onBannerAdPaid). You only need to write one event listener for both modes.
       */
       ['onConsentInfoUpdated', 'onConsentFormDismissed', 'onConsentStatusChange', 'onConsentError'].forEach(e => bindEvent(e));
-      ['onBannerAdLoaded', 'onBannerAdFailedToLoad', 'onBannerAdImpression', 'onBannerAdClicked', 'onBannerAdPaid'].forEach(e => bindEvent(e));
+      ['onBannerAdLoaded', 'onBannerAdFailedToLoad', 'onBannerAdImpression', 'onBannerAdClicked', 'onBannerAdPaid', 'onBannerOrientationChanged'].forEach(e => bindEvent(e));
       ['onInterstitialAdLoaded', 'onInterstitialAdFailedToLoad', 'onInterstitialAdShowed', 'onInterstitialAdDismissed', 'onInterstitialAdPaid'].forEach(e => bindEvent(e));
       ['onRewardedAdLoaded', 'onRewardedAdFailedToLoad', 'onRewardedAdShowed', 'onRewardedAdDismissed', 'onRewardedAdReward', 'onRewardedAdPaid'].forEach(e => bindEvent(e));
       ['onRewardedInterstitialAdLoaded', 'onRewardedInterstitialAdFailedToLoad', 'onRewardedInterstitialAdShowed', 'onRewardedInterstitialAdDismissed', 'onRewardedInterstitialAdReward', 'onRewardedInterstitialAdPaid'].forEach(e => bindEvent(e));
