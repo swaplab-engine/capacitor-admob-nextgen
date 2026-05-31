@@ -22,7 +22,17 @@ function getConfig() {
 }
 
 const config = getConfig();
-const enableNativeAds = config.enableNativeAds === true;
+
+let enableAndroid = false;
+let enableIos = false;
+
+if (typeof config.enableNativeAds === 'boolean') {
+    enableAndroid = config.enableNativeAds;
+    enableIos = config.enableNativeAds;
+} else if (typeof config.enableNativeAds === 'object' && config.enableNativeAds !== null) {
+    enableAndroid = config.enableNativeAds.android === true;
+    enableIos = config.enableNativeAds.ios === true;
+}
 
 function injectBetweenMarkers(content, startMarker, endMarker, injectionString) {
     const regex = new RegExp(`(${startMarker})[\\s\\S]*?(${endMarker})`, 'g');
@@ -30,74 +40,36 @@ function injectBetweenMarkers(content, startMarker, endMarker, injectionString) 
 }
 
 // =================================================================
-// ANDROID INJECTIONS
+// 1. ANDROID INJECTIONS
 // =================================================================
 const buildGradlePath = path.join(pluginRoot, 'android', 'build.gradle');
 if (fs.existsSync(buildGradlePath)) {
     let gradleData = fs.readFileSync(buildGradlePath, 'utf-8');
     
-    // Inject Source Sets (XML Resources)
-    let resInjection = "";
-    if (enableNativeAds) {
-        resInjection = "        res.srcDirs += ['src/main/native-templates/res']";
-        console.log("Android: Native Ads resources enabled.");
-    } else {
-        console.log("Android: Native Ads resources excluded.");
-    }
+    // Inject Source Sets
+    let resInjection = enableAndroid ? "        res.srcDirs += ['src/main/native-templates/res']" : "";
+    gradleData = injectBetweenMarkers(gradleData, '// ADMOB_NATIVE_RES_START', '// ADMOB_NATIVE_RES_END', resInjection);
 
-    gradleData = injectBetweenMarkers(
-        gradleData, 
-        '// ADMOB_NATIVE_RES_START', 
-        '// ADMOB_NATIVE_RES_END', 
-        resInjection
-    );
-
-    // Inject Dependencies (ConstraintLayout)
-    let depsInjection = "";
-    if (enableNativeAds) {
-        depsInjection = "    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'";
-        console.log("Android: ConstraintLayout dependency injected.");
-    } else {
-        console.log("Android: ConstraintLayout dependency excluded.");
-    }
-
-    gradleData = injectBetweenMarkers(
-        gradleData, 
-        '// ADMOB_NATIVE_DEPENDENCIES_START', 
-        '// ADMOB_NATIVE_DEPENDENCIES_END', 
-        depsInjection
-    );
+    // Inject Dependencies
+    let depsInjection = enableAndroid ? "    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'" : "";
+    gradleData = injectBetweenMarkers(gradleData, '// ADMOB_NATIVE_DEPENDENCIES_START', '// ADMOB_NATIVE_DEPENDENCIES_END', depsInjection);
 
     fs.writeFileSync(buildGradlePath, gradleData, 'utf-8');
+    console.log(`Android: Native Ads ${enableAndroid ? 'ENABLED' : 'DISABLED'}`);
 }
 
-/*
-
 // =================================================================
-// IOS INJECTIONS
+// 2. IOS INJECTIONS
 // =================================================================
 const packageSwiftPath = path.join(pluginRoot, 'Package.swift');
 if (fs.existsSync(packageSwiftPath)) {
     let packageData = fs.readFileSync(packageSwiftPath, 'utf-8');
     
-    let resourceInjection = "";
-    if (enableNativeAds) {
-        resourceInjection = '                .process("NativeTemplates")';
-        console.log("iOS: Native Ads resources enabled.");
-    } else {
-        console.log("iOS: Native Ads resources excluded.");
-    }
-
-    packageData = injectBetweenMarkers(
-        packageData, 
-        '// ADMOB_NATIVE_RESOURCES_START', 
-        '// ADMOB_NATIVE_RESOURCES_END', 
-        resourceInjection
-    );
+    let resourceInjection = enableIos ? '                .process("NativeTemplates")' : "";
+    packageData = injectBetweenMarkers(packageData, '// ADMOB_NATIVE_RESOURCES_START', '// ADMOB_NATIVE_RESOURCES_END', resourceInjection);
 
     fs.writeFileSync(packageSwiftPath, packageData, 'utf-8');
+    console.log(`iOS: Native Ads ${enableIos ? 'ENABLED' : 'DISABLED'}`);
 }
-
-*/
 
 console.log("Native setup completed.\n");

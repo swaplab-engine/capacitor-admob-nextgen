@@ -41,12 +41,14 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
     <td align="center"><img width="190" src="https://github.com/user-attachments/assets/044154ea-4f4d-4b5d-a447-74154c71a858" alt="IOS UMP ATT" /></td>
   </tr>
   <tr>
-    <td align="center"><strong>Video: Native Ad</strong></td>
-    <td align="center"><strong>Video: edge to edge (cp 8+ api 36 android 16) </strong></td>
-    <td align="center"><strong>Video: edge to edge (cp 8+ api 36 android 14) </strong></td>
+    <td align="center"><strong>Native Ad Android</strong></td>
+    <td align="center"><strong>Native Ad IOS</strong></td>
+    <td align="center"><strong>Banner: edge to edge (cp 8+ api 36 android 16) </strong></td>
+    <td align="center"><strong>Banner: edge to edge (cp 8+ api 36 android 14) </strong></td>
   </tr>
   <tr>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a" alt="Native Ad" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a" alt="Native Ad Android" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/f045ebbf-92b5-4fb2-a9a0-812d0088bfee" alt="Native Ad IOS" /></td>
     <td align="center"><video width="190" src="https://github.com/user-attachments/assets/12188a39-b3a1-49c7-af92-74d4a7a5be7c" alt="api 36 android 16" /></td>
     <td align="center"><video width="190" src="https://github.com/user-attachments/assets/04f46544-7d48-4141-9ff1-5b1a3d84a657" alt="api 36 android 14" /></td>
   </tr>
@@ -162,7 +164,11 @@ If you prefer total manual control, simply do not add the script to your `packag
 ```
 ---
 
-### 🧩 Native Ads Setup (Opt-In Feature): Only Android BETA
+### 🧩 Native Ads Setup (Opt-In Feature)
+
+*   **Official Google Templates:** Plugin this utilize the official AdMob Native Templates provided by Google, ensuring your ads meet the highest professional and production standards.
+    *   [Android Template Source](https://github.com/googleads/googleads-mobile-android-native-templates)
+    *   [iOS Template Source](https://github.com/googleads/googleads-mobile-ios-native-templates)
 
 Unlike standard Banner or Interstitial ads, Native Ads require specific UI template files (`.xml` for Android, `.xib` for iOS) and additional layout dependencies (such as Android's `ConstraintLayout`). 
 
@@ -170,7 +176,7 @@ To maintain a clean architecture, keep the plugin extremely lightweight, and pre
 
 To enable Native Ads, update your app's root `package.json`:
 
-1. Add `"enableNativeAds": true` inside your `"admob"` configuration.
+1. Add `"enableNativeAds"` inside your `"admob"` configuration. You can enable it globally by setting it to `true`, or target specific platforms using an object (e.g., `{ "ios": true, "android": false }`).
 2. Chain the `admob-native.js` script to your existing `capacitor:sync:after` (or `before`) hook.
 
 ```json
@@ -179,15 +185,15 @@ To enable Native Ads, update your app's root `package.json`:
   "admob": {
     "androidAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy",
     "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz",
-    "enableNativeAds": true
+    "enableNativeAds": { "ios": true, "android": true }
   },
   "scripts": {
     "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/admob-native.js"
   }
 }
 ```
-
-💡 Transparency Note: If you do not need Native Ads, simply set `"enableNativeAds": false` (or remove it) and do not run the `admob-native.js` script. All Native Ad UI templates and the `ConstraintLayout` dependency will be completely excluded and ignored during your native app compilation.
+💡 Transparency Note: 
+If you do not need Native Ads on a specific platform, simply set it to `false` (e.g., `{ "ios": true, "android": false }`). If you don't need Native Ads at all, set `"enableNativeAds": false` (or omit it entirely). The dynamic hook ensures that any disabled platform will completely exclude the Native Ad UI templates and `ConstraintLayout` dependency during your native app compilation.
 
 ---
 

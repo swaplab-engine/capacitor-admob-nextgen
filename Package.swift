@@ -23,7 +23,12 @@ let package = Package(
                 .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
                 .product(name: "GoogleUserMessagingPlatform", package: "swift-package-manager-google-user-messaging-platform")
             ],
-            path: "ios/Sources/AdMobNextGenPlugin"),
+            path: "ios/Sources/AdMobNextGenPlugin",
+            resources: [
+                // ADMOB_NATIVE_RESOURCES_START
+                // ADMOB_NATIVE_RESOURCES_END
+            ]
+          ),
         .testTarget(
             name: "AdMobNextGenPluginTests",
             dependencies: ["AdMobNextGenPlugin"],

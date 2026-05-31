@@ -13,7 +13,7 @@ window.customElements.define(
 
     connectedCallback() {
       this.shadowRoot.innerHTML = `
-        <style>
+          <style>
           :host {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: block;

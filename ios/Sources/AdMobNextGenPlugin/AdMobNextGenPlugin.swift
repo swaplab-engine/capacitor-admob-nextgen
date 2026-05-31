@@ -49,6 +49,15 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         ),
 
         CAPPluginMethod(
+            name: "showNativeAd",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "hideNativeAd",
+            returnType: CAPPluginReturnPromise
+        ),
+
+        CAPPluginMethod(
             name: "loadInterstitial",
             returnType: CAPPluginReturnPromise
         ),
@@ -82,6 +91,7 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private var appOpenExecutor: AppOpenExecutor!
     private var bannerExecutor: BannerExecutor!
+    private var nativeExecutor: NativeExecutor!
     private var interstitialExecutor: InterstitialExecutor!
     private var rewardedExecutor: RewardedExecutor!
     private var rewardedInterstitialExecutor: RewardedInterstitialExecutor!
@@ -92,11 +102,10 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         self.trackingExecutor = TrackingExecutor(plugin: self)
         self.appOpenExecutor = AppOpenExecutor(plugin: self)
         self.bannerExecutor = BannerExecutor(plugin: self)
+        self.nativeExecutor = NativeExecutor(plugin: self)
         self.interstitialExecutor = InterstitialExecutor(plugin: self)
         self.rewardedExecutor = RewardedExecutor(plugin: self)
-        self.rewardedInterstitialExecutor = RewardedInterstitialExecutor(
-            plugin: self
-        )
+        self.rewardedInterstitialExecutor = RewardedInterstitialExecutor(plugin: self)
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
@@ -165,6 +174,14 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
     }
     @objc func destroyBanner(_ call: CAPPluginCall) {
         bannerExecutor.destroyBanner(call)
+    }
+
+    @objc func showNativeAd(_ call: CAPPluginCall) {
+        nativeExecutor.showNativeAd(call)
+    }
+
+    @objc func hideNativeAd(_ call: CAPPluginCall) {
+        nativeExecutor.hideNativeAd(call)
     }
 
     @objc func loadInterstitial(_ call: CAPPluginCall) {
