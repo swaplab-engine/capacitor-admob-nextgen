@@ -17,40 +17,48 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
 
 <table>
   <tr>
-    <td align="center"><strong>Consent (UMP)</strong></td>
-    <td align="center"><strong>App Open</strong></td>
-    <td align="center"><strong>Interstitial</strong></td>
-    <td align="center"><strong>Rewarded</strong></td>
+    <td align="center" valign="top"><strong>Consent (UMP)</strong></td>
+    <td align="center" valign="top"><strong>App Open</strong></td>
+    <td align="center" valign="top"><strong>Interstitial</strong></td>
+    <td align="center" valign="top"><strong>Rewarded</strong></td>
   </tr>
   <tr>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/85544f57-2abd-4507-9bc9-6a6b032d4314" alt="Consent UMP Popup" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/ccbb9244-2a80-4b87-9eab-41ce088c2a1f" alt="App Open Preload" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/013fbdae-0db6-47af-bc62-faedb52bfeb7" alt="Interstitial Preload" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/f2b98490-bb00-4949-a842-7f309d920c1c" alt="Rewarded Preload" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/85544f57-2abd-4507-9bc9-6a6b032d4314" alt="Consent UMP Popup" /></td>
+    <td align="center" valign="middle"><img width="190" src="https://github.com/user-attachments/assets/ccbb9244-2a80-4b87-9eab-41ce088c2a1f" alt="App Open Preload" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/013fbdae-0db6-47af-bc62-faedb52bfeb7" alt="Interstitial Preload" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/f2b98490-bb00-4949-a842-7f309d920c1c" alt="Rewarded Preload" /></td>
   </tr>
   <tr>
-    <td align="center"><strong>Banner (Adaptive)</strong></td>
-    <td align="center"><strong>Banner (Large Adaptive)</strong></td>
-    <td align="center"><strong>Banner (Collapsible Adaptive)</strong></td>
-    <td align="center"><strong>IOS UMP ATT</strong></td>
+    <td align="center" valign="top"><strong>Banner (Adaptive)</strong></td>
+    <td align="center" valign="top"><strong>Banner (Large Adaptive)</strong></td>
+    <td align="center" valign="top"><strong>Banner (Collapsible)</strong></td>
+    <td align="center" valign="top"><strong>IOS UMP ATT</strong></td>
   </tr>
   <tr>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/d3d8dd18-9c99-448a-b407-61c819a556bf" alt="Adaptive Banner" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/54044007-0468-4a68-be35-0502491ceb52" alt="Large Anchored Banner" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/1c947811-188f-48d2-85d2-0658914377b5" alt="Collapsible Banner" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/044154ea-4f4d-4b5d-a447-74154c71a858" alt="IOS UMP ATT" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/d3d8dd18-9c99-448a-b407-61c819a556bf" alt="Adaptive Banner" /></td>
+    <td align="center" valign="middle"><img width="190" src="https://github.com/user-attachments/assets/54044007-0468-4a68-be35-0502491ceb52" alt="Large Anchored Banner" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/1c947811-188f-48d2-85d2-0658914377b5" alt="Collapsible Banner" /></td>
+    <td align="center" valign="top"><img width="190" src="https://github.com/user-attachments/assets/044154ea-4f4d-4b5d-a447-74154c71a858" alt="IOS UMP ATT" /></td>
   </tr>
   <tr>
-    <td align="center"><strong>Native Ad Android</strong></td>
-    <td align="center"><strong>Native Ad IOS</strong></td>
-    <td align="center"><strong>Banner: edge to edge (cp 8+ api 36 android 16) </strong></td>
-    <td align="center"><strong>Banner: edge to edge (cp 8+ api 36 android 14) </strong></td>
+    <td align="center" valign="top"><strong>Native Ad (Android)</strong></td>
+    <td align="center" valign="top"><strong>Native Ad (IOS)</strong></td>
+    <td align="center" valign="top"><strong>Edge to Edge (API 36/16)</strong></td>
+    <td align="center" valign="top"><strong>Edge to Edge (API 36/14)</strong></td>
   </tr>
   <tr>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a" alt="Native Ad Android" /></td>
-    <td align="center"><img width="190" src="https://github.com/user-attachments/assets/f045ebbf-92b5-4fb2-a9a0-812d0088bfee" alt="Native Ad IOS" /></td>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/12188a39-b3a1-49c7-af92-74d4a7a5be7c" alt="api 36 android 16" /></td>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/04f46544-7d48-4141-9ff1-5b1a3d84a657" alt="api 36 android 14" /></td>
+    <td align="center" valign="top">
+      <video width="190" autoplay loop muted playsinline src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a"></video>
+    </td>
+    <td align="center" valign="middle">
+      <img width="190" src="https://github.com/user-attachments/assets/f045ebbf-92b5-4fb2-a9a0-812d0088bfee" alt="Native Ad IOS" />
+    </td>
+    <td align="center" valign="top">
+      <video width="190" autoplay loop muted playsinline src="https://github.com/user-attachments/assets/12188a39-b3a1-49c7-af92-74d4a7a5be7c"></video>
+    </td>
+    <td align="center" valign="top">
+      <video width="190" autoplay loop muted playsinline src="https://github.com/user-attachments/assets/04f46544-7d48-4141-9ff1-5b1a3d84a657"></video>
+    </td>
   </tr>
 </table>
 
