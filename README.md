@@ -47,8 +47,8 @@ This plugin integrates the newly announced Google Mobile Ads (GMA) Next-Gen SDK 
   </tr>
   <tr>
     <td align="center"><video width="190" src="https://github.com/user-attachments/assets/8a830828-8d31-4a70-b01b-ad31c506328a" alt="Native Ad" /></td>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/159c1ee7-2599-4b32-beb7-b97db495546a" alt="api 36 android 16" /></td>
-    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/352ece1e-4702-4329-93c1-1bae96641546" alt="api 36 android 14" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/12188a39-b3a1-49c7-af92-74d4a7a5be7c" alt="api 36 android 16" /></td>
+    <td align="center"><video width="190" src="https://github.com/user-attachments/assets/04f46544-7d48-4141-9ff1-5b1a3d84a657" alt="api 36 android 14" /></td>
   </tr>
 </table>
 
