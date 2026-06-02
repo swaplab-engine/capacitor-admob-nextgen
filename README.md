@@ -163,7 +163,7 @@ If you prefer total manual control, simply do not add the script to your `packag
     android:value="ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy" />
 ```
 
-**For iOS:** Open `ios/App/App/Info.plist` and add: ( IOS Next release)
+**For iOS:** Open `ios/App/App/Info.plist` and add:
 ```xml
 <key>GADApplicationIdentifier</key>
 <string>ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz</string>
