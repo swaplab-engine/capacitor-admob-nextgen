@@ -89,6 +89,7 @@ public class RewardedExecutor {
         }
 
         activity.runOnUiThread(() -> {
+            final boolean[] isRewardEarned = {false};
             mRewardedAd.setAdEventCallback(new RewardedAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
@@ -98,6 +99,11 @@ public class RewardedExecutor {
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     mRewardedAd = null; 
+
+                    if (!isRewardEarned[0]) {
+                        plugin.notifyPluginListeners("onRewardedAdSkip", new JSObject());
+                    }
+
                     plugin.notifyPluginListeners("onRewardedAdDismissed", new JSObject());
                 }
 
@@ -133,6 +139,7 @@ public class RewardedExecutor {
             mRewardedAd.show(activity, new OnUserEarnedRewardListener() {
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    isRewardEarned[0] = true;
                     JSObject ret = new JSObject();
                     ret.put("amount", rewardItem.getAmount());
                     ret.put("type", rewardItem.getType());

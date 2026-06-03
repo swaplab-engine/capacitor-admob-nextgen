@@ -11,6 +11,8 @@ import GoogleMobileAds
 
     private var lastLoadTime: TimeInterval = 0
 
+    private var isRewardEarned: Bool = false
+
     init(plugin: AdMobNextGenPlugin) {
         self.plugin = plugin
         super.init()
@@ -101,8 +103,10 @@ import GoogleMobileAds
             }
 
             if let ad = self.rewardedAd {
+                self.isRewardEarned = false
 
                 ad.present(from: viewController) { [weak self] in
+                    self?.isRewardEarned = true
                     let reward = ad.adReward
                     var ret = JSObject()
                     ret["amount"] = reward.amount.doubleValue  
@@ -123,6 +127,10 @@ import GoogleMobileAds
 
     public func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         rewardedAd = nil  
+
+        if !self.isRewardEarned {
+            plugin?.notifyListeners("onRewardedAdSkip", data: [:])
+        }
         plugin?.notifyListeners("onRewardedAdDismissed", data: [:])
     }
 
