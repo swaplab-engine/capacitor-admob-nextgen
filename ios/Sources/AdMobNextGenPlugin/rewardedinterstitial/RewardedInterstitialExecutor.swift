@@ -12,6 +12,8 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
     private var lastLoadTime: TimeInterval = 0
 
+    private var isRewardInterstitialEarned: Bool = false
+
     init(plugin: AdMobNextGenPlugin) {
         self.plugin = plugin
         super.init()
@@ -113,8 +115,10 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
             }
 
             if let ad = self.rewardedInterstitialAd {
+                self.isRewardInterstitialEarned = false
 
                 ad.present(from: viewController) { [weak self] in
+                    self?.isRewardInterstitialEarned = true
                     let reward = ad.adReward
                     var ret = JSObject()
                     ret["amount"] = reward.amount.doubleValue
@@ -135,6 +139,9 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
     public func adDidDismissFullScreenContent(_ ad: FullScreenPresentingAd) {
         rewardedInterstitialAd = nil  
+        if !self.isRewardInterstitialEarned {
+            plugin?.notifyListeners("onRewardedInterstitialAdSkip", data: [:])
+        }
         plugin?.notifyListeners("onRewardedInterstitialAdDismissed", data: [:])
     }
 

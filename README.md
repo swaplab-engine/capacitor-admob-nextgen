@@ -975,6 +975,7 @@ Listens for Ad events triggered by the native SDK.
 - `onRewardedInterstitialAdImpression`: Fired when an ad impression is recorded.
 - `onRewardedInterstitialAdClicked`: Fired when an ad is clicked.
 - `onRewardedInterstitialAdReward`: Fired when the user earns a reward. Returns { amount: number, type: string, source?: string }.
+- `onRewardedInterstitialAdSkip`: Fired when the user closes the ad before earning the reward interstitial.
 - `onRewardedInterstitialAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
 * ### App Open Events
 - `onAppOpenAdLoaded`: Fired when an ad is loaded. Returns { adUnitId: string, source?: string }.

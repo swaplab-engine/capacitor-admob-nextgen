@@ -88,6 +88,7 @@ public class RewardedInterstitialExecutor {
         }
 
         activity.runOnUiThread(() -> {
+            final boolean[] isRewardEarned = {false};
             mRewardedInterstitialAd.setAdEventCallback(new RewardedInterstitialAdEventCallback() {
                 @Override
                 public void onAdShowedFullScreenContent() {
@@ -97,6 +98,9 @@ public class RewardedInterstitialExecutor {
                 @Override
                 public void onAdDismissedFullScreenContent() {
                     mRewardedInterstitialAd = null; 
+                    if (!isRewardEarned[0]) {
+                        plugin.notifyPluginListeners("onRewardedInterstitialAdSkip", new JSObject());
+                    }
                     plugin.notifyPluginListeners("onRewardedInterstitialAdDismissed", new JSObject());
                 }
 
@@ -132,6 +136,7 @@ public class RewardedInterstitialExecutor {
             mRewardedInterstitialAd.show(activity, new OnUserEarnedRewardListener() {
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                    isRewardEarned[0] = true;
                     JSObject ret = new JSObject();
                     ret.put("amount", rewardItem.getAmount());
                     ret.put("type", rewardItem.getType());
