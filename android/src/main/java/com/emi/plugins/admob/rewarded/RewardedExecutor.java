@@ -40,6 +40,16 @@ public class RewardedExecutor {
             return;
         }
 
+        if (mRewardedAd != null && currentAdUnitId.equals(adUnitId)) {
+
+            JSObject ret = new JSObject();
+            ret.put("adUnitId", currentAdUnitId);
+            ret.put("message", "Ad already loaded (Cached)");
+            plugin.notifyPluginListeners("onRewardedAdLoaded", ret);
+            callback.onSuccess();
+            return;
+        }
+
         Double retryOpt = call.getDouble("retryInterval");
         long minLoadInterval = (retryOpt != null) ? retryOpt.longValue() : 5000L;
         long currentTime = System.currentTimeMillis();
@@ -69,7 +79,6 @@ public class RewardedExecutor {
 
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                            mRewardedAd = null;
 
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());

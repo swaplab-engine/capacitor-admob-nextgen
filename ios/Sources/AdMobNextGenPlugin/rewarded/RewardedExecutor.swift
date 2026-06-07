@@ -34,6 +34,16 @@ import GoogleMobileAds
             return
         }
 
+        if self.rewardedAd != nil && self.currentAdUnitId == adUnitId {
+
+            var ret = JSObject()
+            ret["adUnitId"] = self.currentAdUnitId
+            ret["message"] = "Ad already loaded (Cached)"
+            plugin.notifyListeners("onRewardedAdLoaded", data: ret)
+            call.resolve()
+            return
+        }
+
         let retryOpt = call.getDouble("retryInterval")
         let minLoadInterval: TimeInterval =
             (retryOpt != nil) ? (retryOpt! / 1000.0) : 5.0  
@@ -52,10 +62,13 @@ import GoogleMobileAds
 
         Task { @MainActor in
             do {
-                self.rewardedAd = try await RewardedAd.load(
+
+                let ad = try await RewardedAd.load(
                     with: adUnitId,
                     request: request
                 )
+
+                self.rewardedAd = ad
                 self.rewardedAd?.fullScreenContentDelegate = self
 
                 self.rewardedAd?.paidEventHandler = { [weak self] value in
@@ -77,7 +90,6 @@ import GoogleMobileAds
                 call.resolve()
 
             } catch {
-                self.rewardedAd = nil
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription

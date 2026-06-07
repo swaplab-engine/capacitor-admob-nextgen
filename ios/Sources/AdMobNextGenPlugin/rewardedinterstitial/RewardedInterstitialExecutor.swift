@@ -35,6 +35,16 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
             return
         }
 
+        if self.rewardedInterstitialAd != nil && self.currentAdUnitId == adUnitId {
+
+            var ret = JSObject()
+            ret["adUnitId"] = self.currentAdUnitId
+            ret["message"] = "Ad already loaded (Cached)"
+            plugin.notifyListeners("onRewardedInterstitialAdLoaded", data: ret)
+            call.resolve()
+            return
+        }
+
         let retryOpt = call.getDouble("retryInterval")
         let minLoadInterval: TimeInterval =
             (retryOpt != nil) ? (retryOpt! / 1000.0) : 5.0  
@@ -53,11 +63,13 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
         Task { @MainActor in
             do {
-                self.rewardedInterstitialAd =
-                    try await RewardedInterstitialAd.load(
-                        with: adUnitId,
-                        request: request
-                    )
+
+                let ad = try await RewardedInterstitialAd.load(
+                    with: adUnitId,
+                    request: request
+                )
+
+                self.rewardedInterstitialAd = ad
                 self.rewardedInterstitialAd?.fullScreenContentDelegate = self
 
                 self.rewardedInterstitialAd?.paidEventHandler = {
@@ -86,7 +98,6 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
                 call.resolve()
 
             } catch {
-                self.rewardedInterstitialAd = nil
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription
