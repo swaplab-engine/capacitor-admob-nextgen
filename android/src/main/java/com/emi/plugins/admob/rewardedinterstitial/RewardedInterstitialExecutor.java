@@ -40,6 +40,16 @@ public class RewardedInterstitialExecutor {
             return;
         }
 
+        if (mRewardedInterstitialAd != null && currentAdUnitId.equals(adUnitId)) {
+
+            JSObject ret = new JSObject();
+            ret.put("adUnitId", currentAdUnitId);
+            ret.put("message", "Ad already loaded (Cached)");
+            plugin.notifyPluginListeners("onRewardedInterstitialAdLoaded", ret);
+            callback.onSuccess();
+            return;
+        }
+
         Double retryOpt = call.getDouble("retryInterval");
         long minLoadInterval = (retryOpt != null) ? retryOpt.longValue() : 5000L;
         long currentTime = System.currentTimeMillis();
@@ -69,8 +79,6 @@ public class RewardedInterstitialExecutor {
 
                         @Override
                         public void onAdFailedToLoad(@NonNull LoadAdError adError) {
-                            mRewardedInterstitialAd = null;
-
                             JSObject ret = new JSObject();
                             ret.put("error", adError.getMessage());
                             plugin.notifyPluginListeners("onRewardedInterstitialAdFailedToLoad", ret);

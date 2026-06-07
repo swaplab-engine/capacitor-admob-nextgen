@@ -715,7 +715,7 @@ window.customElements.define(
       ['onBannerAdLoaded', 'onBannerAdFailedToLoad', 'onBannerAdImpression', 'onBannerAdClicked', 'onBannerAdPaid', 'onBannerOrientationChanged'].forEach(e => bindEvent(e));
       ['onInterstitialAdLoaded', 'onInterstitialAdFailedToLoad', 'onInterstitialAdShowed', 'onInterstitialAdDismissed', 'onInterstitialAdPaid'].forEach(e => bindEvent(e));
       ['onRewardedAdLoaded', 'onRewardedAdFailedToLoad', 'onRewardedAdShowed', 'onRewardedAdDismissed', 'onRewardedAdReward', 'onRewardedAdSkip', 'onRewardedAdPaid'].forEach(e => bindEvent(e));
-      ['onRewardedInterstitialAdLoaded', 'onRewardedInterstitialAdFailedToLoad', 'onRewardedInterstitialAdShowed', 'onRewardedInterstitialAdDismissed', 'onRewardedInterstitialAdReward', 'onRewardedInterstitialAdPaid'].forEach(e => bindEvent(e));
+      ['onRewardedInterstitialAdLoaded', 'onRewardedInterstitialAdFailedToLoad', 'onRewardedInterstitialAdShowed', 'onRewardedInterstitialAdDismissed', 'onRewardedInterstitialAdReward', 'onRewardedInterstitialAdSkip', 'onRewardedInterstitialAdPaid'].forEach(e => bindEvent(e));
       ['onAppOpenAdLoaded', 'onAppOpenAdFailedToLoad', 'onAppOpenAdShowed', 'onAppOpenAdDismissed', 'onAppOpenAdPaid'].forEach(e => bindEvent(e));
       // Native Ads Events
       ['onNativeAdLoaded', 'onNativeAdFailedToLoad', 'onNativeAdShowed', 'onNativeAdDismissed', 'onNativeAdFailedToShow', 'onNativeAdImpression', 'onNativeAdClicked', 'onNativeAdPaid'].forEach(e => bindEvent(e));
