@@ -235,7 +235,7 @@ To enable Mediation, update your app's root `package.json`:
     "keyAppLovin": "YOUR_APPLOVIN_SDK_KEY_HERE"
   },
   "scripts": {
-    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/admob-native.js && node node_modules/capacitor-admob-nextgen/scripts/admob-mediation.js"
+    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/admob-mediation.js"
   }
 }
 ```
