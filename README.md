@@ -205,6 +205,68 @@ If you do not need Native Ads on a specific platform, simply set it to `false` (
 
 ---
 
+### 🤝 Third-Party Mediation (Opt-In Feature)
+
+Integrating third-party ad networks (like Facebook/Meta, AppLovin, Unity, etc.) traditionally bloats your app size and introduces dependency conflicts. 
+
+To keep this plugin strictly lightweight, **Mediation is completely OPT-IN**. Plugin this built a Next-Gen dynamic injector that perfectly bridges Android's `build.gradle` and iOS's `Package.swift` (SPM) or `Podfile` (CocoaPods). The plugin supports 16 major ad networks, and they will only be installed if you explicitly configure them.
+
+To enable Mediation, update your app's root `package.json`:
+
+1. Add the `"admobMediation"` configuration block.
+2. Control exact platform behaviors using the `"platforms"` toggle (perfect for Capacitor 8+ SPM support).
+3. Chain the `admob-mediation.js` script to your existing hook.
+
+```json
+{
+  "name": "your-app-name",
+  "admob": {
+    "androidAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~yyyyyyyyyy",
+    "iosAppId": "ca-app-pub-xxxxxxxxxxxxxxxx~zzzzzzzzzz"
+  },
+  "admobMediation": {
+    "platforms": { "ios": true, "pod": false, "spm": true, "android": true },
+    "enableFacebook": true,
+    "enableAppLovin": true,
+    "enableUnity": false,
+    "enableVungle": false,
+    "keyAppLovin": "YOUR_APPLOVIN_SDK_KEY_HERE"
+  },
+  "scripts": {
+    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/admob-native.js && node node_modules/capacitor-admob-nextgen/scripts/admob-mediation.js"
+  }
+}
+```
+
+*💡 **Transparency Note (Clean Sweep Architecture):** If you disable a network (e.g., `"enableUnity": false`), the dynamic hook acts as a garbage collector. It will strictly perform a "clean sweep" using Regex, entirely ripping out that specific SDK from your `build.gradle`, `.podspec`, and `Package.swift` files during `npx cap sync`. Your project will never suffer from abandoned code leftovers.*
+
+---
+
+## 🍎 Note: iOS (Capacitor 8+ & SPM)
+
+**Capacitor 8+ Recommendation: Swift Package Manager (SPM).**
+This plugin natively supports injecting Mediation dependencies directly into your `Package.swift` file (by setting `"spm": true` in your mediation config).
+
+* If a dependency is missing, open the project in **Xcode 26+**.
+* Click **File** at the top menu, and select **Packages > Reset Package Caches**. This will forcefully download all dependencies registered in your `Package.swift`.
+
+**Legacy Support (CocoaPods):**
+Because the AdTech industry is still transitioning, some older third-party adapters might not fully support SPM yet. CocoaPods remains available as a fallback. If you need to use CocoaPods (by setting `"pod": true` and `"spm": false`), you must recreate your iOS folder:
+
+1. Remove your existing SPM-based iOS folder:
+   ```bash
+   rm -rf ios
+   ```
+
+2. Re-add the iOS platform using the CocoaPods flag:
+   ```bash
+   npx cap add ios --packagemanager CocoaPods
+   ```
+
+3. Run `npx cap sync`.
+
+---
+
 ## Note: IOS
 Capacitor 8 Recommendation: Swift Package Manager (SPM).
 When a dependency is missing, open the project in Xcode 26+
@@ -212,10 +274,17 @@ When a dependency is missing, open the project in Xcode 26+
 This will download all dependencies in Package.swift.
 
 - Because CocoaPods remains available as an alternative.
-`cd ios`
-```
-pod install --repo-update
-```
+
+1. Remove your existing SPM-based iOS folder:
+   ```bash
+   rm -rf ios
+   ```
+
+2. Re-add the iOS platform using the CocoaPods flag:
+```bash
+   npx cap add ios --packagemanager CocoaPods
+   ```
+3. Run `npx cap sync`
 
 
 ---

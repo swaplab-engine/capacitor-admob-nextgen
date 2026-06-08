@@ -54,6 +54,17 @@ repositories {
     mavenCentral()
 }
 
+// ADMOB_MEDIATION_REPOS_START
+// ADMOB_MEDIATION_REPOS_END
+
+// ==========================================
+// NEXT-GEN SDK CONFLICT RESOLUTION
+// Prevent mediation adapters from pulling standard AdMob SDKs
+// ==========================================
+configurations.configureEach {
+    exclude group: 'com.google.android.gms', module: 'play-services-ads'
+    exclude group: 'com.google.android.gms', module: 'play-services-ads-lite'
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -69,5 +80,8 @@ dependencies {
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     // ADMOB_NATIVE_DEPENDENCIES_START
     // ADMOB_NATIVE_DEPENDENCIES_END
+
+    // ADMOB_MEDIATION_DEPENDENCIES_START
+    // ADMOB_MEDIATION_DEPENDENCIES_END
 
 }
