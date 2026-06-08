@@ -207,6 +207,8 @@ If you do not need Native Ads on a specific platform, simply set it to `false` (
 
 ### 🤝 Third-Party Mediation (Opt-In Feature)
 
+- [📖 Step-by-Step AdMob UI Setup](https://github.com/swaplab-engine/capacitor-admob-nextgen/releases/tag/v1.0.6-beta.1)
+
 Integrating third-party ad networks (like Facebook/Meta, AppLovin, Unity, etc.) traditionally bloats your app size and introduces dependency conflicts. 
 
 To keep this plugin strictly lightweight, **Mediation is completely OPT-IN**. Plugin this built a Next-Gen dynamic injector that perfectly bridges Android's `build.gradle` and iOS's `Package.swift` (SPM) or `Podfile` (CocoaPods). The plugin supports 16 major ad networks, and they will only be installed if you explicitly configure them.
