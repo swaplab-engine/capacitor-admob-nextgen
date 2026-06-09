@@ -81,15 +81,19 @@ const NETWORKS = [
   },
 
   {
-    id: 'ironSource', toggle: 'enableIronSource', vAnd: 'verIronSourceAndroid', dAnd: '8.7.0.0', vIos: 'verIronSourceIos', dIos: '8.7.0.0.0',
+    id: 'ironSource', toggle: 'enableIronSource', vAnd: 'verIronSourceAndroid', dAnd: '8.7.0.0', vIos: 'verIronSourceIos', dIos: '9.4.10001',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:ironsource:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationIronSource', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationIronSource', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-ironsource.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "IronSourceAdapterTarget", package: "googleads-mobile-ios-mediation-ironsource"),`
   },
 
   {
-    id: 'Vungle', toggle: 'enableVungle', vAnd: 'verVungleAndroid', dAnd: '7.4.3.0', vIos: 'verVungleIos', dIos: '7.4.4.0',
+    id: 'Vungle', toggle: 'enableVungle', vAnd: 'verVungleAndroid', dAnd: '7.4.3.0', vIos: 'verVungleIos', dIos: '7.7.300',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:vungle:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationVungle', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationVungle', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-liftoffmonetize.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "LiftoffMonetizeAdapterTarget", package: "googleads-mobile-ios-mediation-liftoffmonetize"),`
   },
 
   {
