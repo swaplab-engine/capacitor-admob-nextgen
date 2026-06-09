@@ -17,7 +17,8 @@
     "ios/Sources/",
     "CapacitorAdmobNextgen.podspec",
     "Package.swift",
-    "scripts/"
+    "scripts/",
+    "LICENSE"
   ],
   "author": "EMI INDO",
   "license": "MIT",
