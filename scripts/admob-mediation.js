@@ -97,21 +97,27 @@ const NETWORKS = [
   },
 
   {
-    id: 'Chartboost', toggle: 'enableChartboost', repo: "        maven { url 'https://cboost.jfrog.io/artifactory/chartboost-ads/' }", vAnd: 'verChartboostAndroid', dAnd: '9.11.1.1', vIos: 'verChartboostIos', dIos: '9.12.0.0',
+    id: 'Chartboost', toggle: 'enableChartboost', repo: "        maven { url 'https://cboost.jfrog.io/artifactory/chartboost-ads/' }", vAnd: 'verChartboostAndroid', dAnd: '9.11.1.1', vIos: 'verChartboostIos', dIos: '9.12.1',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:chartboost:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationChartboost', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationChartboost', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-chartboost.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "ChartboostAdapterTarget", package: "googleads-mobile-ios-mediation-chartboost"),`
   },
 
   {
-    id: 'DT Exchange', toggle: 'enableDtExchange', vAnd: 'verDtExchangeAndroid', dAnd: '8.4.5.0', vIos: 'verDtExchangeIos', dIos: '8.4.7.0',
+    id: 'DT Exchange', toggle: 'enableDtExchange', vAnd: 'verDtExchangeAndroid', dAnd: '8.4.5.0', vIos: 'verDtExchangeIos', dIos: '8.4.701',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:fyber:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationFyber', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationFyber', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-dtexchange.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "DTExchangeAdapterTarget", package: "googleads-mobile-ios-mediation-dtexchange"),`
   },
 
   {
-    id: 'iMobile', toggle: 'enableImobile', vAnd: 'verImobileAndroid', dAnd: '2.3.2.3', vIos: 'verImobileIos', dIos: '2.3.4.6',
+    id: 'iMobile', toggle: 'enableImobile', vAnd: 'verImobileAndroid', dAnd: '2.3.2.3', vIos: 'verImobileIos', dIos: '2.3.407',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:imobile:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationIMobile', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationIMobile', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-imobile.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "IMobileAdapterTarget", package: "googleads-mobile-ios-mediation-imobile"),`
   },
 
   {
