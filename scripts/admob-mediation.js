@@ -121,27 +121,35 @@ const NETWORKS = [
   },
 
   {
-    id: 'InMobi', toggle: 'enableInmobi', repo: "        maven { url 'https://imobile.github.io/adnw-sdk-android' }", vAnd: 'verInmobiAndroid', dAnd: '11.2.0.0', vIos: 'verInmobiIos', dIos: '11.2.0.0',
+    id: 'InMobi', toggle: 'enableInmobi', repo: "        maven { url 'https://imobile.github.io/adnw-sdk-android' }", vAnd: 'verInmobiAndroid', dAnd: '11.2.0.0', vIos: 'verInmobiIos', dIos: '11.3.0',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:inmobi:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationInMobi', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationInMobi', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-inmobi.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "InMobiAdapterTarget", package: "googleads-mobile-ios-mediation-inmobi"),`
   },
 
   {
-    id: 'LINE', toggle: 'enableLine', vAnd: 'verLineAndroid', dAnd: '3.1.0.0', vIos: 'verLineIos', dIos: '3.0.1.0',
+    id: 'LINE', toggle: 'enableLine', vAnd: 'verLineAndroid', dAnd: '3.1.0.0', vIos: 'verLineIos', dIos: '3.0.101',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:line:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationLine', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationLine', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-line.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "LineAdapterTarget", package: "googleads-mobile-ios-mediation-line"),`
   },
 
   {
-    id: 'Maio', toggle: 'enableMaio', repo: "        maven { url 'https://imobile-maio.github.io/maven' }", vAnd: 'verMaioAndroid', dAnd: '2.0.8.2', vIos: 'verMaioIos', dIos: '2.2.1.1',
+    id: 'Maio', toggle: 'enableMaio', repo: "        maven { url 'https://imobile-maio.github.io/maven' }", vAnd: 'verMaioAndroid', dAnd: '2.0.8.2', vIos: 'verMaioIos', dIos: '2.2.102',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:maio:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMaio', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMaio', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-maio.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "MaioAdapterTarget", package: "googleads-mobile-ios-mediation-maio"),`
   },
 
   {
-    id: 'Mintegral', toggle: 'enableMintegral', repo: "        maven { url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea' }", vAnd: 'verMintegralAndroid', dAnd: '17.1.51.0', vIos: 'verMintegralIos', dIos: '8.1.3.0',
+    id: 'Mintegral', toggle: 'enableMintegral', repo: "        maven { url 'https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea' }", vAnd: 'verMintegralAndroid', dAnd: '17.1.51.0', vIos: 'verMintegralIos', dIos: '8.1.400',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:mintegral:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMintegral', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMintegral', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-mintegral.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "MintegralAdapterTarget", package: "googleads-mobile-ios-mediation-mintegral"),`
   },
 
   {
