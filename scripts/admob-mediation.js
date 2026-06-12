@@ -153,27 +153,35 @@ const NETWORKS = [
   },
 
   {
-    id: 'Moloco', toggle: 'enableMoloco', vAnd: 'verMolocoAndroid', dAnd: '4.8.0.0', vIos: 'verMolocoIos', dIos: '4.6.0.0',
+    id: 'Moloco', toggle: 'enableMoloco', vAnd: 'verMolocoAndroid', dAnd: '4.8.0.0', vIos: 'verMolocoIos', dIos: '4.6.101',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:moloco:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMoloco', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMoloco', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-moloco.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "MolocoAdapterTarget", package: "googleads-mobile-ios-mediation-moloco"),`
   },
 
   {
-    id: 'myTarget', toggle: 'enableMytarget', vAnd: 'verMytargetAndroid', dAnd: '5.45.3.0', vIos: 'verMytargetIos', dIos: '5.42.1.0',
+    id: 'myTarget', toggle: 'enableMytarget', vAnd: 'verMytargetAndroid', dAnd: '5.45.3.0', vIos: 'verMytargetIos', dIos: '5.43.0',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:mytarget:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMyTarget', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationMyTarget', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-mytarget.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "MyTargetAdapterTarget", package: "googleads-mobile-ios-mediation-mytarget"),`
   },
 
   {
-    id: 'Pangle', toggle: 'enablePangle', repo: "        maven { url 'https://artifact.bytedance.com/repository/pangle/' }", vAnd: 'verPangleAndroid', dAnd: '8.0.0.4.0', vIos: 'verPangleIos', dIos: '7.9.1.1.0',
+    id: 'Pangle', toggle: 'enablePangle', repo: "        maven { url 'https://artifact.bytedance.com/repository/pangle/' }", vAnd: 'verPangleAndroid', dAnd: '8.0.0.4.0', vIos: 'verPangleIos', dIos: '7.9.10101',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:pangle:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationPangle', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationPangle', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-pangle.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "PangleAdapterTarget", package: "googleads-mobile-ios-mediation-pangle"),`
   },
 
   {
-    id: 'PubMatic', toggle: 'enablePubmatic', repo: "        maven { url 'https://repo.pubmatic.com/artifactory/public-repos' }", vAnd: 'verPubmaticAndroid', dAnd: '5.1.0.0', vIos: 'verPubmaticIos', dIos: '5.1.0.0',
+    id: 'PubMatic', toggle: 'enablePubmatic', repo: "        maven { url 'https://repo.pubmatic.com/artifactory/public-repos' }", vAnd: 'verPubmaticAndroid', dAnd: '5.1.0.0', vIos: 'verPubmaticIos', dIos: '5.1.100',
     depAnd: (v) => `    implementation 'com.google.ads.mediation:pubmatic:${v}'`,
-    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationPubMatic', '${v}'`
+    depIos: (v) => `  s.dependency 'GoogleMobileAdsMediationPubMatic', '${v}'`,
+    spmDep: (v) => `        .package(url: "https://github.com/googleads/googleads-mobile-ios-mediation-pubmatic.git", exact: "${v}"),`,
+    spmTarget: () => `                .product(name: "PubMaticAdapterTarget", package: "googleads-mobile-ios-mediation-pubmatic"),`
   }
 ];
 
