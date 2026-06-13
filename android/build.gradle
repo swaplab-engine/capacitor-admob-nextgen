@@ -75,7 +75,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
     // GMA Next-Gen SDK: https://developers.google.com/admob/android/next-gen/rel-notes
-    implementation 'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.1.1'
+    implementation 'com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.0'
     // https://developers.google.com/admob/android/privacy/release-notes
     implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     // ADMOB_NATIVE_DEPENDENCIES_START
