@@ -580,7 +580,10 @@ window.customElements.define(
       getById('btn-appopen-load').addEventListener('click', async () => {
         try {
           this.logToTerminal('Loading Classic App Open...', 'SYS');
-          await AdMobNextGen.loadAppOpen({ adUnitId: 'ca-app-pub-3940256099942544/9257395921' });
+          await AdMobNextGen.loadAppOpen({ 
+            adUnitId: 'ca-app-pub-3940256099942544/9257395921',
+            isAutoShow: false, // if true Automatically show when app resumes from background
+           });
         } catch (error) { this.logToTerminal(`AppOpen Load Error: ${error}`, 'ERROR'); }
       });
       getById('btn-appopen-show').addEventListener('click', () => AdMobNextGen.showAppOpen());
@@ -591,7 +594,10 @@ window.customElements.define(
       getById('btn-preload-start').addEventListener('click', async () => {
         try {
           this.logToTerminal('Starting Preload Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadAppOpen({ adUnitId: 'ca-app-pub-3940256099942544/9257395921' });
+          await AdMobNextGen.startPreloadAppOpen({ 
+            adUnitId: 'ca-app-pub-3940256099942544/9257395921',
+            isAutoShow: false, // if true Automatically show when app resumes from background 
+          });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });
 
