@@ -49,10 +49,14 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     return {
       tcString: '',
       purposeConsents: '',
+      purposeLegitimateInterests: '',
       vendorConsents: '',
       gdprApplies: 0,
       isPersonalizedAllowed: true,
-      statusMessage: 'Web fallback. Personalized allowed.'
+      statusMessage: 'Web fallback. Personalized allowed.',
+      isAdMobPersonalizedAdsAllowed: true,
+      isAdMobNonPersonalizedAdsAllowed: true,
+      adMobConsentStatus: 'Web fallback. AdMob ads allowed by default.'
     };
   }
 

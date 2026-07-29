@@ -20,6 +20,7 @@ import com.google.android.ump.UserMessagingPlatform;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+import java.util.Map; 
 
 public class ConsentExecutor {
 
@@ -42,6 +43,9 @@ public class ConsentExecutor {
 
         Boolean underAgeOpt = call.getBoolean("tagForUnderAgeOfConsent", false);
         boolean tagForUnderAgeOfConsent = (underAgeOpt != null) ? underAgeOpt : false;
+
+        Boolean showFormOpt = call.getBoolean("showFormIfRequired", true);
+        final boolean showFormIfRequired = (showFormOpt != null) ? showFormOpt : true;
 
         String manualTestDeviceId = call.getString("testDeviceId", "");
 
@@ -76,18 +80,23 @@ public class ConsentExecutor {
                     () -> {
                         plugin.notifyPluginListeners("onConsentInfoUpdated", new JSObject());
 
-                        UserMessagingPlatform.loadAndShowConsentFormIfRequired(
-                                activity,
-                                (FormError loadAndShowError) -> {
-                                    if (loadAndShowError != null) {
-                                        sendErrorEvent(loadAndShowError);
-                                        call.reject(loadAndShowError.getMessage());
-                                    } else {
-                                        plugin.notifyPluginListeners("onConsentFormDismissed", new JSObject());
-                                        sendConsentStatus(call);
+                        if (showFormIfRequired) {
+                            UserMessagingPlatform.loadAndShowConsentFormIfRequired(
+                                    activity,
+                                    (FormError loadAndShowError) -> {
+                                        if (loadAndShowError != null) {
+                                            sendErrorEvent(loadAndShowError);
+                                            call.reject(loadAndShowError.getMessage());
+                                        } else {
+                                            plugin.notifyPluginListeners("onConsentFormDismissed", new JSObject());
+                                            sendConsentStatus(call);
+                                        }
                                     }
-                                }
-                        );
+                            );
+                        } else {
+
+                            sendConsentStatus(call);
+                        }
                     },
                     (FormError requestConsentError) -> {
                         sendErrorEvent(requestConsentError);
@@ -120,45 +129,99 @@ public class ConsentExecutor {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(plugin.getActivity());
             JSObject tcData = new JSObject();
 
-            String tcString = prefs.getString("IABTCF_TCString", "");
+            Map<String, ?> allEntries = prefs.getAll();
+            for (Map.Entry<String, ?> entry : allEntries.entrySet()) {
+                if (entry.getKey().startsWith("IABTCF_")) {
+                    tcData.put(entry.getKey(), entry.getValue());
+                }
+            }
+
             String purposeConsents = prefs.getString("IABTCF_PurposeConsents", "");
+            String purposeLegitimateInterests = prefs.getString("IABTCF_PurposeLegitimateInterests", ""); 
             String vendorConsents = prefs.getString("IABTCF_VendorConsents", "");
             int gdprApplies = prefs.getInt("IABTCF_gdprApplies", 0);
-
-            tcData.put("tcString", tcString);
-            tcData.put("purposeConsents", purposeConsents);
-            tcData.put("vendorConsents", vendorConsents);
-            tcData.put("gdprApplies", gdprApplies);
 
             boolean isPersonalizedAllowed = false;
             String statusMessage = "Unknown";
 
+            boolean isAdMobPersonalizedAdsAllowed = false;
+            boolean isAdMobNonPersonalizedAdsAllowed = false;
+            String adMobConsentStatus = "Unknown";
+
             if (gdprApplies == 0) {
+
                 isPersonalizedAllowed = true;
                 statusMessage = "Not GDPR region. Personalized Ads allowed by default.";
+
+                isAdMobPersonalizedAdsAllowed = true;
+                isAdMobNonPersonalizedAdsAllowed = true;
+                adMobConsentStatus = "Not GDPR region. AdMob ads allowed by default.";
             } else {
+
                 if (purposeConsents != null && purposeConsents.length() > 0) {
                     char p1 = purposeConsents.charAt(0);
                     if (p1 == '1') {
                         isPersonalizedAllowed = true;
-                        statusMessage = "Purpose 1 Granted. Personalized Ads allowed.";
+                        statusMessage = "Purpose 1 Granted. Legacy check passed.";
                     } else {
                         isPersonalizedAllowed = false;
-                        statusMessage = "Purpose 1 Denied. Non-Personalized / Limited Ads only.";
+                        statusMessage = "Purpose 1 Denied. Legacy check failed.";
+                    }
+                }
+
+                boolean hasPurpose1 = checkConsent(purposeConsents, 1);
+                boolean hasPurpose3 = checkConsent(purposeConsents, 3);
+                boolean hasPurpose4 = checkConsent(purposeConsents, 4);
+
+                boolean hasRequiredLI_or_Consent = 
+                    hasConsentOrLI(purposeConsents, purposeLegitimateInterests, 2) &&
+                    hasConsentOrLI(purposeConsents, purposeLegitimateInterests, 7) &&
+                    hasConsentOrLI(purposeConsents, purposeLegitimateInterests, 9) &&
+                    hasConsentOrLI(purposeConsents, purposeLegitimateInterests, 10);
+
+                boolean hasVendorGoogle = checkConsent(vendorConsents, 755); 
+
+                if (hasPurpose1 && hasVendorGoogle && hasRequiredLI_or_Consent) {
+                    isAdMobNonPersonalizedAdsAllowed = true;
+
+                    if (hasPurpose3 && hasPurpose4) {
+                        isAdMobPersonalizedAdsAllowed = true;
+                        adMobConsentStatus = "Strict requirements met for Personalized Ads (Purposes 1,3,4 + LI 2,7,9,10 + Vendor 755).";
+                    } else {
+                        isAdMobPersonalizedAdsAllowed = false;
+                        adMobConsentStatus = "Requirements met for Non-Personalized Ads only.";
                     }
                 } else {
-                    isPersonalizedAllowed = false;
-                    statusMessage = "No consent data found (User hasn't answered yet).";
+                    isAdMobPersonalizedAdsAllowed = false;
+                    isAdMobNonPersonalizedAdsAllowed = false;
+                    adMobConsentStatus = "Insufficient strict consent (Missing P1, Vendor 755, or P2,7,9,10). Limited Ads only.";
                 }
             }
 
             tcData.put("isPersonalizedAllowed", isPersonalizedAllowed);
             tcData.put("statusMessage", statusMessage);
 
+            tcData.put("isAdMobPersonalizedAdsAllowed", isAdMobPersonalizedAdsAllowed);
+            tcData.put("isAdMobNonPersonalizedAdsAllowed", isAdMobNonPersonalizedAdsAllowed);
+            tcData.put("adMobConsentStatus", adMobConsentStatus);
+
             call.resolve(tcData);
         } catch (Exception e) {
             call.reject("Failed to read TC Data: " + e.getMessage());
         }
+    }
+
+    private boolean checkConsent(String consentString, int id) {
+        if (consentString == null || consentString.length() < id) {
+            return false;
+        }
+        return consentString.charAt(id - 1) == '1';
+    }
+
+    private boolean hasConsentOrLI(String consents, String lis, int id) {
+        boolean hasConsent = checkConsent(consents, id);
+        boolean hasLI = checkConsent(lis, id);
+        return hasConsent || hasLI;
     }
 
     private void sendConsentStatus(PluginCall call) {

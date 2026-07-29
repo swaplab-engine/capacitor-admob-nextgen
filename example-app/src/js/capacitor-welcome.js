@@ -315,7 +315,8 @@ window.customElements.define(
           const result = await AdMobNextGen.requestConsentInfo({
             debug: true,  // default: false
             reset: false, // default: false
-            tagForUnderAgeOfConsent: false // default: false
+            tagForUnderAgeOfConsent: false, // default: false
+            showFormIfRequired: true // default: true 
           });
           this.logToTerminal(`Consent: canRequestAds=${result.canRequestAds}`);
         } catch (error) {
@@ -357,8 +358,25 @@ window.customElements.define(
       getById('btn-tcdata').addEventListener('click', async () => {
         try {
           const result = await AdMobNextGen.getTCData();
-          this.logToTerminal(`TCData: Personalized=${result.isPersonalizedAllowed}`);
-        } catch (error) { this.logToTerminal(`TCData Error: ${error}`, 'ERROR'); }
+          
+          // Print the detailed status message from the native layer
+          this.logToTerminal(`Status: ${result.adMobConsentStatus}`, 'SYS');
+
+          // Demonstrate Standard Usage (Strict AdMob Policy)
+          if (result.isAdMobPersonalizedAdsAllowed) {
+            this.logToTerminal(`✅ AdMob Personalized Ads: GRANTED`, 'SUCCESS');
+          } else if (result.isAdMobNonPersonalizedAdsAllowed) {
+            this.logToTerminal(`⚠️ AdMob Non-Personalized Ads: GRANTED`, 'SYS');
+          } else {
+            this.logToTerminal(`❌ AdMob Ads: DENIED (Insufficient Consent)`, 'ERROR');
+          }
+
+          // (Optional) If you want to show the raw legacy check too:
+          // this.logToTerminal(`Legacy Check: ${result.isPersonalizedAllowed}`, 'SYS');
+
+        } catch (error) { 
+          this.logToTerminal(`TCData Error: ${error}`, 'ERROR'); 
+        }
       });
 
       getById('btn-init').addEventListener('click', async () => {

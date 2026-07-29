@@ -392,6 +392,13 @@ export interface ConsentOptions {
    * If `debug` is true and this is left empty, the plugin will automatically attempt to detect and register the current device.
    */
   testDeviceId?: string;
+
+  /**
+   * Whether to automatically show the UMP consent form if it is required.
+   * If set to false, it will only request the info without showing the form.
+   * Default: true
+   */
+  showFormIfRequired?: boolean;
 }
 
 export interface ConsentStatusResult {
@@ -424,41 +431,117 @@ export interface ConsentStatusResult {
   consentStatus: number;
 }
 
+/**
+ * Represents the parsed and raw IAB TCF v2.2 consent data retrieved from the device's local storage.
+ * 
+ * ### A: Standard Usage (Ready-to-use Flags)
+ * For most users, relying on the built-in boolean flags (`isAdMobPersonalizedAdsAllowed` & `isAdMobNonPersonalizedAdsAllowed`) 
+ * is the easiest way to ensure AdMob compliance without parsing complex strings.
+ * 
+ * ### B: Advanced Usage (Raw Data Control)
+ * Advanced users who want full control over the consent logic can completely ignore the built-in boolean flags. 
+ * The plugin dynamically extracts and exposes ALL standard IAB TCF v2 keys (e.g., `IABTCF_PurposeConsents`), 
+ * allowing you to build custom condition logic.
+ */
 export interface TCDataResult {
   /**
    * The raw Transparency and Consent String (TC String) encoded in Base64.
    */
-  tcString: string;
+  tcString?: string;
 
   /**
    * A binary string representing user consent for specific IAB purposes (e.g., "10011...").
    * Index 0 represents Purpose 1, index 1 represents Purpose 2, etc.
    */
-  purposeConsents: string;
+  purposeConsents?: string;
+
+  /**
+   * A binary string representing user legitimate interests for specific IAB purposes.
+   */
+  purposeLegitimateInterests?: string;
 
   /**
    * A binary string representing user consent for specific vendors.
    */
-  vendorConsents: string;
+  vendorConsents?: string;
 
   /**
    * Indicates whether GDPR applies to this user.
    * - 1 = GDPR applies.
    * - 0 = GDPR does not apply.
    */
-  gdprApplies: number;
+  gdprApplies?: number;
 
   /**
-   * A smart helper boolean parsed natively by the plugin.
-   * Returns true if IAB Purpose 1 is granted OR if GDPR does not apply.
-   * Useful for quickly deciding whether to load personalized or non-personalized ads manually.
+   * ### ⚠️ LEGACY FLAG
+   * Preserved for backward compatibility with older app versions. 
+   * **Not recommended for strict AdMob policy compliance.**
+   * 
+   * **GDPR Requirements Checked:**
+   * - Consent for Purpose 1 only.
    */
   isPersonalizedAllowed: boolean;
 
   /**
-   * A human-readable message explaining the parsing result of the TCData.
+   * A human-readable message explaining the parsing result of the legacy TCData check.
    */
   statusMessage: string;
+
+  /**
+   * ### 🟢 STANDARD USAGE (Ready-to-use Flag)
+   * **(Recommended)** Returns `true` if the user has granted all necessary consents for AdMob to serve **Personalized Ads**.
+   * 
+   * **GDPR Requirements Checked:**
+   * - Consent for Purposes 1, 3, 4
+   * - AND (Consent or Legitimate Interest) for Purposes 2, 7, 9, 10
+   * - AND Vendor 755 (Google)
+   * 
+   * *Note: If the user is outside the GDPR region (e.g., USA, Indonesia), this returns `true` by default.*
+   * 
+   * @example
+   * if (tcData.isAdMobPersonalizedAdsAllowed) {
+   *     console.log("Consent met: AdMob can serve Personalized Ads.");
+   *     // Proceed to load ads...
+   * }
+   */
+  isAdMobPersonalizedAdsAllowed: boolean;
+
+  /**
+   * ### 🟡 STANDARD USAGE (Ready-to-use Flag)
+   * **(Recommended)** Returns `true` if the user has granted the minimum consent required for AdMob to serve **Non-Personalized Ads**.
+   * 
+   * **GDPR Requirements Checked:**
+   * - Consent for Purpose 1
+   * - AND (Consent or Legitimate Interest) for Purposes 2, 7, 9, 10
+   * - AND Vendor 755 (Google)
+   * 
+   * *Note: If the user is outside the GDPR region, this returns `true` by default.*
+   * 
+   * @example
+   * if (tcData.isAdMobNonPersonalizedAdsAllowed) {
+   *     console.log("Consent met: AdMob will serve Non-Personalized Ads (Limited Ads).");
+   *     // Proceed to load ads...
+   * }
+   */
+  isAdMobNonPersonalizedAdsAllowed: boolean;
+
+  /**
+   * A human-readable message explaining the specific strict AdMob consent status.
+   */
+  adMobConsentStatus: string;
+
+  /**
+   * ### 🔴 ADVANCED USAGE (Raw Data Extraction)
+   * Dynamic Extraction fallback: Allows access to any other `IABTCF_` keys retrieved 
+   * dynamically from the device's preferences.
+   * 
+   * @example
+   * // Advanced users can parse strings manually (JavaScript strings are 0-indexed)
+   * const purposes = tcData.IABTCF_PurposeConsents || "";
+   * const hasPurpose1 = purposes.charAt(0) === '1';
+   * const hasPurpose3 = purposes.charAt(2) === '1';
+   */
+  [key: string]: any;
 }
 
 export interface InitializeOptions {
