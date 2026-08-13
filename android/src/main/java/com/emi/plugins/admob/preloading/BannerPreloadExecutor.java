@@ -144,6 +144,10 @@ public class BannerPreloadExecutor {
     }
 
     public void pollAndShow(Activity activity, ActionCallback callback) {
+        if (activity == null) {
+            callback.onError("Activity is null, cannot render ad.");
+            return;
+        }
         if (!plugin.isInitialized()) {
             callback.onError("Google Mobile Ads SDK has not been initialized. Please call initialize() first.");
             return;
@@ -377,7 +381,10 @@ public class BannerPreloadExecutor {
     }
 
     public void hidePreloadedBanner(PluginCall call) {
-        plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return;
+
+        activity.runOnUiThread(() -> {
             isBannerVisible = false;
             if (adView != null) adView.setVisibility(View.GONE);
             if (capacitorAdLayout != null) capacitorAdLayout.setVisibility(View.GONE);
@@ -387,7 +394,10 @@ public class BannerPreloadExecutor {
     }
 
     public void destroyPreloadedBanner(PluginCall call) {
-        plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return;
+
+        activity.runOnUiThread(() -> {
             isBannerVisible = false;
             updateWebViewMargins();
             destroyCurrentAdInternal();
@@ -544,6 +554,9 @@ public class BannerPreloadExecutor {
     }
 
     public void onDestroy() {
-        plugin.getActivity().runOnUiThread(this::destroyCurrentAdInternal);
+        Activity activity = plugin.getActivity();
+        if (activity != null) { 
+            activity.runOnUiThread(this::destroyCurrentAdInternal);
+       }
     }
 }

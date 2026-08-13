@@ -73,6 +73,11 @@ public class BannerExecutor {
 
         Activity activity = plugin.getActivity();
 
+        if (activity == null) {
+            call.reject("Activity is null. Cannot create banner.");
+            return;
+        }
+
         activity.runOnUiThread(() -> {
             if (isLoading) {
                 call.reject("A banner is already loading.");
@@ -214,6 +219,11 @@ public class BannerExecutor {
                     activity.runOnUiThread(() -> {
                         isLoading = false;
 
+                        if (capacitorAdLayout == null) {
+                            pendingAdView.destroy(); 
+                            return;
+                        }
+
                         if (adView != null) {
                             if (adView.getParent() != null) {
                                 ((ViewGroup) adView.getParent()).removeView(adView);
@@ -254,10 +264,13 @@ public class BannerExecutor {
                 public void onAdFailedToLoad(@NonNull LoadAdError adError) {
                     activity.runOnUiThread(() -> {
                         isLoading = false;
-                        if (pendingAdView.getParent() != null) {
+
+                        if (pendingAdView != null) {
+                            if (pendingAdView.getParent() != null) {
                             ((ViewGroup) pendingAdView.getParent()).removeView(pendingAdView);
+                            }
+                           pendingAdView.destroy();
                         }
-                        pendingAdView.destroy();
 
                         JSObject ret = new JSObject();
                         ret.put("error", adError.getMessage());
@@ -415,7 +428,10 @@ public class BannerExecutor {
     }
 
     public void showBanner(final PluginCall call) {
-        plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return; 
+
+        activity.runOnUiThread(() -> {
             if (adView == null) {
                 if (call != null) call.reject("Banner not created yet.");
                 return;
@@ -433,7 +449,10 @@ public class BannerExecutor {
     }
 
     public void hideBanner(final PluginCall call) {
-        plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return;
+
+        activity.runOnUiThread(() -> {
             isBannerVisible = false;
             if (adView != null) adView.setVisibility(View.GONE);
             if (capacitorAdLayout != null) capacitorAdLayout.setVisibility(View.GONE);
@@ -443,7 +462,10 @@ public class BannerExecutor {
     }
 
     public void destroyBanner(final PluginCall call) {
-        plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return;
+
+        activity.runOnUiThread(() -> {
             isBannerVisible = false;
             updateWebViewMargins();
 
@@ -577,20 +599,21 @@ public class BannerExecutor {
     }
 
     public void onDestroy() {
-        if (adView != null) {
-            plugin.getActivity().runOnUiThread(() -> {
+        Activity activity = plugin.getActivity();
+        if (activity == null) return; 
+
+        activity.runOnUiThread(() -> {
+            if (adView != null) {
                 adView.destroy();
                 adView = null;
-            });
-        }
-        if (capacitorAdLayout != null) {
-            plugin.getActivity().runOnUiThread(() -> {
+            }
+            if (capacitorAdLayout != null) {
                 if (capacitorAdLayout.getParent() != null) {
                     ((ViewGroup) capacitorAdLayout.getParent()).removeView(capacitorAdLayout);
                 }
                 capacitorAdLayout = null;
-            });
-        }
+            }
+        });
     }
 
 }
