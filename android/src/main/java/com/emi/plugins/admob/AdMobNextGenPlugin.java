@@ -376,10 +376,16 @@ public void pollAndShowAppOpen(PluginCall call) {
     });
 }
 
-@PluginMethod
-public void isAppOpenPreloadAvailable(PluginCall call) {
-    appOpenPreloadExecutor.checkAvailability(call);
-}
+  @PluginMethod
+    public void isAppOpenPreloadAvailable(PluginCall call) {
+        if (!isInitialized) {
+            JSObject ret = new JSObject();
+            ret.put("isAvailable", false);
+            call.resolve(ret);
+            return;
+        }
+        appOpenPreloadExecutor.checkAvailability(call);
+    }
 
     @PluginMethod
     public void startPreloadBanner(PluginCall call) {
@@ -417,6 +423,12 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
 
     @PluginMethod
     public void isBannerPreloadAvailable(PluginCall call) {
+        if (!isInitialized) {
+            JSObject ret = new JSObject();
+            ret.put("isAvailable", false);
+            call.resolve(ret);
+            return;
+        }
         bannerPreloadExecutor.checkAvailability(call);
     }
 
@@ -446,6 +458,12 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
 
     @PluginMethod
     public void isInterstitialPreloadAvailable(PluginCall call) {
+        if (!isInitialized) {
+            JSObject ret = new JSObject();
+            ret.put("isAvailable", false);
+            call.resolve(ret);
+            return;
+        }
         interstitialPreloadExecutor.checkAvailability(call);
     }
 
@@ -475,6 +493,12 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
 
     @PluginMethod
     public void isRewardedPreloadAvailable(PluginCall call) {
+        if (!isInitialized) {
+            JSObject ret = new JSObject();
+            ret.put("isAvailable", false);
+            call.resolve(ret);
+            return;
+        }
         rewardedPreloadExecutor.checkAvailability(call);
     }
 
@@ -504,6 +528,12 @@ public void isAppOpenPreloadAvailable(PluginCall call) {
 
     @PluginMethod
     public void isRewardedInterstitialPreloadAvailable(PluginCall call) {
+        if (!isInitialized) {
+            JSObject ret = new JSObject();
+            ret.put("isAvailable", false);
+            call.resolve(ret);
+            return;
+        }
         rewardedInterstitialPreloadExecutor.checkAvailability(call);
     }
 
