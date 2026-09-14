@@ -133,6 +133,7 @@ window.customElements.define(
                 <label>Overlap: <input type="checkbox" id="banner-overlap"></label>
                 <label>Collapsible: <input type="checkbox" id="banner-col"></label>
                 <label>AutoShow: <input type="checkbox" id="banner-auto" checked></label>
+                <label>Cap8 Safe: <input type="checkbox" id="banner-cap8safe"></label>
               </div>
               <div class="btn-row">
                 <button class="btn btn-load ad-action" id="btn-banner-create" disabled>Create</button>
@@ -416,6 +417,7 @@ window.customElements.define(
           const overlap = getById('banner-overlap').checked;
           const collaps = getById('banner-col').checked;
           const auto = getById('banner-auto').checked;
+          const cap8Safe = this.shadowRoot.getElementById('banner-cap8safe').checked;
 
           this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}]`, 'SYS');
 
@@ -426,8 +428,10 @@ window.customElements.define(
             adSize: 'ADAPTIVE',
             isAutoShow: auto,
             isOverlap: overlap,
-            isCollapsible: collaps
+            isCollapsible: collaps,
+            enableCapacitor8SafeAreaHandling: cap8Safe // https://github.com/swaplab-engine/capacitor-admob-nextgen/issues/7
           });
+          this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}, Cap8Safe:${cap8Safe}]`);
         } catch (error) { this.logToTerminal(`Banner Error: ${error}`, 'ERROR'); }
       });
 

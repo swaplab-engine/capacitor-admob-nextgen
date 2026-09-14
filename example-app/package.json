@@ -4,7 +4,7 @@
   "description": "Internal testing environment for Capacitor AdMob Next-Gen Plugin",
   "admob": {
     "androidAppId": "ca-app-pub-3940256099942544~3347511713",
-    "iosAppId": "ca-app-pub-3940256099942544~1458002511", 
+    "iosAppId": "ca-app-pub-3940256099942544~1458002511",
     "userTrackingDescription": "This identifier will be used to deliver personalized ads to you."
   },
   "type": "module",
@@ -19,9 +19,9 @@
     "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js"
   },
   "dependencies": {
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/core": "latest",
-    "@capacitor/ios": "^8.0.0",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "@capacitor/splash-screen": "^8.0.1",
     "capacitor-admob-nextgen": "file:.."
   },

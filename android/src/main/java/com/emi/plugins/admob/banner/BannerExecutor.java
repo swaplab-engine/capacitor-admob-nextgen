@@ -45,6 +45,7 @@ public class BannerExecutor {
     private boolean isOverlapping = true;
     private boolean isAutoShow = true;
     private boolean isCollapsible = false;
+    private boolean enableCapacitor8SafeAreaHandling = false;
 
     private int lastAdHeight = 0;
     private int systemSafeTop = 0;
@@ -86,6 +87,9 @@ public class BannerExecutor {
 
             Boolean autoShowOpt = call.getBoolean("isAutoShow", true);
             boolean requestAutoShow = (autoShowOpt != null) ? autoShowOpt : true;
+
+            Boolean cap8SafeOpt = call.getBoolean("enableCapacitor8SafeAreaHandling", false);
+            this.enableCapacitor8SafeAreaHandling = (cap8SafeOpt != null) ? cap8SafeOpt : false;
 
             String posOpt = call.getString("position", "BOTTOM");
             String requestPosition = (posOpt != null) ? posOpt.toUpperCase() : "BOTTOM";
@@ -267,9 +271,9 @@ public class BannerExecutor {
 
                         if (pendingAdView != null) {
                             if (pendingAdView.getParent() != null) {
-                            ((ViewGroup) pendingAdView.getParent()).removeView(pendingAdView);
+                                ((ViewGroup) pendingAdView.getParent()).removeView(pendingAdView);
                             }
-                           pendingAdView.destroy();
+                            pendingAdView.destroy();
                         }
 
                         JSObject ret = new JSObject();
@@ -309,7 +313,6 @@ public class BannerExecutor {
     }
 
     private void updateBannerLayoutLegacy() {
-
         if (adView == null || capacitorAdLayout == null) return;
 
         FrameLayout.LayoutParams bannerParams = new FrameLayout.LayoutParams(
@@ -322,43 +325,57 @@ public class BannerExecutor {
         int bottomMargin = 0;
 
         if (activity != null && activity.getWindow() != null) {
-            View decorView = activity.getWindow().getDecorView();
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!enableCapacitor8SafeAreaHandling) {
+                View decorView = activity.getWindow().getDecorView();
 
-                android.view.WindowInsets insets = decorView.getRootWindowInsets();
-                if (insets != null) {
-                    boolean isStatusVisible = insets.isVisible(android.view.WindowInsets.Type.statusBars());
-                    boolean isNavVisible = insets.isVisible(android.view.WindowInsets.Type.navigationBars());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 
-                    topMargin = isStatusVisible ? insets.getInsets(android.view.WindowInsets.Type.statusBars()).top : 0;
-                    bottomMargin = isNavVisible ? insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom : 0;
-                }
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                    if (insets != null) {
+                        boolean isStatusVisible = insets.isVisible(android.view.WindowInsets.Type.statusBars());
+                        boolean isNavVisible = insets.isVisible(android.view.WindowInsets.Type.navigationBars());
 
-                android.view.WindowInsets insets = decorView.getRootWindowInsets();
-                if (insets != null) {
-                    topMargin = insets.getSystemWindowInsetTop();
-                    bottomMargin = insets.getSystemWindowInsetBottom();
+                        topMargin = isStatusVisible ? insets.getInsets(android.view.WindowInsets.Type.statusBars()).top : 0;
+                        bottomMargin = isNavVisible ? insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom : 0;
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+                    android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                    if (insets != null) {
+                        topMargin = insets.getSystemWindowInsetTop();
+                        bottomMargin = insets.getSystemWindowInsetBottom();
+
+                        int uiOptions = decorView.getSystemUiVisibility();
+                        if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0) topMargin = 0;
+                        if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) bottomMargin = 0;
+                    }
+                } else {
 
                     int uiOptions = decorView.getSystemUiVisibility();
-                    if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0) topMargin = 0;
-                    if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) bottomMargin = 0;
+                    if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) topMargin = getRealStatusBarHeight();
+                    if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) bottomMargin = getRealNavigationBarHeight();
                 }
-            } else {
-
-                int uiOptions = decorView.getSystemUiVisibility();
-                if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) topMargin = getRealStatusBarHeight();
-                if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) bottomMargin = getRealNavigationBarHeight();
             }
         }
 
         if ("TOP".equals(currentPosition)) {
-            bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, topMargin, 0, 0);
-        } else {
-            bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, 0, 0, bottomMargin);
+            if (!enableCapacitor8SafeAreaHandling) {
+                bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                bannerParams.setMargins(0, 0, 0, 0);
+            } else {
+              bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+              bannerParams.setMargins(0, topMargin, 0, 0);
+           }
+           } else {
+            if (!enableCapacitor8SafeAreaHandling) {
+                bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                bannerParams.setMargins(0, 0, 0, 0);
+            } else {
+                bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                bannerParams.setMargins(0, 0, 0, bottomMargin);
+            }
+
         }
 
         adView.setLayoutParams(bannerParams);
@@ -366,7 +383,6 @@ public class BannerExecutor {
     }
 
     private void updateWebViewMarginsLegacy() {
-
         View webViewView = plugin.getBridge().getWebView();
         if (webViewView == null) return;
 
@@ -378,13 +394,56 @@ public class BannerExecutor {
                 params.topMargin = 0;
                 params.bottomMargin = 0;
             } else {
+                int topMargin = 0;
+                int bottomMargin = 0;
+
+                if (!enableCapacitor8SafeAreaHandling) {
+                    Activity activity = plugin.getActivity();
+                    if (activity != null && activity.getWindow() != null) {
+                        View decorView = activity.getWindow().getDecorView();
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                            if (insets != null) {
+                                boolean isStatusVisible = insets.isVisible(android.view.WindowInsets.Type.statusBars());
+                                boolean isNavVisible = insets.isVisible(android.view.WindowInsets.Type.navigationBars());
+                                topMargin = isStatusVisible ? insets.getInsets(android.view.WindowInsets.Type.statusBars()).top : 0;
+                                bottomMargin = isNavVisible ? insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom : 0;
+                            }
+                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                            if (insets != null) {
+                                topMargin = insets.getSystemWindowInsetTop();
+                                bottomMargin = insets.getSystemWindowInsetBottom();
+                                int uiOptions = decorView.getSystemUiVisibility();
+                                if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) != 0) topMargin = 0;
+                                if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) bottomMargin = 0;
+                            }
+                        } else {
+                            int uiOptions = decorView.getSystemUiVisibility();
+                            if ((uiOptions & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) topMargin = getRealStatusBarHeight();
+                            if ((uiOptions & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) == 0) bottomMargin = getRealNavigationBarHeight();
+                        }
+                    }
+                }
 
                 if ("TOP".equals(currentPosition)) {
-                    params.topMargin = lastAdHeight; 
-                    params.bottomMargin = 0;
+                    if (!enableCapacitor8SafeAreaHandling) {
+                        params.topMargin = lastAdHeight;
+                        params.bottomMargin = 0;
+                    } else {
+                        params.topMargin = lastAdHeight + topMargin;
+                        params.bottomMargin = 0;
+                    }
+
                 } else {
-                    params.topMargin = 0;
-                    params.bottomMargin = lastAdHeight; 
+                    if (!enableCapacitor8SafeAreaHandling) {
+                        params.topMargin = 0;
+                        params.bottomMargin = lastAdHeight;
+                    } else {
+                        params.topMargin = 0;
+                        params.bottomMargin = lastAdHeight + bottomMargin;
+                    }
+
                 }
             }
 
@@ -429,7 +488,7 @@ public class BannerExecutor {
 
     public void showBanner(final PluginCall call) {
         Activity activity = plugin.getActivity();
-        if (activity == null) return; 
+        if (activity == null) return;
 
         activity.runOnUiThread(() -> {
             if (adView == null) {
@@ -600,7 +659,7 @@ public class BannerExecutor {
 
     public void onDestroy() {
         Activity activity = plugin.getActivity();
-        if (activity == null) return; 
+        if (activity == null) return;
 
         activity.runOnUiThread(() -> {
             if (adView != null) {
