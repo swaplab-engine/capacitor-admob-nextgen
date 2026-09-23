@@ -642,7 +642,11 @@ export interface BannerOptions {
    * Smart safe-area handling for Capacitor 8.5+.
    * Prevents double padding on Android 14 and below with WebView < 140.
    * Set to true if using Capacitor 8.5+ with default edge-to-edge layout.
-   * Default is false for backward compatibility.
+   * 
+   * **IMPORTANT**: If set to `true`, you must add `EdgeToEdge.enable(this);` 
+   * inside the `onCreate` method of your `MainActivity.java` (or `MainActivity.kt`).
+   * 
+   * @default false (for backward compatibility)
    */
   enableCapacitor8SafeAreaHandling?: boolean;
 }

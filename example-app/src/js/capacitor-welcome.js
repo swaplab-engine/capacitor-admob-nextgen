@@ -429,7 +429,10 @@ window.customElements.define(
             isAutoShow: auto,
             isOverlap: overlap,
             isCollapsible: collaps,
-            enableCapacitor8SafeAreaHandling: cap8Safe // https://github.com/swaplab-engine/capacitor-admob-nextgen/issues/7
+            
+            // if true = add EdgeToEdge.enable(this); to MainActivity.java 
+            // https://github.com/swaplab-engine/capacitor-admob-nextgen/issues/7
+            enableCapacitor8SafeAreaHandling: cap8Safe // default: false 
           });
           this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}, Cap8Safe:${cap8Safe}]`);
         } catch (error) { this.logToTerminal(`Banner Error: ${error}`, 'ERROR'); }

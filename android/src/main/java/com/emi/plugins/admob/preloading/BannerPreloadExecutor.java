@@ -45,6 +45,7 @@ public class BannerPreloadExecutor {
     private boolean isBannerVisible = false;
     private boolean isOverlapping = true;
     private boolean isCollapsible = false;
+    private boolean enableCapacitor8SafeAreaHandling = false;
 
     private int lastAdHeight = 0;
     private int systemSafeTop = 0;
@@ -80,6 +81,9 @@ public class BannerPreloadExecutor {
         this.lastLoadTime = currentTime;
 
         this.currentAdUnitId = adUnitId;
+
+        Boolean cap8SafeOpt = call.getBoolean("enableCapacitor8SafeAreaHandling", false);
+        this.enableCapacitor8SafeAreaHandling = (cap8SafeOpt != null) ? cap8SafeOpt : false;
 
         String posOpt = call.getString("position", "BOTTOM");
         this.currentPosition = (posOpt != null) ? posOpt.toUpperCase() : "BOTTOM";
@@ -244,6 +248,7 @@ public class BannerPreloadExecutor {
     }
 
     private void updateBannerLayout() {
+
         if (Build.VERSION.SDK_INT < 35) {
             updateBannerLayoutLegacy();
             return;
@@ -310,18 +315,92 @@ public class BannerPreloadExecutor {
         }
 
         if ("TOP".equals(currentPosition)) {
-            bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, topMargin, 0, 0);
+            if (isStrictlyAndroid12()) {
+
+                bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                bannerParams.setMargins(0, topMargin, 0, 0);
+            } else {
+                if (!enableCapacitor8SafeAreaHandling) {
+                    bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                    bannerParams.setMargins(0, 0, 0, 0);
+                } else {
+
+                    bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+                    bannerParams.setMargins(0, 0, 0, 0);
+                }
+            }
         } else {
-            bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-            bannerParams.setMargins(0, 0, 0, bottomMargin);
+            if (isStrictlyAndroid12()) {
+
+                bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                bannerParams.setMargins(0, 0, 0, bottomMargin);
+            } else {
+                if (!enableCapacitor8SafeAreaHandling) {
+                    bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                    bannerParams.setMargins(0, 0, 0, 0);
+                } else {
+
+                    bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+                    bannerParams.setMargins(0, 0, 0, 0);
+                }
+            }
         }
 
         adView.setLayoutParams(bannerParams);
         capacitorAdLayout.requestLayout();
     }
 
+    private void updateWebViewMarginsLegacy() {
+        View webViewView = plugin.getBridge().getWebView();
+        if (webViewView == null) return;
+
+        ViewGroup.LayoutParams lp = webViewView.getLayoutParams();
+        if (lp instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
+
+            if (!isBannerVisible || isOverlapping) {
+                params.topMargin = 0;
+                params.bottomMargin = 0;
+            } else {
+                if ("TOP".equals(currentPosition)) {
+                    if (isStrictlyAndroid12()) {
+                        params.topMargin = lastAdHeight;
+                        params.bottomMargin = 0;
+                    } else {
+                        if (!enableCapacitor8SafeAreaHandling) {
+                            params.topMargin = lastAdHeight;
+                            params.bottomMargin = 0;
+                        } else {
+
+                            params.topMargin = lastAdHeight;
+                            params.bottomMargin = 0;
+                        }
+                    }
+                } else {
+                    if (isStrictlyAndroid12()) {
+                        params.topMargin = 0;
+                        params.bottomMargin = lastAdHeight;
+                    } else {
+                        if (!enableCapacitor8SafeAreaHandling) {
+                            params.topMargin = 0;
+                            params.bottomMargin = lastAdHeight;
+                        } else {
+
+                            params.topMargin = 0;
+                            params.bottomMargin = lastAdHeight;
+                        }
+                    }
+                }
+            }
+
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            webViewView.setLayoutParams(params);
+            webViewView.requestLayout();
+        }
+    }
+
     private void updateWebViewMargins() {
+
         if (Build.VERSION.SDK_INT < 35) {
             updateWebViewMarginsLegacy();
             return;
@@ -353,31 +432,10 @@ public class BannerPreloadExecutor {
         }
     }
 
-    private void updateWebViewMarginsLegacy() {
-        View webViewView = plugin.getBridge().getWebView();
-        if (webViewView == null) return;
+    private boolean isStrictlyAndroid12() {
 
-        ViewGroup.LayoutParams lp = webViewView.getLayoutParams();
-        if (lp instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
-
-            if (!isBannerVisible || isOverlapping) {
-                params.topMargin = 0;
-                params.bottomMargin = 0;
-            } else {
-                if ("TOP".equals(currentPosition)) {
-                    params.topMargin = lastAdHeight;
-                    params.bottomMargin = 0;
-                } else {
-                    params.topMargin = 0;
-                    params.bottomMargin = lastAdHeight;
-                }
-            }
-
-            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            webViewView.setLayoutParams(params);
-            webViewView.requestLayout();
-        }
+        return android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.S ||
+                android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.S_V2;
     }
 
     public void hidePreloadedBanner(PluginCall call) {
