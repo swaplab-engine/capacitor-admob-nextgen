@@ -47,6 +47,10 @@ public class BannerExecutor {
     private boolean isCollapsible = false;
     private boolean enableCapacitor8SafeAreaHandling = false;
 
+    private boolean legacyApplyBannerInsets = false;
+    private boolean legacyApplyWebviewInsets = false;
+    private int legacyMarginOffset = 0;
+
     private int lastAdHeight = 0;
     private int systemSafeTop = 0;
     private int systemSafeBottom = 0;
@@ -90,6 +94,22 @@ public class BannerExecutor {
 
             Boolean cap8SafeOpt = call.getBoolean("enableCapacitor8SafeAreaHandling", false);
             this.enableCapacitor8SafeAreaHandling = (cap8SafeOpt != null) ? cap8SafeOpt : false;
+
+            JSObject legacyConfig = call.getObject("legacyOSCustomSettings");
+            if (legacyConfig != null) {
+
+                this.legacyApplyBannerInsets = legacyConfig.optBoolean("applyBannerInsets", !this.enableCapacitor8SafeAreaHandling);
+                this.legacyApplyWebviewInsets = legacyConfig.optBoolean("applyWebviewInsets", !this.enableCapacitor8SafeAreaHandling);
+
+                double marginOffsetOpt = legacyConfig.optDouble("marginOffset", 0.0);
+                float density = plugin.getActivity().getResources().getDisplayMetrics().density;
+                this.legacyMarginOffset = (int) Math.round(marginOffsetOpt * density);
+            } else {
+
+                this.legacyApplyBannerInsets = !this.enableCapacitor8SafeAreaHandling;
+                this.legacyApplyWebviewInsets = !this.enableCapacitor8SafeAreaHandling;
+                this.legacyMarginOffset = 0;
+            }
 
             String posOpt = call.getString("position", "BOTTOM");
             String requestPosition = (posOpt != null) ? posOpt.toUpperCase() : "BOTTOM";
@@ -354,35 +374,13 @@ public class BannerExecutor {
         }
 
         if ("TOP".equals(currentPosition)) {
-            if (isStrictlyAndroid12()) {
-
-                bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                bannerParams.setMargins(0, topMargin, 0, 0);
-            } else {
-                if (!enableCapacitor8SafeAreaHandling) {
-                    bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                    bannerParams.setMargins(0, 0, 0, 0);
-                } else {
-
-                    bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
-                    bannerParams.setMargins(0, 0, 0, 0);
-                }
-            }
+            bannerParams.gravity = Gravity.TOP | Gravity.CENTER_HORIZONTAL;
+            int baseTop = legacyApplyBannerInsets ? topMargin : 0;
+            bannerParams.setMargins(0, baseTop + legacyMarginOffset, 0, 0);
         } else {
-            if (isStrictlyAndroid12()) {
-
-                bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                bannerParams.setMargins(0, 0, 0, bottomMargin);
-            } else {
-                if (!enableCapacitor8SafeAreaHandling) {
-                    bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                    bannerParams.setMargins(0, 0, 0, 0);
-                } else {
-
-                    bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-                    bannerParams.setMargins(0, 0, 0, 0);
-                }
-            }
+            bannerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+            int baseBottom = legacyApplyBannerInsets ? bottomMargin : 0;
+            bannerParams.setMargins(0, 0, 0, baseBottom + legacyMarginOffset);
         }
 
         adView.setLayoutParams(bannerParams);
@@ -397,38 +395,46 @@ public class BannerExecutor {
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
 
-            if (!isBannerVisible || isOverlapping) {
-                params.topMargin = 0;
-                params.bottomMargin = 0;
+            int topMargin = 0;
+            int bottomMargin = 0;
+
+            Activity activity = plugin.getActivity();
+            if (activity != null && activity.getWindow() != null) {
+                View decorView = activity.getWindow().getDecorView();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                    if (insets != null) {
+                        topMargin = insets.isVisible(android.view.WindowInsets.Type.statusBars()) ? insets.getInsets(android.view.WindowInsets.Type.statusBars()).top : 0;
+                        bottomMargin = insets.isVisible(android.view.WindowInsets.Type.navigationBars()) ? insets.getInsets(android.view.WindowInsets.Type.navigationBars()).bottom : 0;
+                    }
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    android.view.WindowInsets insets = decorView.getRootWindowInsets();
+                    if (insets != null) {
+                        topMargin = insets.getSystemWindowInsetTop();
+                        bottomMargin = insets.getSystemWindowInsetBottom();
+                    }
+                }
+            }
+
+            int baseTop = legacyApplyWebviewInsets ? topMargin : 0;
+            int baseBottom = legacyApplyWebviewInsets ? bottomMargin : 0;
+
+            if (!isBannerVisible) {
+
+                params.topMargin = baseTop;
+                params.bottomMargin = baseBottom;
+            } else if (isOverlapping) {
+
+                params.topMargin = baseTop;
+                params.bottomMargin = baseBottom;
             } else {
+
                 if ("TOP".equals(currentPosition)) {
-                    if (isStrictlyAndroid12()) {
-                        params.topMargin = lastAdHeight;
-                        params.bottomMargin = 0;
-                    } else {
-                        if (!enableCapacitor8SafeAreaHandling) {
-                            params.topMargin = lastAdHeight;
-                            params.bottomMargin = 0;
-                        } else {
-
-                            params.topMargin = lastAdHeight;
-                            params.bottomMargin = 0;
-                        }
-                    }
+                    params.topMargin = lastAdHeight + baseTop + legacyMarginOffset;
+                    params.bottomMargin = baseBottom;
                 } else {
-                    if (isStrictlyAndroid12()) {
-                        params.topMargin = 0;
-                        params.bottomMargin = lastAdHeight;
-                    } else {
-                        if (!enableCapacitor8SafeAreaHandling) {
-                            params.topMargin = 0;
-                            params.bottomMargin = lastAdHeight;
-                        } else {
-
-                            params.topMargin = 0;
-                            params.bottomMargin = lastAdHeight;
-                        }
-                    }
+                    params.topMargin = baseTop;
+                    params.bottomMargin = lastAdHeight + baseBottom + legacyMarginOffset;
                 }
             }
 
@@ -469,12 +475,6 @@ public class BannerExecutor {
             webViewView.setLayoutParams(params);
             webViewView.requestLayout();
         }
-    }
-
-    private boolean isStrictlyAndroid12() {
-
-        return android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.S ||
-                android.os.Build.VERSION.SDK_INT == android.os.Build.VERSION_CODES.S_V2;
     }
 
     public void showBanner(final PluginCall call) {

@@ -8,7 +8,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Enable Edge-to-Edge mode
-       // EdgeToEdge.enable(this);
+        EdgeToEdge.enable(this);
 
         super.onCreate(savedInstanceState);
     }

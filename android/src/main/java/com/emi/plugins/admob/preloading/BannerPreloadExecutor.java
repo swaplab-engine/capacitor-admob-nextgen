@@ -205,19 +205,19 @@ public class BannerPreloadExecutor {
             capacitorAdLayout.setTag("emi_banner_preload_layout");
             capacitorAdLayout.setBackgroundColor(Color.TRANSPARENT);
 
-                lastOrientation = activity.getResources().getConfiguration().orientation;
-                capacitorAdLayout.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    int currentOrientation = activity.getResources().getConfiguration().orientation;
-                    if (currentOrientation != lastOrientation) {
-                        lastOrientation = currentOrientation;
+            lastOrientation = activity.getResources().getConfiguration().orientation;
+            capacitorAdLayout.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                int currentOrientation = activity.getResources().getConfiguration().orientation;
+                if (currentOrientation != lastOrientation) {
+                    lastOrientation = currentOrientation;
 
-                        JSObject ret = new JSObject();
-                        ret.put("adUnitId", currentAdUnitId);
-                        ret.put("orientation", currentOrientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE ? "LANDSCAPE" : "PORTRAIT");
+                    JSObject ret = new JSObject();
+                    ret.put("adUnitId", currentAdUnitId);
+                    ret.put("orientation", currentOrientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE ? "LANDSCAPE" : "PORTRAIT");
 
-                        plugin.notifyPluginListeners("onBannerOrientationChanged", ret);
-                    }
-                });
+                    plugin.notifyPluginListeners("onBannerOrientationChanged", ret);
+                }
+            });
 
             FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
                     FrameLayout.LayoutParams.MATCH_PARENT,
@@ -613,8 +613,8 @@ public class BannerPreloadExecutor {
 
     public void onDestroy() {
         Activity activity = plugin.getActivity();
-        if (activity != null) { 
+        if (activity != null) {
             activity.runOnUiThread(this::destroyCurrentAdInternal);
-       }
+        }
     }
 }

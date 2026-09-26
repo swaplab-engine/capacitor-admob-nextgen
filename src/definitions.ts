@@ -592,6 +592,29 @@ export interface AppOpenOptions {
   retryInterval?: number;
 }
 
+export interface LegacyOSCustomSettings {
+  /**
+   * If true, the plugin will add system insets (status bar or navigation bar height)
+   * to the native Banner margins. Use this if the banner overlaps or fails to sit 
+   * correctly above the navigation bar on older Android versions.
+   */
+  applyBannerInsets?: boolean;
+
+  /**
+   * If true, the plugin will add system insets (status bar or navigation bar height)
+   * to the WebView margins. Use this if the WebView overlaps the system bars or 
+   * banner unexpectedly.
+   */
+  applyWebviewInsets?: boolean;
+
+  /**
+   * Custom margin offset (in dp) to push both the banner and WebView simultaneously.
+   * Useful as an injection tunnel to manually fix OS-specific overlapping issues 
+   * (e.g., Android 8/9/10/11/12/13/14 navigation bar overlap) dynamically from JavaScript.
+   */
+  marginOffset?: number;
+}
+
 export interface BannerOptions {
   adUnitId: string;
   
@@ -649,6 +672,14 @@ export interface BannerOptions {
    * @default false (for backward compatibility)
    */
   enableCapacitor8SafeAreaHandling?: boolean;
+  
+  /**
+   * Custom settings for Android API < 35 (Android 14 and below).
+   * Use this configuration object as an injection tunnel to manually fix specific 
+   * OS and WebView layout anomalies (such as the banner overlapping or sinking below 
+   * the navigation bar) from the JavaScript side without updating the native plugin.
+   */
+  legacyOSCustomSettings?: LegacyOSCustomSettings;
 }
 
 export interface NativeAdOptions {

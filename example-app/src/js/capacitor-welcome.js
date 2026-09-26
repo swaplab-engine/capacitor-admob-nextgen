@@ -1,5 +1,6 @@
 import { AdMobNextGen } from 'capacitor-admob-nextgen';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { Device } from '@capacitor/device';
 import { SystemBars } from '@capacitor/core';
 
 
@@ -126,23 +127,41 @@ window.customElements.define(
               </div>
             </div>
 
-            <div class="section full-width">
-              <h3 class="section-title">2. Banner Ad</h3>
-              <div class="controls">
-                <label>Pos: <select id="banner-pos"><option value="BOTTOM">BTM</option><option value="TOP">TOP</option></select></label>
-                <label>Overlap: <input type="checkbox" id="banner-overlap"></label>
-                <label>Collapsible: <input type="checkbox" id="banner-col"></label>
-                <label>AutoShow: <input type="checkbox" id="banner-auto" checked></label>
-                <label>Cap8 Safe: <input type="checkbox" id="banner-cap8safe"></label>
-              </div>
-              <div class="btn-row">
-                <button class="btn btn-load ad-action" id="btn-banner-create" disabled>Create</button>
-                <button class="btn btn-show ad-action" id="btn-banner-show" disabled>Show</button>
-                <button class="btn btn-alt ad-action" id="btn-banner-hide" disabled>Hide</button>
-                <button class="btn btn-alt ad-action" id="btn-banner-destroy" disabled>Destroy</button>
-              </div>
+         <div class="section full-width">
+           <h3 class="section-title">2. Banner Ad</h3>
+            <div class="controls">
+              <label>Pos: <select id="banner-pos"><option value="BOTTOM">BTM</option><option value="TOP">TOP</option></select></label>
+              <label>Overlap: <input type="checkbox" id="banner-overlap"></label>
+              <label>Collapsible: <input type="checkbox" id="banner-col"></label>
+              <label>AutoShow: <input type="checkbox" id="banner-auto" checked></label>
+              <label>Cap8 Safe: <input type="checkbox" id="banner-cap8safe"></label>
+              <label>Bn Insets: <input type="checkbox" id="banner-insets" checked></label>
+            <label>Wv Insets: <input type="checkbox" id="webview-insets"></label>
+    
+             <label>OS Target: 
+               <select id="banner-os-target">
+               <option value="ALL">ALL</option>
+               <option value="9">9</option>
+               <option value="10">10</option>
+               <option value="11">11</option>
+               <option value="12">12</option>
+               <option value="13">13</option>
+               <option value="14">14</option>
+               <option value="15">15</option>
+               <option value="16">16</option>
+               <option value="17">17</option>
+         </select>
+          </label>
+            <label>Offset: <input type="number" id="banner-offset" value="0" style="width: 45px;"></label>
+         </div>
+            <div class="btn-row">
+               <button class="btn btn-load ad-action" id="btn-banner-create" disabled>Create</button>
+               <button class="btn btn-show ad-action" id="btn-banner-show" disabled>Show</button>
+               <button class="btn btn-alt ad-action" id="btn-banner-hide" disabled>Hide</button>
+               <button class="btn btn-alt ad-action" id="btn-banner-destroy" disabled>Destroy</button>
+               </div>
             </div>
-
+            
             <div class="section full-width" style="border: 1px solid #8e24aa;">
               <h3 class="section-title" style="color: #8e24aa;">2b. Banner (Next-Gen Preload)</h3>
               <div class="controls" style="text-align: center; color: #555;">
@@ -359,7 +378,7 @@ window.customElements.define(
       getById('btn-tcdata').addEventListener('click', async () => {
         try {
           const result = await AdMobNextGen.getTCData();
-          
+
           // Print the detailed status message from the native layer
           this.logToTerminal(`Status: ${result.adMobConsentStatus}`, 'SYS');
 
@@ -375,8 +394,8 @@ window.customElements.define(
           // (Optional) If you want to show the raw legacy check too:
           // this.logToTerminal(`Legacy Check: ${result.isPersonalizedAllowed}`, 'SYS');
 
-        } catch (error) { 
-          this.logToTerminal(`TCData Error: ${error}`, 'ERROR'); 
+        } catch (error) {
+          this.logToTerminal(`TCData Error: ${error}`, 'ERROR');
         }
       });
 
@@ -419,9 +438,41 @@ window.customElements.define(
           const auto = getById('banner-auto').checked;
           const cap8Safe = this.shadowRoot.getElementById('banner-cap8safe').checked;
 
+          // Get the Checkbox Insets value from the UI.
+          const applyBanner = this.shadowRoot.getElementById('banner-insets').checked;
+          const applyWebview = this.shadowRoot.getElementById('webview-insets').checked;
+
+          // Get the target OS value and the Offset value from the UI.
+          const osTarget = this.shadowRoot.getElementById('banner-os-target').value;
+          const offsetInput = this.shadowRoot.getElementById('banner-offset').value;
+
+          let manualOffset = parseInt(offsetInput, 10);
+          if (isNaN(manualOffset)) {
+            manualOffset = 0;
+          }
+
+          // -------------------------------------------------------------
+          // Dynamic Injection Logic Based on Target OS
+          // -------------------------------------------------------------
+          const deviceInfo = await Device.getInfo();
+
+          let appliedOffset = 0;
+          let appliedBannerInsets = !cap8Safe;
+          let appliedWebviewInsets = !cap8Safe;
+
+          if (deviceInfo.platform === 'android') {
+            const currentOS = parseInt(deviceInfo.osVersion, 10);
+
+            // If the dropdown is set to 'ALL', or the device OS matches the dropdown selection
+            if (osTarget === 'ALL' || currentOS === parseInt(osTarget, 10)) {
+              appliedOffset = manualOffset;
+              appliedBannerInsets = applyBanner;
+              appliedWebviewInsets = applyWebview;
+            }
+          }
+
           this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}]`, 'SYS');
 
-          // Using a different test ID for Banner to avoid overlapping with App Open
           await AdMobNextGen.createBanner({
             adUnitId: 'ca-app-pub-3940256099942544/9214589741',
             position: pos,
@@ -429,13 +480,23 @@ window.customElements.define(
             isAutoShow: auto,
             isOverlap: overlap,
             isCollapsible: collaps,
-            
+
             // if true = add EdgeToEdge.enable(this); to MainActivity.java 
+            enableCapacitor8SafeAreaHandling: cap8Safe, // default: false 
+
+            // Optional Custom Injection android 8/9/10/11/12/13/14 | webview v <140>
             // https://github.com/swaplab-engine/capacitor-admob-nextgen/issues/7
-            enableCapacitor8SafeAreaHandling: cap8Safe // default: false 
+            legacyOSCustomSettings: { 
+              applyBannerInsets: appliedBannerInsets, // default: false 
+              applyWebviewInsets: appliedWebviewInsets, // default: false 
+              marginOffset: appliedOffset  // default: 0
+            }
           });
-          this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}, Cap8Safe:${cap8Safe}]`);
-        } catch (error) { this.logToTerminal(`Banner Error: ${error}`, 'ERROR'); }
+
+          this.logToTerminal(`Creating Banner [TargetOS:${osTarget}, Offset:${appliedOffset}, BnInsets:${appliedBannerInsets}, WvInsets:${appliedWebviewInsets}]`);
+        } catch (error) {
+          this.logToTerminal(`Banner Error: ${error}`, 'ERROR');
+        }
       });
 
       getById('btn-banner-show').addEventListener('click', () => AdMobNextGen.showBanner());
@@ -605,10 +666,10 @@ window.customElements.define(
       getById('btn-appopen-load').addEventListener('click', async () => {
         try {
           this.logToTerminal('Loading Classic App Open...', 'SYS');
-          await AdMobNextGen.loadAppOpen({ 
+          await AdMobNextGen.loadAppOpen({
             adUnitId: 'ca-app-pub-3940256099942544/9257395921',
             isAutoShow: false, // if true Automatically show when app resumes from background
-           });
+          });
         } catch (error) { this.logToTerminal(`AppOpen Load Error: ${error}`, 'ERROR'); }
       });
       getById('btn-appopen-show').addEventListener('click', () => AdMobNextGen.showAppOpen());
@@ -619,7 +680,7 @@ window.customElements.define(
       getById('btn-preload-start').addEventListener('click', async () => {
         try {
           this.logToTerminal('Starting Preload Buffer...', 'NEXTGEN');
-          await AdMobNextGen.startPreloadAppOpen({ 
+          await AdMobNextGen.startPreloadAppOpen({
             adUnitId: 'ca-app-pub-3940256099942544/9257395921',
             isAutoShow: false, // if true Automatically show when app resumes from background 
           });
