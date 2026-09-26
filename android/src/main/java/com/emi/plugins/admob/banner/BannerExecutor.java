@@ -30,6 +30,8 @@ import com.google.android.libraries.ads.mobile.sdk.common.AdLoadCallback;
 import com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError;
 import com.google.android.libraries.ads.mobile.sdk.common.LoadAdError;
 
+import java.util.Objects;
+
 public class BannerExecutor {
 
     private final AdMobNextGenPlugin plugin;
@@ -95,19 +97,41 @@ public class BannerExecutor {
             Boolean cap8SafeOpt = call.getBoolean("enableCapacitor8SafeAreaHandling", false);
             this.enableCapacitor8SafeAreaHandling = (cap8SafeOpt != null) ? cap8SafeOpt : false;
 
+            boolean smartBannerInsets = false;
+            int wvVersion = getWebViewVersion();
+
+            JSObject wvRet = new JSObject();
+            wvRet.put("webViewVersion", wvVersion);
+            wvRet.put("androidApiLevel", Build.VERSION.SDK_INT);
+            plugin.notifyPluginListeners("onWebViewVersion", wvRet);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && Build.VERSION.SDK_INT < 35) {
+                if (wvVersion >= 140) {
+                    smartBannerInsets = true;
+                }
+            }
+
             JSObject legacyConfig = call.getObject("legacyOSCustomSettings");
             if (legacyConfig != null) {
+                if (legacyConfig.has("applyBannerInsets")) {
+                    try {
+                        this.legacyApplyBannerInsets = legacyConfig.getBoolean("applyBannerInsets");
+                    } catch (Exception e) {
+                        this.legacyApplyBannerInsets = smartBannerInsets;
+                    }
+                } else {
+                    this.legacyApplyBannerInsets = smartBannerInsets;
+                }
 
-                this.legacyApplyBannerInsets = legacyConfig.optBoolean("applyBannerInsets", !this.enableCapacitor8SafeAreaHandling);
-                this.legacyApplyWebviewInsets = legacyConfig.optBoolean("applyWebviewInsets", !this.enableCapacitor8SafeAreaHandling);
+                this.legacyApplyWebviewInsets = legacyConfig.optBoolean("applyWebviewInsets", false);
 
                 double marginOffsetOpt = legacyConfig.optDouble("marginOffset", 0.0);
                 float density = plugin.getActivity().getResources().getDisplayMetrics().density;
                 this.legacyMarginOffset = (int) Math.round(marginOffsetOpt * density);
             } else {
 
-                this.legacyApplyBannerInsets = !this.enableCapacitor8SafeAreaHandling;
-                this.legacyApplyWebviewInsets = !this.enableCapacitor8SafeAreaHandling;
+                this.legacyApplyBannerInsets = smartBannerInsets;
+                this.legacyApplyWebviewInsets = false;
                 this.legacyMarginOffset = 0;
             }
 
@@ -638,6 +662,34 @@ public class BannerExecutor {
         if ("LARGE_ANCHORED_ADAPTIVE".equalsIgnoreCase(sizeStr)) return AdSize.getLargeAnchoredAdaptiveBannerAdSize(activity, getAdWidth(activity));
         if ("PORTRAIT_INLINE_ADAPTIVE".equalsIgnoreCase(sizeStr)) return AdSize.getPortraitInlineAdaptiveBannerAdSize(activity, getAdWidth(activity));
         return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(activity, getAdWidth(activity));
+    }
+
+    private int getWebViewVersion() {
+        try {
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                @SuppressLint("WebViewApiAvailability") android.content.pm.PackageInfo info = android.webkit.WebView.getCurrentWebViewPackage();
+                if (info != null && info.versionName != null) {
+
+                    String[] parts = info.versionName.split("\\.");
+                    if (parts.length > 0) {
+                        return Integer.parseInt(parts[0]);
+                    }
+                }
+            }
+
+            Activity activity = plugin.getActivity();
+            if (activity != null) {
+                String ua = android.webkit.WebSettings.getDefaultUserAgent(activity);
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("Chrome/(\\d+)").matcher(ua);
+                if (m.find() && m.group(1) != null) {
+                    return Integer.parseInt(Objects.requireNonNull(m.group(1)));
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return 0; 
     }
 
     public void onPause() {

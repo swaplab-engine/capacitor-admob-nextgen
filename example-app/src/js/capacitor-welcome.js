@@ -479,18 +479,16 @@ window.customElements.define(
             adSize: 'ADAPTIVE',
             isAutoShow: auto,
             isOverlap: overlap,
-            isCollapsible: collaps,
+            isCollapsible: collaps
 
-            // if true = add EdgeToEdge.enable(this); to MainActivity.java 
-            enableCapacitor8SafeAreaHandling: cap8Safe, // default: false 
-
-            // Optional Custom Injection android 8/9/10/11/12/13/14 | webview v <140>
-            // https://github.com/swaplab-engine/capacitor-admob-nextgen/issues/7
+            /* Optional 
             legacyOSCustomSettings: { 
-              applyBannerInsets: appliedBannerInsets, // default: false 
-              applyWebviewInsets: appliedWebviewInsets, // default: false 
-              marginOffset: appliedOffset  // default: 0
+              applyBannerInsets: false, // default: false 
+              applyWebviewInsets: false , // default: false 
+              marginOffset: 0  // default: 0
             }
+            */
+
           });
 
           this.logToTerminal(`Creating Banner [TargetOS:${osTarget}, Offset:${appliedOffset}, BnInsets:${appliedBannerInsets}, WvInsets:${appliedWebviewInsets}]`);
@@ -504,6 +502,11 @@ window.customElements.define(
       getById('btn-banner-destroy').addEventListener('click', () => {
         AdMobNextGen.destroyBanner();
         this.logToTerminal('Banner Destroyed.', 'SYS');
+      });
+
+            
+      AdMobNextGen.addListener('onWebViewVersion', (info) => {
+        this.logToTerminal(`[SYSTEM] Android API: ${info.androidApiLevel} | WebView: v${info.webViewVersion}`, 'SYS');
       });
 
       // ==========================================
