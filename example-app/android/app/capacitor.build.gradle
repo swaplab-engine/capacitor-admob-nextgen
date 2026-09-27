@@ -9,8 +9,8 @@ android {
 
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
-    implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-device')
+    implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-admob-nextgen')
 
 }

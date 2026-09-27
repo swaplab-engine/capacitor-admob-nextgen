@@ -134,25 +134,6 @@ window.customElements.define(
               <label>Overlap: <input type="checkbox" id="banner-overlap"></label>
               <label>Collapsible: <input type="checkbox" id="banner-col"></label>
               <label>AutoShow: <input type="checkbox" id="banner-auto" checked></label>
-              <label>Cap8 Safe: <input type="checkbox" id="banner-cap8safe"></label>
-              <label>Bn Insets: <input type="checkbox" id="banner-insets" checked></label>
-            <label>Wv Insets: <input type="checkbox" id="webview-insets"></label>
-    
-             <label>OS Target: 
-               <select id="banner-os-target">
-               <option value="ALL">ALL</option>
-               <option value="9">9</option>
-               <option value="10">10</option>
-               <option value="11">11</option>
-               <option value="12">12</option>
-               <option value="13">13</option>
-               <option value="14">14</option>
-               <option value="15">15</option>
-               <option value="16">16</option>
-               <option value="17">17</option>
-         </select>
-          </label>
-            <label>Offset: <input type="number" id="banner-offset" value="0" style="width: 45px;"></label>
          </div>
             <div class="btn-row">
                <button class="btn btn-load ad-action" id="btn-banner-create" disabled>Create</button>
@@ -436,40 +417,6 @@ window.customElements.define(
           const overlap = getById('banner-overlap').checked;
           const collaps = getById('banner-col').checked;
           const auto = getById('banner-auto').checked;
-          const cap8Safe = this.shadowRoot.getElementById('banner-cap8safe').checked;
-
-          // Get the Checkbox Insets value from the UI.
-          const applyBanner = this.shadowRoot.getElementById('banner-insets').checked;
-          const applyWebview = this.shadowRoot.getElementById('webview-insets').checked;
-
-          // Get the target OS value and the Offset value from the UI.
-          const osTarget = this.shadowRoot.getElementById('banner-os-target').value;
-          const offsetInput = this.shadowRoot.getElementById('banner-offset').value;
-
-          let manualOffset = parseInt(offsetInput, 10);
-          if (isNaN(manualOffset)) {
-            manualOffset = 0;
-          }
-
-          // -------------------------------------------------------------
-          // Dynamic Injection Logic Based on Target OS
-          // -------------------------------------------------------------
-          const deviceInfo = await Device.getInfo();
-
-          let appliedOffset = 0;
-          let appliedBannerInsets = !cap8Safe;
-          let appliedWebviewInsets = !cap8Safe;
-
-          if (deviceInfo.platform === 'android') {
-            const currentOS = parseInt(deviceInfo.osVersion, 10);
-
-            // If the dropdown is set to 'ALL', or the device OS matches the dropdown selection
-            if (osTarget === 'ALL' || currentOS === parseInt(osTarget, 10)) {
-              appliedOffset = manualOffset;
-              appliedBannerInsets = applyBanner;
-              appliedWebviewInsets = applyWebview;
-            }
-          }
 
           this.logToTerminal(`Creating Banner [Pos:${pos}, Overlap:${overlap}]`, 'SYS');
 
@@ -490,8 +437,6 @@ window.customElements.define(
             */
 
           });
-
-          this.logToTerminal(`Creating Banner [TargetOS:${osTarget}, Offset:${appliedOffset}, BnInsets:${appliedBannerInsets}, WvInsets:${appliedWebviewInsets}]`);
         } catch (error) {
           this.logToTerminal(`Banner Error: ${error}`, 'ERROR');
         }
@@ -525,6 +470,15 @@ window.customElements.define(
             isOverlap: overlap,
             isCollapsible: collaps,
             bufferSize: 2
+
+            /* Optional 
+            legacyOSCustomSettings: { 
+              applyBannerInsets: false, // default: false 
+              applyWebviewInsets: false , // default: false 
+              marginOffset: 0  // default: 0
+            }
+            */
+
           });
         } catch (error) { this.logToTerminal(`Preload Start Error: ${error}`, 'ERROR'); }
       });

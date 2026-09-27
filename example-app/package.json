@@ -19,11 +19,11 @@
     "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js"
   },
   "dependencies": {
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/core": "^8.0.0",
-    "@capacitor/ios": "^8.0.0",
-    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
     "@capacitor/device": "^8.0.3",
+    "@capacitor/ios": "^8.5.2",
+    "@capacitor/splash-screen": "^8.0.1",
     "capacitor-admob-nextgen": "file:.."
   },
   "devDependencies": {
