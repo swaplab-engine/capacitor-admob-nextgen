@@ -27,20 +27,84 @@ import GoogleMobileAds
     private var lastLoadTime: TimeInterval = 0
     private var minLoadInterval: TimeInterval = 5.0
 
+    private var boundsObserverView: BoundsObserverView?
+    private var lastObservedWidth: CGFloat = 0
+
     init(plugin: AdMobNextGenPlugin) {
         self.plugin = plugin
         super.init()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleOrientationChange),
-            name: UIDevice.orientationDidChangeNotification,
-            object: nil
-        )
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        DispatchQueue.main.async {
+            self.boundsObserverView?.removeFromSuperview()
+            self.boundsObserverView = nil
+        }
+    }
+
+    private func startObservingBounds() {
+
+        guard boundsObserverView == nil, let rootVC = self.plugin?.bridge?.viewController else { return }
+
+        self.lastObservedWidth = self.getSafeViewWidth()
+
+        let observerView = BoundsObserverView()
+        observerView.isUserInteractionEnabled = false 
+        observerView.backgroundColor = .clear
+        observerView.translatesAutoresizingMaskIntoConstraints = false
+
+        rootVC.view.addSubview(observerView)
+        rootVC.view.sendSubviewToBack(observerView) 
+
+        NSLayoutConstraint.activate([
+            observerView.leadingAnchor.constraint(equalTo: rootVC.view.leadingAnchor),
+            observerView.trailingAnchor.constraint(equalTo: rootVC.view.trailingAnchor),
+            observerView.topAnchor.constraint(equalTo: rootVC.view.topAnchor),
+            observerView.bottomAnchor.constraint(equalTo: rootVC.view.bottomAnchor)
+        ])
+
+        observerView.onBoundsChanged = { [weak self] _ in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                self.layoutViews() 
+
+                let currentWidth = self.getSafeViewWidth()
+
+                if abs(self.lastObservedWidth - currentWidth) > 1.0 {
+                    self.lastObservedWidth = currentWidth
+
+                    if !self.lastAdUnitId.isEmpty {
+                        var ret = JSObject()
+                        ret["adUnitId"] = self.lastAdUnitId
+                        ret["orientation"] = "RESIZE" 
+                        self.plugin?.notifyListeners("onBannerOrientationChanged", data: ret)
+                    }
+                }
+            }
+        }
+
+        self.boundsObserverView = observerView
+    }
+
+    private func getSafeViewWidth() -> CGFloat {
+
+        if let window = self.getKeyWindow() {
+            var frame = window.bounds
+            if #available(iOS 11.0, *) {
+                frame = frame.inset(by: window.safeAreaInsets)
+            }
+            return frame.size.width
+        }
+
+        guard let rootViewController = self.plugin?.bridge?.viewController else {
+            return UIScreen.main.bounds.width
+        }
+        var frame = rootViewController.view.frame
+        if #available(iOS 11.0, *) {
+            frame = frame.inset(by: rootViewController.view.safeAreaInsets)
+        }
+        return frame.size.width
     }
 
     private func getKeyWindow() -> UIWindow? {
@@ -84,6 +148,9 @@ import GoogleMobileAds
             (retryOpt != nil) ? (retryOpt! / 1000.0) : 5.0
 
         DispatchQueue.main.async {
+
+            self.startObservingBounds()
+
             let currentTime = Date().timeIntervalSince1970
 
             if self.isLoading {
@@ -186,15 +253,8 @@ import GoogleMobileAds
     }
 
     private func getAdSize(sizeStr: String) -> AdSize {
-        guard let rootViewController = self.plugin?.bridge?.viewController
-        else { return AdSizeBanner }
 
-        var frame = rootViewController.view.frame
-        if #available(iOS 11.0, *) {
-            frame = frame.inset(by: rootViewController.view.safeAreaInsets)
-        }
-        let viewWidth = frame.size.width
-
+        let viewWidth = self.getSafeViewWidth()
         let size = sizeStr.uppercased()
 
         if size == "BANNER" { return AdSizeBanner }
@@ -253,18 +313,19 @@ import GoogleMobileAds
 
     @objc private func layoutViews() {
         DispatchQueue.main.async {
+
             guard let rootVC = self.plugin?.bridge?.viewController,
-                let webView = self.plugin?.bridge?.webView
+                  let webView = self.plugin?.bridge?.webView,
+                  let window = self.getKeyWindow() 
             else { return }
 
             webView.translatesAutoresizingMaskIntoConstraints = true
             self.bannerView?.translatesAutoresizingMaskIntoConstraints = true
 
-            let window = self.getKeyWindow()
-            var safeArea = window?.safeAreaInsets ?? .zero
+            var safeArea = window.safeAreaInsets
 
-            let screenH = UIScreen.main.bounds.size.height
-            let screenW = UIScreen.main.bounds.size.width
+            let screenH = window.bounds.size.height
+            let screenW = window.bounds.size.width
 
             if safeArea.bottom == 0 && screenH >= 812.0 {
                 safeArea.bottom = 34.0
@@ -512,5 +573,15 @@ import GoogleMobileAds
         var ret = JSObject()
         ret["adUnitId"] = self.lastAdUnitId
         self.plugin?.notifyListeners("onBannerAdDismissedFullScreen", data: ret)
+    }
+}
+
+class BoundsObserverView: UIView {
+    var onBoundsChanged: ((CGRect) -> Void)?
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+
+        onBoundsChanged?(self.bounds)
     }
 }

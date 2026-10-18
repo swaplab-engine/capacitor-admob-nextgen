@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.swift_version = '5.1'
   s.static_framework = true
   s.dependency 'Capacitor'
-  s.dependency 'Google-Mobile-Ads-SDK', '~> 13.3.0'
+  s.dependency 'Google-Mobile-Ads-SDK', '~> 13.11.0'
   s.dependency 'GoogleUserMessagingPlatform', '~> 3.1'
 
   # ADMOB_MEDIATION_PODS_START

@@ -72,13 +72,14 @@ This plugin is regularly updated to support the latest standards.
 | :--- | :--- | :--- | :--- |
 | **GMA Next-Gen SDK** | Android | **1.5.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
-| **Mobile Ads SDK** | iOS | **13.3.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
+| **Mobile Ads SDK** | iOS | **13.11.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
 
 
 ---
 
-## ✨ Key Features
+<details>
+<summary>👉 Click to view: ✨ Key Features</summary>
 
 ### 🚀 Core & Performance
 - **Next-Gen Preloading API:** Introduces continuous background ad buffering. Pull ads instantly with zero latency.
@@ -114,6 +115,9 @@ This plugin specifically targets the newly announced **[GMA Next-Gen SDK](https:
 * Learn about the architectural differences here: [Announcing Google Mobile Ads Next-Gen](https://ads-developers.googleblog.com/2026/01/announcing-google-mobile-ads-next-gen.html).
 * **CRITICAL:** Do **NOT** combine the legacy Google Mobile Ads SDK and the Next-Gen SDK in the same project. It will cause your application to crash during the build process.
 * If you still need the legacy SDK, please use the standard [@capacitor-community/admob](https://github.com/capacitor-community/admob) plugin.
+
+
+</details>
 
 ---
 
@@ -171,6 +175,34 @@ If you prefer total manual control, simply do not add the script to your `packag
 <string>This identifier will be used to deliver personalized ads to you.</string>
 ```
 ---
+
+
+
+### 📱 iOS 27 & iPhone Duo Support (Capacitor 8.5+)
+
+Apple's iOS 27 strictly requires the modern `UIScene` lifecycle for multi-screen devices like the iPhone Duo. Capacitor 8.5+ adopts this architecture. To ensure your app launches successfully on these new environments without throwing an `EXC_BREAKPOINT` crash, you must migrate your iOS project to use `SceneDelegate`.
+
+You have two options to implement this:
+
+#### Option A: Automatic Setup (Highly Recommended)
+Avoid dealing with complex Xcode project configurations. This plugin provides a smart injection script that automatically detects your setup and safely injects the Capacitor 8.5+ `SceneDelegate` proxy into your `AppDelegate.swift` and `Info.plist` during `npx cap sync`.
+
+Simply chain the `ios-scene-migration.js` script to your existing hook in the `scripts` section of your `package.json`:
+
+```json
+  "scripts": {
+    "capacitor:sync:after": "node node_modules/capacitor-admob-nextgen/scripts/admob-manifest.js && node node_modules/capacitor-admob-nextgen/scripts/ios-scene-migration.js"
+  }
+```
+
+*💡 Transparency Note: This plugin does NOT secretly manipulate your project. The injection script is strictly OPT-IN and only runs if you explicitly declare the hook above. The script is also smart enough to automatically skip injection if it detects that you have manually created a `SceneDelegate.swift` file.*
+
+#### Option B: Manual Setup (Full Control)
+If you prefer total manual control, simply do not add the migration script to your `package.json`. You must manually create the `SceneDelegate.swift` file and update your `Info.plist` and `AppDelegate.swift` according to the official [Capacitor 8.5 Update Guide](https://capacitorjs.com/docs/updating/8-5).
+
+---
+
+
 
 ### 🧩 Native Ads Setup (Opt-In Feature)
 
