@@ -121,6 +121,11 @@ This plugin specifically targets the newly announced **[GMA Next-Gen SDK](https:
 
 ---
 
+> Fastest test (APK Debug): **[⚡ With github action ](https://github.com/swaplab-engine/capacitor-admob-nextgen-template)** (Optional)
+
+---
+
+
 ## 📦 Installation
 
 ```bash
