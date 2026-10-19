@@ -61,7 +61,10 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
         let request = Request()
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+
+            guard let self = self else { return }
+
             do {
 
                 let ad = try await RewardedInterstitialAd.load(
@@ -72,8 +75,7 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
                 self.rewardedInterstitialAd = ad
                 self.rewardedInterstitialAd?.fullScreenContentDelegate = self
 
-                self.rewardedInterstitialAd?.paidEventHandler = {
-                    [weak self] value in
+                self.rewardedInterstitialAd?.paidEventHandler = { [weak self] value in
                     guard let self = self else { return }
                     var ret = JSObject()
                     ret["adUnitId"] = self.currentAdUnitId
@@ -90,7 +92,8 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
                 var ret = JSObject()
                 ret["adUnitId"] = self.currentAdUnitId
-                plugin.notifyListeners(
+
+                self.plugin?.notifyListeners(
                     "onRewardedInterstitialAdLoaded",
                     data: ret
                 )
@@ -101,7 +104,8 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription
-                plugin.notifyListeners(
+
+                self.plugin?.notifyListeners(
                     "onRewardedInterstitialAdFailedToLoad",
                     data: ret
                 )
@@ -119,7 +123,10 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
             return
         }
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+
+            guard let self = self else { return }
+
             guard let viewController = plugin.bridge?.viewController else {
                 call.reject("Root ViewController not found.")
                 return
@@ -129,12 +136,16 @@ public class RewardedInterstitialExecutor: NSObject, FullScreenContentDelegate {
                 self.isRewardInterstitialEarned = false
 
                 ad.present(from: viewController) { [weak self] in
-                    self?.isRewardInterstitialEarned = true
+
+                    guard let self = self else { return }
+
+                    self.isRewardInterstitialEarned = true
                     let reward = ad.adReward
                     var ret = JSObject()
                     ret["amount"] = reward.amount.doubleValue
                     ret["type"] = reward.type
-                    self?.plugin?.notifyListeners(
+
+                    self.plugin?.notifyListeners(
                         "onRewardedInterstitialAdReward",
                         data: ret
                     )

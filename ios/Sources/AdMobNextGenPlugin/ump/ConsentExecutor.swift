@@ -12,7 +12,10 @@ import UserMessagingPlatform
     }
 
     @objc func requestConsentInfo(_ call: CAPPluginCall) {
-        DispatchQueue.main.async {
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
             let debugMode = call.getBool("debug", false)
             let resetConsent = call.getBool("reset", false)
             let tagForUnderAgeOfConsent = call.getBool(
@@ -40,8 +43,7 @@ import UserMessagingPlatform
                 parameters.debugSettings = debugSettings
             }
 
-            ConsentInformation.shared.requestConsentInfoUpdate(with: parameters)
-            { [weak self] error in
+            ConsentInformation.shared.requestConsentInfoUpdate(with: parameters) { [weak self] error in
                 guard let self = self else { return }
 
                 if let error = error {
@@ -58,8 +60,9 @@ import UserMessagingPlatform
                         return
                     }
 
-                    ConsentForm.loadAndPresentIfRequired(from: viewController) {
-                        loadAndShowError in
+                    ConsentForm.loadAndPresentIfRequired(from: viewController) { [weak self] loadAndShowError in
+                        guard let self = self else { return }
+
                         if let error = loadAndShowError {
                             self.sendErrorEvent(error)
                             call.reject(error.localizedDescription)
@@ -80,15 +83,19 @@ import UserMessagingPlatform
     }
 
     @objc func showPrivacyOptionsForm(_ call: CAPPluginCall) {
-        DispatchQueue.main.async {
+
+        DispatchQueue.main.async { [weak self] in
+
+            guard let self = self else { return }
+
             guard let viewController = self.plugin?.bridge?.viewController
             else {
                 call.reject("ViewController is null")
                 return
             }
 
-            ConsentForm.presentPrivacyOptionsForm(from: viewController) {
-                [weak self] formError in
+            ConsentForm.presentPrivacyOptionsForm(from: viewController) { [weak self] formError in
+
                 guard let self = self else { return }
 
                 if let error = formError {

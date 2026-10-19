@@ -48,7 +48,7 @@ import GoogleMobileAds
 
         let retryOpt = call.getDouble("retryInterval")
         let minLoadInterval: TimeInterval =
-            (retryOpt != nil) ? (retryOpt! / 1000.0) : 5.0  
+        (retryOpt != nil) ? (retryOpt! / 1000.0) : 5.0  
         let currentTime = Date().timeIntervalSince1970
 
         if (currentTime - lastRequestTime) < minLoadInterval {
@@ -69,7 +69,8 @@ import GoogleMobileAds
 
         let request = Request()
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
             do {
                 self.appOpenAd = try await AppOpenAd.load(
                     with: adUnitId,
@@ -93,7 +94,7 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["adUnitId"] = self.currentAdUnitId
-                plugin.notifyListeners("onAppOpenAdLoaded", data: ret)
+                self.plugin?.notifyListeners("onAppOpenAdLoaded", data: ret)
 
                 call.resolve()
             } catch {
@@ -102,7 +103,7 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription
-                plugin.notifyListeners("onAppOpenAdFailedToLoad", data: ret)
+                self.plugin?.notifyListeners("onAppOpenAdFailedToLoad", data: ret)
 
                 call.reject(error.localizedDescription)
             }

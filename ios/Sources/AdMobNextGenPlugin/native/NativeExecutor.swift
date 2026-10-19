@@ -27,7 +27,8 @@ public class NativeExecutor: NSObject, NativeAdLoaderDelegate, NativeAdDelegate
     }
 
     public func showNativeAd(_ call: CAPPluginCall) {
-        guard let plugin = plugin else {
+
+        guard plugin != nil else {
             call.reject("Plugin is not initialized")
             return
         }
@@ -91,6 +92,8 @@ public class NativeExecutor: NSObject, NativeAdLoaderDelegate, NativeAdDelegate
 
             var precisionStr = "UNKNOWN"
             switch adValue.precision {
+
+            case .unknown: precisionStr = "UNKNOWN"
             case .estimated: precisionStr = "ESTIMATED"
             case .publisherProvided: precisionStr = "PUBLISHER_PROVIDED"
             case .precise: precisionStr = "PRECISE"

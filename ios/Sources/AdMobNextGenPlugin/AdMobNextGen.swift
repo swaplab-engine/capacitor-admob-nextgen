@@ -19,12 +19,13 @@ import GoogleMobileAds
             )
         }
 
-        if let childDirected = tagForChildDirectedTreatment {
-            requestConfiguration.tagForChildDirectedTreatment = childDirected
-        }
-
-        if let underAge = tagForUnderAgeOfConsent {
-            requestConfiguration.tagForUnderAgeOfConsent = underAge
+        if let childDirected = tagForChildDirectedTreatment?.boolValue, childDirected {
+            requestConfiguration.ageRestrictedTreatment = .child
+        } else if let underAge = tagForUnderAgeOfConsent?.boolValue, underAge {
+            requestConfiguration.ageRestrictedTreatment = .teen
+        } else if (tagForChildDirectedTreatment != nil && tagForChildDirectedTreatment?.boolValue == false) ||
+                  (tagForUnderAgeOfConsent != nil && tagForUnderAgeOfConsent?.boolValue == false) {
+            requestConfiguration.ageRestrictedTreatment = .unspecified
         }
 
         MobileAds.shared.start { status in

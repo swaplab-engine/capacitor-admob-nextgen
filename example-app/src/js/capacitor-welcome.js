@@ -43,7 +43,7 @@ window.customElements.define(
           }
 
           .scroll-area {
-            flex: 1; 
+            flex: 1;
             overflow-y: auto;
             padding: 10px;
             display: grid;
@@ -92,7 +92,7 @@ window.customElements.define(
           }
 
           .terminal-wrapper {
-            height: 32vh; 
+            height: 32vh;
             background-color: #222428;
             display: flex; flex-direction: column;
             border-top: 2px solid #111;

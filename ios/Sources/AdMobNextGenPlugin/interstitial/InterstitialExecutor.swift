@@ -58,7 +58,10 @@ import GoogleMobileAds
 
         let request = Request()
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+
+            guard let self = self else { return }
+
             do {
 
                 let ad = try await InterstitialAd.load(
@@ -86,7 +89,7 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["adUnitId"] = self.currentAdUnitId
-                plugin.notifyListeners("onInterstitialAdLoaded", data: ret)
+                self.plugin?.notifyListeners("onInterstitialAdLoaded", data: ret)
 
                 call.resolve()
 
@@ -94,7 +97,7 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription
-                plugin.notifyListeners(
+                self.plugin?.notifyListeners(
                     "onInterstitialAdFailedToLoad",
                     data: ret
                 )

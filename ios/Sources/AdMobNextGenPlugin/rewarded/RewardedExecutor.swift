@@ -60,7 +60,10 @@ import GoogleMobileAds
 
         let request = Request()
 
-        Task { @MainActor in
+        Task { @MainActor [weak self] in
+
+            guard let self = self else { return }
+
             do {
 
                 let ad = try await RewardedAd.load(
@@ -85,7 +88,8 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["adUnitId"] = self.currentAdUnitId
-                plugin.notifyListeners("onRewardedAdLoaded", data: ret)
+
+                self.plugin?.notifyListeners("onRewardedAdLoaded", data: ret)
 
                 call.resolve()
 
@@ -93,7 +97,8 @@ import GoogleMobileAds
 
                 var ret = JSObject()
                 ret["error"] = error.localizedDescription
-                plugin.notifyListeners("onRewardedAdFailedToLoad", data: ret)
+
+                self.plugin?.notifyListeners("onRewardedAdFailedToLoad", data: ret)
 
                 call.reject(error.localizedDescription)
             }
@@ -108,7 +113,10 @@ import GoogleMobileAds
             return
         }
 
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+
+            guard let self = self else { return }
+
             guard let viewController = plugin.bridge?.viewController else {
                 call.reject("Root ViewController not found.")
                 return
@@ -118,12 +126,16 @@ import GoogleMobileAds
                 self.isRewardEarned = false
 
                 ad.present(from: viewController) { [weak self] in
-                    self?.isRewardEarned = true
+
+                    guard let self = self else { return }
+
+                    self.isRewardEarned = true
                     let reward = ad.adReward
                     var ret = JSObject()
                     ret["amount"] = reward.amount.doubleValue  
                     ret["type"] = reward.type
-                    self?.plugin?.notifyListeners(
+
+                    self.plugin?.notifyListeners(
                         "onRewardedAdReward",
                         data: ret
                     )
