@@ -387,6 +387,11 @@ public void pollAndShowAppOpen(PluginCall call) {
         appOpenPreloadExecutor.checkAvailability(call);
     }
 
+  @PluginMethod
+    public void stopPreloadAppOpen(PluginCall call) {
+        appOpenPreloadExecutor.stopPreload(call);
+   } 
+
     @PluginMethod
     public void startPreloadBanner(PluginCall call) {
         bannerPreloadExecutor.startPreload(call, new ActionCallback() {
@@ -419,6 +424,11 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void destroyPreloadedBanner(PluginCall call) {
         bannerPreloadExecutor.destroyPreloadedBanner(call);
+    }
+
+    @PluginMethod
+    public void stopPreloadBanner(PluginCall call) {
+        bannerPreloadExecutor.stopPreload(call);
     }
 
     @PluginMethod
@@ -468,6 +478,11 @@ public void pollAndShowAppOpen(PluginCall call) {
     }
 
     @PluginMethod
+    public void stopPreloadInterstitial(PluginCall call) {
+        interstitialPreloadExecutor.stopPreload(call);
+    }
+
+    @PluginMethod
     public void startPreloadRewarded(PluginCall call) {
         rewardedPreloadExecutor.startPreload(call, new ActionCallback() {
             @Override public void onSuccess() {
@@ -503,6 +518,11 @@ public void pollAndShowAppOpen(PluginCall call) {
     }
 
     @PluginMethod
+    public void stopPreloadRewarded(PluginCall call) {
+        rewardedPreloadExecutor.stopPreload(call);
+    }
+
+    @PluginMethod
     public void startPreloadRewardedInterstitial(PluginCall call) {
         rewardedInterstitialPreloadExecutor.startPreload(call, new ActionCallback() {
             @Override public void onSuccess() {
@@ -535,6 +555,11 @@ public void pollAndShowAppOpen(PluginCall call) {
             return;
         }
         rewardedInterstitialPreloadExecutor.checkAvailability(call);
+    }
+
+    @PluginMethod
+    public void stopPreloadRewardedInterstitial(PluginCall call) {
+        rewardedInterstitialPreloadExecutor.stopPreload(call);
     }
 
     @PluginMethod

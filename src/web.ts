@@ -151,6 +151,10 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     return { isAvailable: false };
   }
 
+  async stopPreloadAppOpen(): Promise<void> {
+    // No-op for web
+  }
+
   // ==========================================
   // NEXT-GEN PRELOADING API
   // ==========================================
@@ -161,6 +165,7 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
   async pollAndShowBanner(): Promise<void> { }
   async hidePreloadedBanner(): Promise<void> { }
   async destroyPreloadedBanner(): Promise<void> { }
+  async stopPreloadBanner(): Promise<void> { }
 
   /* eslint-enable @typescript-eslint/no-empty-function */
 
@@ -176,6 +181,10 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     // No-op for web
   }
 
+  async stopPreloadInterstitial(): Promise<void> {
+    // No-op for web
+   }
+
   async isInterstitialPreloadAvailable(_options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }> {
     // No-op for web
     return { isAvailable: false };
@@ -186,6 +195,10 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
   }
 
   async pollAndShowRewarded(): Promise<void> {
+    // No-op for web
+  }
+
+  async stopPreloadRewarded(): Promise<void> { 
     // No-op for web
   }
 
@@ -206,4 +219,9 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     // No-op for web
     return { isAvailable: false };
   }
+
+  async stopPreloadRewardedInterstitial(): Promise<void> { 
+    // No-op for web
+  }
+  
 }

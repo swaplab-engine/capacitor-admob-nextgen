@@ -475,6 +475,16 @@ public class BannerPreloadExecutor {
         });
     }
 
+    public void stopPreload(PluginCall call) {
+        if (currentAdUnitId == null || currentAdUnitId.isEmpty()) {
+            call.resolve();
+            return;
+        }
+        BannerAdPreloader.destroy(currentAdUnitId);
+        currentAdUnitId = ""; 
+        call.resolve();
+    }
+
     public void destroyPreloadedBanner(PluginCall call) {
         Activity activity = plugin.getActivity();
         if (activity == null) return;

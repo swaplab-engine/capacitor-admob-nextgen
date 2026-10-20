@@ -500,20 +500,25 @@ npx cap sync
 * [`startPreloadAppOpen(...)`](#startpreloadappopen)
 * [`pollAndShowAppOpen()`](#pollandshowappopen)
 * [`isAppOpenPreloadAvailable(...)`](#isappopenpreloadavailable)
+* [`stopPreloadAppOpen()`](#stoppreloadappopen)
 * [`startPreloadBanner(...)`](#startpreloadbanner)
 * [`pollAndShowBanner()`](#pollandshowbanner)
 * [`hidePreloadedBanner()`](#hidepreloadedbanner)
 * [`destroyPreloadedBanner()`](#destroypreloadedbanner)
 * [`isBannerPreloadAvailable(...)`](#isbannerpreloadavailable)
+* [`stopPreloadBanner()`](#stoppreloadbanner)
 * [`startPreloadInterstitial(...)`](#startpreloadinterstitial)
 * [`pollAndShowInterstitial()`](#pollandshowinterstitial)
 * [`isInterstitialPreloadAvailable(...)`](#isinterstitialpreloadavailable)
+* [`stopPreloadInterstitial()`](#stoppreloadinterstitial)
 * [`startPreloadRewarded(...)`](#startpreloadrewarded)
 * [`pollAndShowRewarded()`](#pollandshowrewarded)
 * [`isRewardedPreloadAvailable(...)`](#isrewardedpreloadavailable)
+* [`stopPreloadRewarded()`](#stoppreloadrewarded)
 * [`startPreloadRewardedInterstitial(...)`](#startpreloadrewardedinterstitial)
 * [`pollAndShowRewardedInterstitial()`](#pollandshowrewardedinterstitial)
 * [`isRewardedInterstitialPreloadAvailable(...)`](#isrewardedinterstitialpreloadavailable)
+* [`stopPreloadRewardedInterstitial()`](#stoppreloadrewardedinterstitial)
 * [`addListener(string, ...)`](#addlistenerstring-)
 * [Interfaces](#interfaces)
 
@@ -850,6 +855,17 @@ Synchronously checks if an ad is currently ready in the preload buffer.
 --------------------
 
 
+### stopPreloadAppOpen()
+
+```typescript
+stopPreloadAppOpen() => Promise<void>
+```
+
+Stops the preloading process and destroys preloaded ads from the background cache.
+
+--------------------
+
+
 ### startPreloadBanner(...)
 
 ```typescript
@@ -915,6 +931,17 @@ Synchronously checks if a Banner ad is ready in the preload buffer.
 --------------------
 
 
+### stopPreloadBanner()
+
+```typescript
+stopPreloadBanner() => Promise<void>
+```
+
+Stops the preloading process and destroys preloaded ads from the background cache.
+
+--------------------
+
+
 ### startPreloadInterstitial(...)
 
 ```typescript
@@ -954,6 +981,17 @@ Synchronously checks if an Interstitial ad is ready in the preload buffer.
 | **`options`** | <code>{ adUnitId?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ isAvailable: boolean; }&gt;</code>
+
+--------------------
+
+
+### stopPreloadInterstitial()
+
+```typescript
+stopPreloadInterstitial() => Promise<void>
+```
+
+Stops the preloading process and destroys preloaded ads from the background cache.
 
 --------------------
 
@@ -1001,6 +1039,17 @@ Synchronously checks if a Rewarded ad is ready in the preload buffer.
 --------------------
 
 
+### stopPreloadRewarded()
+
+```typescript
+stopPreloadRewarded() => Promise<void>
+```
+
+Stops the preloading process and destroys preloaded ads from the background cache.
+
+--------------------
+
+
 ### startPreloadRewardedInterstitial(...)
 
 ```typescript
@@ -1040,6 +1089,17 @@ Synchronously checks if a Rewarded Interstitial ad is ready in the preload buffe
 | **`options`** | <code>{ adUnitId?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ isAvailable: boolean; }&gt;</code>
+
+--------------------
+
+
+### stopPreloadRewardedInterstitial()
+
+```typescript
+stopPreloadRewardedInterstitial() => Promise<void>
+```
+
+Stops the preloading process and destroys preloaded ads from the background cache.
 
 --------------------
 

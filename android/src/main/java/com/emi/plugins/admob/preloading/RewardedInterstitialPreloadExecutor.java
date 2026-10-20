@@ -202,4 +202,15 @@ public class RewardedInterstitialPreloadExecutor {
         ret.put("isAvailable", isAvailable);
         call.resolve(ret);
     }
+
+    public void stopPreload(PluginCall call) {
+        if (currentAdUnitId == null || currentAdUnitId.isEmpty()) {
+            call.resolve();
+            return;
+        }
+        RewardedInterstitialAdPreloader.destroy(currentAdUnitId);
+        currentAdUnitId = ""; 
+        call.resolve();
+    }
+
 }

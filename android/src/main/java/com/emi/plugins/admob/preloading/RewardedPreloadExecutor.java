@@ -205,4 +205,15 @@ public class RewardedPreloadExecutor {
         ret.put("isAvailable", isAvailable);
         call.resolve(ret);
     }
+
+    public void stopPreload(PluginCall call) {
+        if (currentAdUnitId == null || currentAdUnitId.isEmpty()) {
+            call.resolve();
+            return;
+        }
+        RewardedAdPreloader.destroy(currentAdUnitId);
+        currentAdUnitId = ""; 
+        call.resolve();
+    }
+
 }

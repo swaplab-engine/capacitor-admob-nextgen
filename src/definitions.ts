@@ -190,6 +190,11 @@ export interface AdMobNextGenPlugin {
   isAppOpenPreloadAvailable(options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }>;
 
   /**
+   * Stops the preloading process and destroys preloaded ads from the background cache.
+   */
+  stopPreloadAppOpen(): Promise<void>;
+
+  /**
    * Starts the background preloader buffer for Banner Ads.
    */
   startPreloadBanner(options: BannerOptions & { bufferSize?: number }): Promise<void>;
@@ -215,6 +220,11 @@ export interface AdMobNextGenPlugin {
   isBannerPreloadAvailable(options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }>;
 
   /**
+   * Stops the preloading process and destroys preloaded ads from the background cache.
+   */
+  stopPreloadBanner(): Promise<void>;
+
+  /**
    * Starts the background preloader buffer for Interstitial Ads.
    */
   startPreloadInterstitial(options: InterstitialOptions & { bufferSize?: number }): Promise<void>;
@@ -228,6 +238,11 @@ export interface AdMobNextGenPlugin {
    * Synchronously checks if an Interstitial ad is ready in the preload buffer.
    */
   isInterstitialPreloadAvailable(options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }>;
+
+  /**
+   * Stops the preloading process and destroys preloaded ads from the background cache.
+   */
+  stopPreloadInterstitial(): Promise<void>;
 
   /**
    * Starts the background preloader buffer for Rewarded Ads.
@@ -245,6 +260,11 @@ export interface AdMobNextGenPlugin {
   isRewardedPreloadAvailable(options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }>;
 
   /**
+   * Stops the preloading process and destroys preloaded ads from the background cache.
+   */
+  stopPreloadRewarded(): Promise<void>;
+
+  /**
    * Starts the background preloader buffer for Rewarded Interstitial Ads.
    */
   startPreloadRewardedInterstitial(options: RewardedInterstitialOptions & { bufferSize?: number }): Promise<void>;
@@ -259,6 +279,10 @@ export interface AdMobNextGenPlugin {
    */
   isRewardedInterstitialPreloadAvailable(options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }>;
 
+  /**
+   * Stops the preloading process and destroys preloaded ads from the background cache.
+   */
+  stopPreloadRewardedInterstitial(): Promise<void>;
 
   // ==========================================
   // EVENT LISTENERS
