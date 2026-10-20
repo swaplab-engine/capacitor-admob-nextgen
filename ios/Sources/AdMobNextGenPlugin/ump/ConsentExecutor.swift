@@ -134,7 +134,7 @@ import UserMessagingPlatform
         let purposeConsents = defaults.string(forKey: "IABTCF_PurposeConsents") ?? ""
         let purposeLegitimateInterests = defaults.string(forKey: "IABTCF_PurposeLegitimateInterests") ?? ""
         let vendorConsents = defaults.string(forKey: "IABTCF_VendorConsents") ?? ""
-        let gdprApplies = defaults.integer(forKey: "IABTCF_gdprApplies")
+        let gdprAppliesObject = defaults.object(forKey: "IABTCF_gdprApplies")
 
         var isPersonalizedAllowed = false
         var statusMessage = "Unknown"
@@ -143,52 +143,64 @@ import UserMessagingPlatform
         var isAdMobNonPersonalizedAdsAllowed = false
         var adMobConsentStatus = "Unknown"
 
-        if gdprApplies == 0 {
+        if gdprAppliesObject == nil {
 
-            isPersonalizedAllowed = true
-            statusMessage = "Not GDPR region. Personalized Ads allowed by default."
+            statusMessage = "TCF data missing. Consent not yet gathered."
+            adMobConsentStatus = "UNKNOWN"
 
-            isAdMobPersonalizedAdsAllowed = true
-            isAdMobNonPersonalizedAdsAllowed = true
-            adMobConsentStatus = "Not GDPR region. AdMob ads allowed by default."
-        } else {
+            isPersonalizedAllowed = false
+            isAdMobPersonalizedAdsAllowed = false
+            isAdMobNonPersonalizedAdsAllowed = false
+        } else { 
+            let gdprApplies = defaults.integer(forKey: "IABTCF_gdprApplies")
 
-            if !purposeConsents.isEmpty {
-                if purposeConsents.first == "1" {
-                    isPersonalizedAllowed = true
-                    statusMessage = "Purpose 1 Granted. Legacy check passed."
-                } else {
-                    isPersonalizedAllowed = false
-                    statusMessage = "Purpose 1 Denied. Legacy check failed."
-                }
-            }
+            if gdprApplies == 0 {
 
-            let hasPurpose1 = checkConsent(purposeConsents, id: 1)
-            let hasPurpose3 = checkConsent(purposeConsents, id: 3)
-            let hasPurpose4 = checkConsent(purposeConsents, id: 4)
+                statusMessage = "GDPR does not apply. All ads allowed."
+                adMobConsentStatus = "NOT_REQUIRED"
 
-            let hasRequiredLI_or_Consent =
-                hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 2) &&
-                hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 7) &&
-                hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 9) &&
-                hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 10)
-
-            let hasVendorGoogle = checkConsent(vendorConsents, id: 755) 
-
-            if hasPurpose1 && hasVendorGoogle && hasRequiredLI_or_Consent {
+                isPersonalizedAllowed = true
+                isAdMobPersonalizedAdsAllowed = true
                 isAdMobNonPersonalizedAdsAllowed = true
+            } else {
 
-                if hasPurpose3 && hasPurpose4 {
-                    isAdMobPersonalizedAdsAllowed = true
-                    adMobConsentStatus = "Strict requirements met for Personalized Ads (Purposes 1,3,4 + LI 2,7,9,10 + Vendor 755)."
+                if !purposeConsents.isEmpty {
+                    if purposeConsents.first == "1" {
+                        isPersonalizedAllowed = true
+                        statusMessage = "Purpose 1 Granted. Legacy check passed."
+                    } else {
+                        isPersonalizedAllowed = false
+                        statusMessage = "Purpose 1 Denied. Legacy check failed."
+                    }
+                }
+
+                let hasPurpose1 = checkConsent(purposeConsents, id: 1)
+                let hasPurpose3 = checkConsent(purposeConsents, id: 3)
+                let hasPurpose4 = checkConsent(purposeConsents, id: 4)
+
+                let hasRequiredLI_or_Consent =
+                    hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 2) &&
+                    hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 7) &&
+                    hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 9) &&
+                    hasConsentOrLI(consents: purposeConsents, lis: purposeLegitimateInterests, id: 10)
+
+                let hasVendorGoogle = checkConsent(vendorConsents, id: 755) 
+
+                if hasPurpose1 && hasVendorGoogle && hasRequiredLI_or_Consent {
+                    isAdMobNonPersonalizedAdsAllowed = true
+
+                    if hasPurpose3 && hasPurpose4 {
+                        isAdMobPersonalizedAdsAllowed = true
+                        adMobConsentStatus = "Strict requirements met for Personalized Ads (Purposes 1,3,4 + LI 2,7,9,10 + Vendor 755)."
+                    } else {
+                        isAdMobPersonalizedAdsAllowed = false
+                        adMobConsentStatus = "Requirements met for Non-Personalized Ads only."
+                    }
                 } else {
                     isAdMobPersonalizedAdsAllowed = false
-                    adMobConsentStatus = "Requirements met for Non-Personalized Ads only."
+                    isAdMobNonPersonalizedAdsAllowed = false
+                    adMobConsentStatus = "Insufficient strict consent (Missing P1, Vendor 755, or P2,7,9,10). Limited Ads only."
                 }
-            } else {
-                isAdMobPersonalizedAdsAllowed = false
-                isAdMobNonPersonalizedAdsAllowed = false
-                adMobConsentStatus = "Insufficient strict consent (Missing P1, Vendor 755, or P2,7,9,10). Limited Ads only."
             }
         }
 

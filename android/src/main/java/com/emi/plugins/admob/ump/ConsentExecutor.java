@@ -139,7 +139,7 @@ public class ConsentExecutor {
             String purposeConsents = prefs.getString("IABTCF_PurposeConsents", "");
             String purposeLegitimateInterests = prefs.getString("IABTCF_PurposeLegitimateInterests", ""); 
             String vendorConsents = prefs.getString("IABTCF_VendorConsents", "");
-            int gdprApplies = prefs.getInt("IABTCF_gdprApplies", 0);
+            int gdprApplies = prefs.getInt("IABTCF_gdprApplies", -1);
 
             boolean isPersonalizedAllowed = false;
             String statusMessage = "Unknown";
@@ -148,14 +148,22 @@ public class ConsentExecutor {
             boolean isAdMobNonPersonalizedAdsAllowed = false;
             String adMobConsentStatus = "Unknown";
 
-            if (gdprApplies == 0) {
+            if (gdprApplies == -1) {
+
+                statusMessage = "TCF data missing. Consent not yet gathered.";
+                adMobConsentStatus = "UNKNOWN";
+
+                isPersonalizedAllowed = false;
+                isAdMobPersonalizedAdsAllowed = false;
+                isAdMobNonPersonalizedAdsAllowed = false;
+            } else if (gdprApplies == 0) {
+
+                statusMessage = "Not GDPR region. Personalized Ads allowed by default.";
+                adMobConsentStatus = "Not GDPR region. AdMob ads allowed by default.";
 
                 isPersonalizedAllowed = true;
-                statusMessage = "Not GDPR region. Personalized Ads allowed by default.";
-
                 isAdMobPersonalizedAdsAllowed = true;
                 isAdMobNonPersonalizedAdsAllowed = true;
-                adMobConsentStatus = "Not GDPR region. AdMob ads allowed by default.";
             } else {
 
                 if (purposeConsents != null && purposeConsents.length() > 0) {
