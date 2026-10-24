@@ -49,6 +49,23 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         ),
 
         CAPPluginMethod(
+            name: "loadPictureInPicture",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "showPictureInPicture",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "hidePictureInPicture",
+            returnType: CAPPluginReturnPromise
+        ),
+        CAPPluginMethod(
+            name: "destroyPictureInPicture",
+            returnType: CAPPluginReturnPromise
+        ),
+
+        CAPPluginMethod(
             name: "showNativeAd",
             returnType: CAPPluginReturnPromise
         ),
@@ -91,6 +108,7 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private var appOpenExecutor: AppOpenExecutor!
     private var bannerExecutor: BannerExecutor!
+    private var pictureInPictureExecutor: PictureInPictureExecutor!
     private var nativeExecutor: NativeExecutor!
     private var interstitialExecutor: InterstitialExecutor!
     private var rewardedExecutor: RewardedExecutor!
@@ -102,6 +120,7 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
         self.trackingExecutor = TrackingExecutor(plugin: self)
         self.appOpenExecutor = AppOpenExecutor(plugin: self)
         self.bannerExecutor = BannerExecutor(plugin: self)
+        self.pictureInPictureExecutor = PictureInPictureExecutor(plugin: self)
         self.nativeExecutor = NativeExecutor(plugin: self)
         self.interstitialExecutor = InterstitialExecutor(plugin: self)
         self.rewardedExecutor = RewardedExecutor(plugin: self)
@@ -174,6 +193,23 @@ public class AdMobNextGenPlugin: CAPPlugin, CAPBridgedPlugin {
     }
     @objc func destroyBanner(_ call: CAPPluginCall) {
         bannerExecutor.destroyBanner(call)
+    }
+
+    @objc func loadPictureInPicture(_ call: CAPPluginCall) {
+        pictureInPictureExecutor.loadAd(call)
+    }
+
+    @objc func showPictureInPicture(_ call: CAPPluginCall) {
+        pictureInPictureExecutor.showAd(call)
+    }
+
+    @objc func hidePictureInPicture(_ call: CAPPluginCall) {
+        pictureInPictureExecutor.hideAd(call)
+    }
+
+    @objc func destroyPictureInPicture(_ call: CAPPluginCall) {
+        pictureInPictureExecutor.destroyAd()
+        call.resolve()
     }
 
     @objc func showNativeAd(_ call: CAPPluginCall) {
