@@ -93,6 +93,30 @@ export interface AdMobNextGenPlugin {
   destroyBanner(): Promise<void>;
 
   // ==========================================
+  // PICTURE-IN-PICTURE ADS (BETA)
+  // ==========================================
+  
+  /**
+   * Loads a Picture-in-Picture ad.
+   */
+  loadPictureInPicture(options: PictureInPictureOptions): Promise<void>;
+  
+  /**
+   * Displays the loaded Picture-in-Picture ad.
+   */
+  showPictureInPicture(): Promise<void>;
+  
+  /**
+   * Hides the Picture-in-Picture ad from the screen without destroying it.
+   */
+  hidePictureInPicture(): Promise<void>;
+  
+  /**
+   * Destroys the Picture-in-Picture ad and cleans up memory resources.
+   */
+  destroyPictureInPicture(): Promise<void>;
+
+  // ==========================================
   // INTERSTITIAL ADS
   // ==========================================
 
@@ -345,6 +369,17 @@ export interface AdMobNextGenPlugin {
    * - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
    * - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * - `onBannerOrientationChanged`: Fired when the device orientation changes while a banner is visible. Returns { adUnitId: string, orientation: "LANDSCAPE" | "PORTRAIT" }.
+   * * ### Picture-in-Picture (PiP) Events
+   * - `onPipAdLoaded`: Fired when a PiP ad is loaded. Returns { adUnitId: string }.
+   * - `onPipAdFailedToLoad`: Fired when a PiP ad fails to load. Returns { error: string }.
+   * - `onPipAdShown`: Fired when the PiP window is shown on the screen.
+   * - `onPipAdHidden`: Fired when the PiP window is hidden from the screen.
+   * - `onPipAdImpression`: Fired when a PiP ad impression is recorded.
+   * - `onPipAdClicked`: Fired when a PiP ad is clicked.
+   * - `onPipAdShowed`: Fired when the PiP ad opens full-screen content.
+   * - `onPipAdDismissed`: Fired when the PiP ad full-screen content is closed.
+   * - `onPipAdFailedToShow`: Fired when the PiP ad fails to show full-screen content. Returns { error: string }.
+   * - `onPipAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Native Events
    * - `onNativeAdLoaded`: Fired when a native ad is successfully loaded and rendered. Returns { width: number, height: number }.
    * - `onNativeAdFailedToLoad`: Fired when a native ad fails to load from the network. Returns { message: string }.
@@ -704,6 +739,32 @@ export interface BannerOptions {
    * the navigation bar) from the JavaScript side without updating the native plugin.
    */
   legacyOSCustomSettings?: LegacyOSCustomSettings;
+}
+
+export interface PictureInPictureOptions {
+  adUnitId: string;
+  /**
+   * Sets the default position of the Picture-in-Picture window on the screen.
+   * Default is 'DEFAULT' (usually bottom-right).
+   */
+  position?: 'DEFAULT' | 'TOP_LEFT' | 'TOP_RIGHT' | 'BOTTOM_LEFT' | 'BOTTOM_RIGHT';
+  /**
+   * Defines the lifecycle scope of the Picture-in-Picture ad.
+   * 'SCREEN' : The ad is dismissed when the host screen's view hierarchy is removed from memory.
+   * 'APPLICATION' : The ad remains visible even when the host screen is removed (global floating).
+   * Default is 'SCREEN'.
+   */
+  presentationScope?: 'SCREEN' | 'APPLICATION';
+  /**
+   * If true, automatically shows the ad after it successfully loads (or if it is already available in memory).
+   * Default: false
+   */
+  isAutoShow?: boolean;
+  /**
+   * Minimum time (in milliseconds) before the next ad request is allowed.
+   * Prevents spam requests and invalid traffic penalties. Default: 5000.
+   */
+  retryInterval?: number;
 }
 
 export interface NativeAdOptions {

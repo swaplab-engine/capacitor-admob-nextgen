@@ -70,7 +70,7 @@ This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |
 | :--- | :--- | :--- | :--- |
-| **GMA Next-Gen SDK** | Android | **1.5.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
+| **GMA Next-Gen SDK** | Android | **1.6.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
 | **Mobile Ads SDK** | iOS | **13.11.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
@@ -489,6 +489,10 @@ npx cap sync
 * [`showBanner()`](#showbanner)
 * [`hideBanner()`](#hidebanner)
 * [`destroyBanner()`](#destroybanner)
+* [`loadPictureInPicture(...)`](#loadpictureinpicture)
+* [`showPictureInPicture()`](#showpictureinpicture)
+* [`hidePictureInPicture()`](#hidepictureinpicture)
+* [`destroyPictureInPicture()`](#destroypictureinpicture)
 * [`loadInterstitial(...)`](#loadinterstitial)
 * [`showInterstitial()`](#showinterstitial)
 * [`loadRewarded(...)`](#loadrewarded)
@@ -688,6 +692,54 @@ destroyBanner() => Promise<void>
 ```
 
 Destroys the banner ad and cleans up resources from the view hierarchy.
+
+--------------------
+
+
+### loadPictureInPicture(...)
+
+```typescript
+loadPictureInPicture(options: PictureInPictureOptions) => Promise<void>
+```
+
+Loads a Picture-in-Picture ad.
+
+| Param         | Type                                                                        |
+| ------------- | --------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#pictureinpictureoptions">PictureInPictureOptions</a></code> |
+
+--------------------
+
+
+### showPictureInPicture()
+
+```typescript
+showPictureInPicture() => Promise<void>
+```
+
+Displays the loaded Picture-in-Picture ad.
+
+--------------------
+
+
+### hidePictureInPicture()
+
+```typescript
+hidePictureInPicture() => Promise<void>
+```
+
+Hides the Picture-in-Picture ad from the screen without destroying it.
+
+--------------------
+
+
+### destroyPictureInPicture()
+
+```typescript
+destroyPictureInPicture() => Promise<void>
+```
+
+Destroys the Picture-in-Picture ad and cleans up memory resources.
 
 --------------------
 
@@ -1166,6 +1218,17 @@ Listens for Ad events triggered by the native SDK.
 - `onBannerAdFailedToRefresh`: Fired when the banner auto-refresh fails. Returns { error: string, source?: string }.
 - `onBannerAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
 - `onBannerOrientationChanged`: Fired when the device orientation changes while a banner is visible. Returns { adUnitId: string, orientation: "LANDSCAPE" | "PORTRAIT" }.
+* ### Picture-in-Picture (PiP) Events
+- `onPipAdLoaded`: Fired when a PiP ad is loaded. Returns { adUnitId: string }.
+- `onPipAdFailedToLoad`: Fired when a PiP ad fails to load. Returns { error: string }.
+- `onPipAdShown`: Fired when the PiP window is shown on the screen.
+- `onPipAdHidden`: Fired when the PiP window is hidden from the screen.
+- `onPipAdImpression`: Fired when a PiP ad impression is recorded.
+- `onPipAdClicked`: Fired when a PiP ad is clicked.
+- `onPipAdShowed`: Fired when the PiP ad opens full-screen content.
+- `onPipAdDismissed`: Fired when the PiP ad full-screen content is closed.
+- `onPipAdFailedToShow`: Fired when the PiP ad fails to show full-screen content. Returns { error: string }.
+- `onPipAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
 * ### Native Events
 - `onNativeAdLoaded`: Fired when a native ad is successfully loaded and rendered. Returns { width: number, height: number }.
 - `onNativeAdFailedToLoad`: Fired when a native ad fails to load from the network. Returns { message: string }.
@@ -1304,6 +1367,17 @@ allowing you to build custom condition logic.
 | **`applyBannerInsets`**  | <code>boolean</code> | If true, the plugin will add system insets (status bar or navigation bar height) to the native Banner margins. Use this if the banner overlaps or fails to sit correctly above the navigation bar on older Android versions.                         |
 | **`applyWebviewInsets`** | <code>boolean</code> | If true, the plugin will add system insets (status bar or navigation bar height) to the WebView margins. Use this if the WebView overlaps the system bars or banner unexpectedly.                                                                    |
 | **`marginOffset`**       | <code>number</code>  | Custom margin offset (in dp) to push both the banner and WebView simultaneously. Useful as an injection tunnel to manually fix OS-specific overlapping issues (e.g., Android 8/9/10/11/12/13/14 navigation bar overlap) dynamically from JavaScript. |
+
+
+#### PictureInPictureOptions
+
+| Prop                    | Type                                                                                   | Description                                                                                                                                                                                                                                                                |
+| ----------------------- | -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`adUnitId`**          | <code>string</code>                                                                    |                                                                                                                                                                                                                                                                            |
+| **`position`**          | <code>'DEFAULT' \| 'TOP_LEFT' \| 'TOP_RIGHT' \| 'BOTTOM_LEFT' \| 'BOTTOM_RIGHT'</code> | Sets the default position of the Picture-in-Picture window on the screen. Default is 'DEFAULT' (usually bottom-right).                                                                                                                                                     |
+| **`presentationScope`** | <code>'SCREEN' \| 'APPLICATION'</code>                                                 | Defines the lifecycle scope of the Picture-in-Picture ad. 'SCREEN' : The ad is dismissed when the host screen's view hierarchy is removed from memory. 'APPLICATION' : The ad remains visible even when the host screen is removed (global floating). Default is 'SCREEN'. |
+| **`isAutoShow`**        | <code>boolean</code>                                                                   | If true, automatically shows the ad after it successfully loads (or if it is already available in memory). Default: false                                                                                                                                                  |
+| **`retryInterval`**     | <code>number</code>                                                                    | Minimum time (in milliseconds) before the next ad request is allowed. Prevents spam requests and invalid traffic penalties. Default: 5000.                                                                                                                                 |
 
 
 #### InterstitialOptions

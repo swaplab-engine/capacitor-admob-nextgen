@@ -10,6 +10,7 @@ import type {
   InitializeResult,
   AppOpenOptions,
   BannerOptions,
+  PictureInPictureOptions,
   InterstitialOptions,
   RewardedOptions,
   RewardedInterstitialOptions,
@@ -90,6 +91,26 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     // No-op for web
   }
   async destroyBanner(): Promise<void> {
+    // No-op for web
+  }
+
+  // ==========================================
+  // PICTURE-IN-PICTURE ADS
+  // ==========================================
+  
+  async loadPictureInPicture(_options: PictureInPictureOptions): Promise<void> {
+    // No-op for web
+  }
+  
+  async showPictureInPicture(): Promise<void> {
+    // No-op for web
+  }
+  
+  async hidePictureInPicture(): Promise<void> {
+    // No-op for web
+  }
+  
+  async destroyPictureInPicture(): Promise<void> {
     // No-op for web
   }
 

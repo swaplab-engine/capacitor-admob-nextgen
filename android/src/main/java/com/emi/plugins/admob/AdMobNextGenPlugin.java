@@ -13,8 +13,10 @@ import android.view.WindowInsetsController;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
 import com.emi.plugins.admob.appopen.AppOpenExecutor;
 import com.emi.plugins.admob.banner.BannerExecutor;
+import com.emi.plugins.admob.pip.PictureInPictureExecutor;
 import com.emi.plugins.admob.interstitial.InterstitialExecutor;
 import com.emi.plugins.admob.preloading.AppOpenPreloadExecutor;
 import com.emi.plugins.admob.preloading.BannerPreloadExecutor;
@@ -37,6 +39,7 @@ public class AdMobNextGenPlugin extends Plugin {
     private AdMobNextGen coreImplementation;
     private ConsentExecutor consentExecutor;
     private BannerExecutor bannerExecutor;
+    private PictureInPictureExecutor pictureInPictureExecutor;
     private AppOpenExecutor appOpenExecutor;
     private InterstitialExecutor interstitialExecutor;
     private RewardedExecutor rewardedExecutor;
@@ -62,6 +65,7 @@ public class AdMobNextGenPlugin extends Plugin {
         coreImplementation = new AdMobNextGen();
         consentExecutor = new ConsentExecutor(this);
         bannerExecutor = new BannerExecutor(this);
+        pictureInPictureExecutor = new PictureInPictureExecutor(this);
         appOpenExecutor = new AppOpenExecutor(this);
         interstitialExecutor = new InterstitialExecutor(this);
         rewardedExecutor = new RewardedExecutor(this);
@@ -98,6 +102,7 @@ public class AdMobNextGenPlugin extends Plugin {
         if (bannerExecutor != null) bannerExecutor.onDestroy();
         if (bannerPreloadExecutor != null) bannerPreloadExecutor.onDestroy();
         if (nativeExecutor != null) nativeExecutor.onDestroy();
+        if (pictureInPictureExecutor != null) pictureInPictureExecutor.destroy();
         super.handleOnDestroy();
     }
 
@@ -108,7 +113,8 @@ public class AdMobNextGenPlugin extends Plugin {
 
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
-            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {}
+            public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle bundle) {
+            }
 
             @Override
             public void onActivityStarted(@NonNull Activity activity) {
@@ -121,16 +127,20 @@ public class AdMobNextGenPlugin extends Plugin {
             }
 
             @Override
-            public void onActivityPaused(@NonNull Activity activity) {}
+            public void onActivityPaused(@NonNull Activity activity) {
+            }
 
             @Override
-            public void onActivityStopped(@NonNull Activity activity) {}
+            public void onActivityStopped(@NonNull Activity activity) {
+            }
 
             @Override
-            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {}
+            public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+            }
 
             @Override
-            public void onActivityDestroyed(@NonNull Activity activity) {}
+            public void onActivityDestroyed(@NonNull Activity activity) {
+            }
         });
     }
 
@@ -234,12 +244,64 @@ public class AdMobNextGenPlugin extends Plugin {
     }
 
     @PluginMethod
+    public void loadPictureInPicture(PluginCall call) {
+        pictureInPictureExecutor.load(getActivity(), call, new ActionCallback() {
+            @Override
+            public void onSuccess() {
+                call.resolve();
+            }
+
+            @Override
+            public void onError(String error) {
+                call.reject("Failed to load Picture-in-Picture ad: " + error);
+            }
+        });
+    }
+
+    @PluginMethod
+    public void showPictureInPicture(PluginCall call) {
+        pictureInPictureExecutor.show(getActivity(), new ActionCallback() {
+            @Override
+            public void onSuccess() {
+                call.resolve();
+            }
+
+            @Override
+            public void onError(String error) {
+                call.reject(error);
+            }
+        });
+    }
+
+    @PluginMethod
+    public void hidePictureInPicture(PluginCall call) {
+        pictureInPictureExecutor.hide(new ActionCallback() {
+            @Override
+            public void onSuccess() {
+                call.resolve();
+            }
+
+            @Override
+            public void onError(String error) {
+                call.reject(error);
+            }
+        });
+    }
+
+    @PluginMethod
+    public void destroyPictureInPicture(PluginCall call) {
+        pictureInPictureExecutor.destroy();
+        call.resolve();
+    }
+
+    @PluginMethod
     public void loadInterstitial(PluginCall call) {
         interstitialExecutor.load(getActivity(), call, new ActionCallback() {
             @Override
             public void onSuccess() {
                 call.resolve();
             }
+
             @Override
             public void onError(String error) {
                 call.reject("Failed: " + error);
@@ -352,31 +414,37 @@ public class AdMobNextGenPlugin extends Plugin {
         });
     }
 
-@PluginMethod
-public void startPreloadAppOpen(PluginCall call) {
-    appOpenPreloadExecutor.startPreload(call, new ActionCallback() {
-        @Override public void onSuccess() {
-            call.resolve();
-        }
-        @Override public void onError(String error) {
-            call.reject("Failed: " + error);
-        }
-    });
-}
+    @PluginMethod
+    public void startPreloadAppOpen(PluginCall call) {
+        appOpenPreloadExecutor.startPreload(call, new ActionCallback() {
+            @Override
+            public void onSuccess() {
+                call.resolve();
+            }
 
-@PluginMethod
-public void pollAndShowAppOpen(PluginCall call) {
-    appOpenPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
-        @Override public void onSuccess() {
-            call.resolve();
-        }
-        @Override public void onError(String error) {
-            call.reject("Failed: " + error);
-        }
-    });
-}
+            @Override
+            public void onError(String error) {
+                call.reject("Failed: " + error);
+            }
+        });
+    }
 
-  @PluginMethod
+    @PluginMethod
+    public void pollAndShowAppOpen(PluginCall call) {
+        appOpenPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
+            @Override
+            public void onSuccess() {
+                call.resolve();
+            }
+
+            @Override
+            public void onError(String error) {
+                call.reject("Failed: " + error);
+            }
+        });
+    }
+
+    @PluginMethod
     public void isAppOpenPreloadAvailable(PluginCall call) {
         if (!isInitialized) {
             JSObject ret = new JSObject();
@@ -387,18 +455,21 @@ public void pollAndShowAppOpen(PluginCall call) {
         appOpenPreloadExecutor.checkAvailability(call);
     }
 
-  @PluginMethod
+    @PluginMethod
     public void stopPreloadAppOpen(PluginCall call) {
         appOpenPreloadExecutor.stopPreload(call);
-   } 
+    }
 
     @PluginMethod
     public void startPreloadBanner(PluginCall call) {
         bannerPreloadExecutor.startPreload(call, new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -407,10 +478,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void pollAndShowBanner(PluginCall call) {
         bannerPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -445,10 +519,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void startPreloadInterstitial(PluginCall call) {
         interstitialPreloadExecutor.startPreload(call, new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -457,10 +534,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void pollAndShowInterstitial(PluginCall call) {
         interstitialPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -485,10 +565,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void startPreloadRewarded(PluginCall call) {
         rewardedPreloadExecutor.startPreload(call, new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -497,10 +580,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void pollAndShowRewarded(PluginCall call) {
         rewardedPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -525,10 +611,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void startPreloadRewardedInterstitial(PluginCall call) {
         rewardedInterstitialPreloadExecutor.startPreload(call, new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
@@ -537,10 +626,13 @@ public void pollAndShowAppOpen(PluginCall call) {
     @PluginMethod
     public void pollAndShowRewardedInterstitial(PluginCall call) {
         rewardedInterstitialPreloadExecutor.pollAndShow(getActivity(), new ActionCallback() {
-            @Override public void onSuccess() {
+            @Override
+            public void onSuccess() {
                 call.resolve();
             }
-            @Override public void onError(String error) {
+
+            @Override
+            public void onError(String error) {
                 call.reject("Failed: " + error);
             }
         });
