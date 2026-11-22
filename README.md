@@ -70,13 +70,20 @@ This plugin is regularly updated to support the latest standards.
 
 | Component | Platform | Version | Release Notes |
 | :--- | :--- | :--- | :--- |
-| **GMA Next-Gen SDK** | Android | **1.6.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
+| **GMA Next-Gen SDK** | Android | **1.7.0** | [View Notes](https://developers.google.com/admob/android/next-gen/rel-notes) |
 | **UMP SDK** | Android | **4.0.0** | [View Notes](https://developers.google.com/admob/android/privacy/release-notes) |
 | **Mobile Ads SDK** | iOS | **13.11.0** | [View Notes](https://developers.google.com/admob/ios/rel-notes) |
 | **UMP SDK** | iOS | **3.1.0** | [View Notes](https://developers.google.com/ad-manager/mobile-ads-sdk/ios/privacy/download) |
 
 
 ---
+
+
+> [!IMPORTANT]
+> **Upcoming Policy Notice (GMA SDK v1.7.0+ / iOS v13.12.0+):** Starting with `1.6.1-beta` and future stable releases, the updated Google Mobile Ads SDK enables approximate location collection for apps with location permissions. Before publishing an update to Google Play, please review the required Privacy Policy & Data Safety steps in the **[v1.6.1-beta Release Notes](https://github.com/swaplab-engine/capacitor-admob-nextgen/releases/tag/1.6.1-beta)**.
+>
+> If you do not want to update your app's Privacy Policy or Data Safety declarations yet, stay on the previous stable version: `npm install capacitor-admob-nextgen@1.6.0`.
+
 
 <details>
 <summary>👉 Click to view: ✨ Key Features</summary>
@@ -501,6 +508,10 @@ npx cap sync
 * [`showRewardedInterstitial()`](#showrewardedinterstitial)
 * [`showNativeAd(...)`](#shownativead)
 * [`hideNativeAd()`](#hidenativead)
+* [`loadSqueezebackAd(...)`](#loadsqueezebackad)
+* [`showSqueezebackAd(...)`](#showsqueezebackad)
+* [`hideSqueezebackAd()`](#hidesqueezebackad)
+* [`destroySqueezebackAd()`](#destroysqueezebackad)
 * [`startPreloadAppOpen(...)`](#startpreloadappopen)
 * [`pollAndShowAppOpen()`](#pollandshowappopen)
 * [`isAppOpenPreloadAvailable(...)`](#isappopenpreloadavailable)
@@ -849,6 +860,60 @@ hideNativeAd() => Promise<void>
 ```
 
 Hides and destroys the currently displayed Native Ad.
+
+--------------------
+
+
+### loadSqueezebackAd(...)
+
+```typescript
+loadSqueezebackAd(options: SqueezebackAdOptions) => Promise<{ adUnitId: string; message?: string; }>
+```
+
+Loads a Squeezeback Ad.
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#squeezebackadoptions">SqueezebackAdOptions</a></code> |
+
+**Returns:** <code>Promise&lt;{ adUnitId: string; message?: string; }&gt;</code>
+
+--------------------
+
+
+### showSqueezebackAd(...)
+
+```typescript
+showSqueezebackAd(options?: SqueezebackShowOptions | undefined) => Promise<void>
+```
+
+Shows the loaded Squeezeback Ad.
+
+| Param         | Type                                                                      |
+| ------------- | ------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#squeezebackshowoptions">SqueezebackShowOptions</a></code> |
+
+--------------------
+
+
+### hideSqueezebackAd()
+
+```typescript
+hideSqueezebackAd() => Promise<void>
+```
+
+Hides the currently displayed Squeezeback Ad.
+
+--------------------
+
+
+### destroySqueezebackAd()
+
+```typescript
+destroySqueezebackAd() => Promise<void>
+```
+
+Destroys the loaded Squeezeback Ad and cleans up resources.
 
 --------------------
 
@@ -1238,6 +1303,18 @@ Listens for Ad events triggered by the native SDK.
 - `onNativeAdImpression`: Fired when a native ad impression is recorded.
 - `onNativeAdClicked`: Fired when a native ad is clicked by the user.
 - `onNativeAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
+* ### Squeezeback Events
+- `onSqueezebackAdLoaded`: Fired when a squeezeback ad is loaded. Returns { adUnitId: string, message?: string }.
+- `onSqueezebackAdFailedToLoad`: Fired when a squeezeback ad fails to load. Returns { adUnitId: string, code: number, message: string }.
+- `onSqueezebackAdShown`: Fired when the squeezeback ad is shown on the screen.
+- `onSqueezebackAdHidden`: Fired when the squeezeback ad is hidden or dismissed by the user.
+- `onSqueezebackAdFailedToShow`: Fired when the squeezeback ad fails to show. Returns { adUnitId: string, code: number, message: string }.
+- `onSqueezebackAdImpression`: Fired when a squeezeback ad impression is recorded.
+- `onSqueezebackAdClicked`: Fired when a squeezeback ad is clicked.
+- `onSqueezebackAdShowedFull`: Fired when the squeezeback ad opens full-screen content.
+- `onSqueezebackAdDismissedFull`: Fired when the squeezeback ad full-screen content is closed.
+- `onSqueezebackAdFailedToShowFull`: Fired when the squeezeback ad fails to show full-screen content. Returns { adUnitId: string, code: number, message: string }.
+- `onSqueezebackAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
 * ### Consent (UMP) Events
 - `onConsentInfoUpdated`: Fired when consent info is successfully updated.
 - `onConsentFormDismissed`: Fired when the consent form overlay is closed.
@@ -1329,12 +1406,13 @@ allowing you to build custom condition logic.
 
 #### InitializeOptions
 
-| Prop                               | Type                                          | Description                                                                                                                                                                        |
-| ---------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`isTesting`**                    | <code>boolean</code>                          | Automatically detect and register the current device as a test device. VERY IMPORTANT: Set this to false or remove it before publishing your app to the Play Store. Default: false |
-| **`maxAdContentRating`**           | <code>'' \| 'G' \| 'PG' \| 'T' \| 'MA'</code> | Filter ads by content rating. 'G': General audiences 'PG': Parental guidance 'T': Teens 'MA': Mature audiences Default: "" (No filter)                                             |
-| **`tagForChildDirectedTreatment`** | <code>boolean</code>                          | For purposes of the Children's Online Privacy Protection Act (COPPA). true: Child-directed false: Not child-directed undefined: Unspecified                                        |
-| **`tagForUnderAgeOfConsent`**      | <code>boolean</code>                          | For users under the age of consent (GDPR). true: Under age of consent false: Not under age of consent undefined: Unspecified                                                       |
+| Prop                                     | Type                                          | Description                                                                                                                                                                        |
+| ---------------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`isTesting`**                          | <code>boolean</code>                          | Automatically detect and register the current device as a test device. VERY IMPORTANT: Set this to false or remove it before publishing your app to the Play Store. Default: false |
+| **`maxAdContentRating`**                 | <code>'' \| 'G' \| 'PG' \| 'T' \| 'MA'</code> | Filter ads by content rating. 'G': General audiences 'PG': Parental guidance 'T': Teens 'MA': Mature audiences Default: "" (No filter)                                             |
+| **`tagForChildDirectedTreatment`**       | <code>boolean</code>                          | For purposes of the Children's Online Privacy Protection Act (COPPA). true: Child-directed false: Not child-directed undefined: Unspecified                                        |
+| **`tagForUnderAgeOfConsent`**            | <code>boolean</code>                          | For users under the age of consent (GDPR). true: Under age of consent false: Not under age of consent undefined: Unspecified                                                       |
+| **`setCoarseLocationCollectionEnabled`** | <code>boolean</code>                          | Controls whether the GMA Next-Gen SDK automatically collects coarse location data when the app has location permissions. Set to `false` to disable. Default: true (SDK default)    |
 
 
 #### AppOpenOptions
@@ -1415,6 +1493,23 @@ allowing you to build custom condition logic.
 | **`width`**         | <code>number</code>              | The width of the ad in density-independent pixels (dp/pt). ⚠️ IMPORTANT: Must be an integer (whole number). Use `Math.round()` if getting width from `getBoundingClientRect()`. If not provided, it defaults to matching the parent view's width (MATCH_PARENT). |
 | **`height`**        | <code>number</code>              | The height of the ad in density-independent pixels (dp/pt). Note: The height is usually constrained by the template type (e.g., Small is ~120, Medium is ~350). Default is WRAP_CONTENT.                                                                         |
 | **`retryInterval`** | <code>number</code>              | Minimum time (in milliseconds) before the next ad request is allowed. Prevents spam requests and invalid traffic bans. Default is 5000.                                                                                                                          |
+
+
+#### SqueezebackAdOptions
+
+| Prop                          | Type                 | Description                                                                    | Default            |
+| ----------------------------- | -------------------- | ------------------------------------------------------------------------------ | ------------------ |
+| **`adUnitId`**                | <code>string</code>  | The Ad Unit ID for the Squeezeback Ad.                                         |                    |
+| **`retryInterval`**           | <code>number</code>  | Minimum interval in milliseconds between load requests. Set to `0` to disable. | <code>5000</code>  |
+| **`isAutoShow`**              | <code>boolean</code> | Automatically shows the ad once loaded.                                        | <code>false</code> |
+| **`fallbackBackgroundColor`** | <code>string</code>  | Hex color string (e.g., `"#444444"`) for the fallback background color.        |                    |
+
+
+#### SqueezebackShowOptions
+
+| Prop                          | Type                | Description                                                             |
+| ----------------------------- | ------------------- | ----------------------------------------------------------------------- |
+| **`fallbackBackgroundColor`** | <code>string</code> | Hex color string (e.g., `"#444444"`) for the fallback background color. |
 
 
 #### PluginListenerHandle

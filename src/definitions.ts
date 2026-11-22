@@ -175,6 +175,33 @@ export interface AdMobNextGenPlugin {
    * Hides and destroys the currently displayed Native Ad.
    */
   hideNativeAd(): Promise<void>;
+
+
+  // ==========================================
+  // SQUEEZEBACK ADS
+  // ==========================================
+
+  /**
+   * Loads a Squeezeback Ad.
+   */
+  loadSqueezebackAd(
+    options: SqueezebackAdOptions,
+  ): Promise<{ adUnitId: string; message?: string }>;
+
+  /**
+   * Shows the loaded Squeezeback Ad.
+   */
+  showSqueezebackAd(options?: SqueezebackShowOptions): Promise<void>;
+
+  /**
+   * Hides the currently displayed Squeezeback Ad.
+   */
+  hideSqueezebackAd(): Promise<void>;
+
+  /**
+   * Destroys the loaded Squeezeback Ad and cleans up resources.
+   */
+  destroySqueezebackAd(): Promise<void>;
    
   
   /**
@@ -389,6 +416,18 @@ export interface AdMobNextGenPlugin {
    * - `onNativeAdImpression`: Fired when a native ad impression is recorded.
    * - `onNativeAdClicked`: Fired when a native ad is clicked by the user.
    * - `onNativeAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
+   * * ### Squeezeback Events
+   * - `onSqueezebackAdLoaded`: Fired when a squeezeback ad is loaded. Returns { adUnitId: string, message?: string }.
+   * - `onSqueezebackAdFailedToLoad`: Fired when a squeezeback ad fails to load. Returns { adUnitId: string, code: number, message: string }.
+   * - `onSqueezebackAdShown`: Fired when the squeezeback ad is shown on the screen.
+   * - `onSqueezebackAdHidden`: Fired when the squeezeback ad is hidden or dismissed by the user.
+   * - `onSqueezebackAdFailedToShow`: Fired when the squeezeback ad fails to show. Returns { adUnitId: string, code: number, message: string }.
+   * - `onSqueezebackAdImpression`: Fired when a squeezeback ad impression is recorded.
+   * - `onSqueezebackAdClicked`: Fired when a squeezeback ad is clicked.
+   * - `onSqueezebackAdShowedFull`: Fired when the squeezeback ad opens full-screen content.
+   * - `onSqueezebackAdDismissedFull`: Fired when the squeezeback ad full-screen content is closed.
+   * - `onSqueezebackAdFailedToShowFull`: Fired when the squeezeback ad fails to show full-screen content. Returns { adUnitId: string, code: number, message: string }.
+   * - `onSqueezebackAdPaid`: Fired when revenue is recorded. Returns AdPaidEvent.
    * * ### Consent (UMP) Events
    * - `onConsentInfoUpdated`: Fired when consent info is successfully updated.
    * - `onConsentFormDismissed`: Fired when the consent form overlay is closed.
@@ -636,6 +675,13 @@ export interface InitializeOptions {
    * undefined: Unspecified
    */
   tagForUnderAgeOfConsent?: boolean;
+
+  /**
+   * Controls whether the GMA Next-Gen SDK automatically collects coarse location data
+   * when the app has location permissions. Set to `false` to disable.
+   * Default: true (SDK default)
+   */
+  setCoarseLocationCollectionEnabled?: boolean;
 }
 
 export interface InitializeResult {
@@ -809,6 +855,37 @@ export interface NativeAdOptions {
    * Prevents spam requests and invalid traffic bans. Default is 5000.
    */
   retryInterval?: number;
+}
+
+export interface SqueezebackAdOptions {
+  /**
+   * The Ad Unit ID for the Squeezeback Ad.
+   */
+  adUnitId: string;
+
+  /**
+   * Minimum interval in milliseconds between load requests. Set to `0` to disable.
+   * @default 5000
+   */
+  retryInterval?: number;
+
+  /**
+   * Automatically shows the ad once loaded.
+   * @default false
+   */
+  isAutoShow?: boolean;
+
+  /**
+   * Hex color string (e.g., `"#444444"`) for the fallback background color.
+   */
+  fallbackBackgroundColor?: string;
+}
+
+export interface SqueezebackShowOptions {
+  /**
+   * Hex color string (e.g., `"#444444"`) for the fallback background color.
+   */
+  fallbackBackgroundColor?: string;
 }
 
 export interface InterstitialOptions {

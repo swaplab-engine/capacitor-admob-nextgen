@@ -282,6 +282,29 @@ window.customElements.define(
               </div>
             </div>
 
+          <div class="section full-width" style="border: 1px solid #009688;">
+              <h3 class="section-title" style="color: #009688;">9. Squeezeback Ads (Beta)</h3>
+              <div class="controls">
+                <label>BG Color:
+                  <select id="squeezeback-bg">
+                    <option value="">Default</option>
+                    <option value="#444444">Dark Gray (#444444)</option>
+                    <option value="#000000">Black (#000000)</option>
+                    <option value="#1a237e">Navy (#1a237e)</option>
+                  </select>
+                </label>
+                <label>AutoShow: <input type="checkbox" id="squeezeback-auto"></label>
+              </div>
+              <div class="btn-row" style="margin-bottom: 6px;">
+                <button class="btn btn-load ad-action" id="btn-squeezeback-load" disabled>Load</button>
+                <button class="btn btn-show ad-action" id="btn-squeezeback-show" disabled>Show</button>
+              </div>
+              <div class="btn-row">
+                <button class="btn btn-alt ad-action" id="btn-squeezeback-hide" disabled>Hide</button>
+                <button class="btn btn-alt ad-action" id="btn-squeezeback-destroy" disabled>Destroy</button>
+              </div>
+            </div>
+
           </div> <div class="terminal-wrapper">
             <div class="terminal-header">
               <span>Real-time Event Log</span>
@@ -416,7 +439,8 @@ window.customElements.define(
             isTesting: true, // default: false
             maxAdContentRating: 'G', // default: ''
             tagForChildDirectedTreatment: false, // default: null
-            tagForUnderAgeOfConsent: false // default: null
+            tagForUnderAgeOfConsent: false, // default: null
+            setCoarseLocationCollectionEnabled: false // default: true (SDK default)
           });
 
           if (result.status) {
@@ -764,8 +788,57 @@ window.customElements.define(
         }
       });
 
-    }
+      // ==========================================
+      // 9. SQUEEZEBACK ADS (BETA)
+      // ==========================================
+      getById('btn-squeezeback-load').addEventListener('click', async () => {
+        try {
+          const bgColor = getById('squeezeback-bg').value;
+          const auto = getById('squeezeback-auto').checked;
+          this.logToTerminal(`Loading Squeezeback [Auto:${auto}, BG:${bgColor || 'Default'}]...`, 'SYS');
 
+          await AdMobNextGen.loadSqueezebackAd({
+            adUnitId: 'ca-app-pub-3940256099942544/9983381271', // Official Google Test ID
+            isAutoShow: auto,
+            fallbackBackgroundColor: bgColor || undefined,
+            retryInterval: 5000
+          });
+        } catch (error) {
+          this.logToTerminal(`Squeezeback Load Error: ${error.message || error}`, 'ERROR');
+        }
+      });
+
+      getById('btn-squeezeback-show').addEventListener('click', async () => {
+        try {
+          const bgColor = getById('squeezeback-bg').value;
+          await AdMobNextGen.showSqueezebackAd({
+            fallbackBackgroundColor: bgColor || undefined
+          });
+        } catch (error) {
+          this.logToTerminal(`Squeezeback Show Error: ${error.message || error}`, 'ERROR');
+        }
+      });
+
+      getById('btn-squeezeback-hide').addEventListener('click', async () => {
+        try {
+          await AdMobNextGen.hideSqueezebackAd();
+          this.logToTerminal('Squeezeback Hidden.', 'SYS');
+        } catch (error) {
+          this.logToTerminal(`Squeezeback Hide Error: ${error.message || error}`, 'ERROR');
+        }
+      });
+
+      getById('btn-squeezeback-destroy').addEventListener('click', async () => {
+        try {
+          await AdMobNextGen.destroySqueezebackAd();
+          this.logToTerminal('Squeezeback Destroyed.', 'SYS');
+        } catch (error) {
+          this.logToTerminal(`Squeezeback Destroy Error: ${error.message || error}`, 'ERROR');
+        }
+      });
+
+
+    }
 
     // ==========================================
     // GLOBAL PLUGIN EVENT LISTENERS
@@ -838,6 +911,21 @@ window.customElements.define(
         'onPipAdDismissed', 
         'onPipAdFailedToShow', 
         'onPipAdPaid'
+      ].forEach(e => bindEvent(e));
+
+      // Squeezeback Events
+      [
+        'onSqueezebackAdLoaded',
+        'onSqueezebackAdFailedToLoad',
+        'onSqueezebackAdShown',
+        'onSqueezebackAdHidden',
+        'onSqueezebackAdFailedToShow',
+        'onSqueezebackAdImpression',
+        'onSqueezebackAdClicked',
+        'onSqueezebackAdShowedFull',
+        'onSqueezebackAdDismissedFull',
+        'onSqueezebackAdFailedToShowFull',
+        'onSqueezebackAdPaid'
       ].forEach(e => bindEvent(e));
 
       // Preloader Exclusive Event: The only event strictly unique to the Preloader is the exhausted event. 

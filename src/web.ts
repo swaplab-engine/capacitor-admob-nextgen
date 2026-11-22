@@ -14,11 +14,12 @@ import type {
   InterstitialOptions,
   RewardedOptions,
   RewardedInterstitialOptions,
-  NativeAdOptions
+  NativeAdOptions,
+  SqueezebackAdOptions
 } from './definitions';
 
 export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
-  
+
   // ==========================================
   // CONSENT (UMP)
   // ==========================================
@@ -97,19 +98,19 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
   // ==========================================
   // PICTURE-IN-PICTURE ADS
   // ==========================================
-  
+
   async loadPictureInPicture(_options: PictureInPictureOptions): Promise<void> {
     // No-op for web
   }
-  
+
   async showPictureInPicture(): Promise<void> {
     // No-op for web
   }
-  
+
   async hidePictureInPicture(): Promise<void> {
     // No-op for web
   }
-  
+
   async destroyPictureInPicture(): Promise<void> {
     // No-op for web
   }
@@ -123,6 +124,27 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
   }
 
   async hideNativeAd(): Promise<void> {
+    // No-op for web
+  }
+
+
+  // ==========================================
+  // SQUEEZEBACK ADS
+  // ==========================================
+  async loadSqueezebackAd(options: SqueezebackAdOptions): Promise<{ adUnitId: string; message?: string }> {
+    // No-op for web
+    return { adUnitId: options.adUnitId };
+  }
+
+  async showSqueezebackAd(): Promise<void> {
+    // No-op for web
+  }
+
+  async hideSqueezebackAd(): Promise<void> {
+    // No-op for web
+  }
+
+  async destroySqueezebackAd(): Promise<void> {
     // No-op for web
   }
 
@@ -204,7 +226,7 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
 
   async stopPreloadInterstitial(): Promise<void> {
     // No-op for web
-   }
+  }
 
   async isInterstitialPreloadAvailable(_options?: { adUnitId?: string }): Promise<{ isAvailable: boolean }> {
     // No-op for web
@@ -219,7 +241,7 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     // No-op for web
   }
 
-  async stopPreloadRewarded(): Promise<void> { 
+  async stopPreloadRewarded(): Promise<void> {
     // No-op for web
   }
 
@@ -241,8 +263,8 @@ export class AdMobNextGenWeb extends WebPlugin implements AdMobNextGenPlugin {
     return { isAvailable: false };
   }
 
-  async stopPreloadRewardedInterstitial(): Promise<void> { 
+  async stopPreloadRewardedInterstitial(): Promise<void> {
     // No-op for web
   }
-  
+
 }

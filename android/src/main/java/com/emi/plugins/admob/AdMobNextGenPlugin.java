@@ -26,6 +26,7 @@ import com.emi.plugins.admob.preloading.RewardedPreloadExecutor;
 import com.emi.plugins.admob.rewarded.RewardedExecutor;
 import com.emi.plugins.admob.rewardedinterstitial.RewardedInterstitialExecutor;
 import com.emi.plugins.admob.nativead.NativeExecutor;
+import com.emi.plugins.admob.squeezeback.SqueezebackExecutor;
 import com.emi.plugins.admob.ump.ConsentExecutor;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -45,6 +46,7 @@ public class AdMobNextGenPlugin extends Plugin {
     private RewardedExecutor rewardedExecutor;
     private RewardedInterstitialExecutor rewardedInterstitialExecutor;
     private NativeExecutor nativeExecutor;
+    private SqueezebackExecutor squeezebackExecutor;
 
     private BannerPreloadExecutor bannerPreloadExecutor;
     private AppOpenPreloadExecutor appOpenPreloadExecutor;
@@ -71,6 +73,7 @@ public class AdMobNextGenPlugin extends Plugin {
         rewardedExecutor = new RewardedExecutor(this);
         rewardedInterstitialExecutor = new RewardedInterstitialExecutor(this);
         nativeExecutor = new NativeExecutor(this);
+        squeezebackExecutor = new SqueezebackExecutor(this);
 
         bannerPreloadExecutor = new BannerPreloadExecutor(this);
         appOpenPreloadExecutor = new AppOpenPreloadExecutor(this);
@@ -102,6 +105,9 @@ public class AdMobNextGenPlugin extends Plugin {
         if (bannerExecutor != null) bannerExecutor.onDestroy();
         if (bannerPreloadExecutor != null) bannerPreloadExecutor.onDestroy();
         if (nativeExecutor != null) nativeExecutor.onDestroy();
+        if (squeezebackExecutor != null) {
+            squeezebackExecutor.onDestroy();
+        }
         if (pictureInPictureExecutor != null) pictureInPictureExecutor.destroy();
         super.handleOnDestroy();
     }
@@ -182,6 +188,7 @@ public class AdMobNextGenPlugin extends Plugin {
             return;
         }
 
+        Boolean setCoarseLocationCollectionEnabled = call.getBoolean("setCoarseLocationCollectionEnabled");
         String maxAdContentRating = call.getString("maxAdContentRating", "");
         Boolean tagForChildDirectedTreatment = call.hasOption("tagForChildDirectedTreatment") ? call.getBoolean("tagForChildDirectedTreatment") : null;
         Boolean tagForUnderAgeOfConsent = call.hasOption("tagForUnderAgeOfConsent") ? call.getBoolean("tagForUnderAgeOfConsent") : null;
@@ -190,6 +197,7 @@ public class AdMobNextGenPlugin extends Plugin {
         coreImplementation.initializeSDK(
                 getContext(),
                 appId,
+                setCoarseLocationCollectionEnabled,
                 maxAdContentRating,
                 tagForChildDirectedTreatment,
                 tagForUnderAgeOfConsent,
@@ -667,5 +675,25 @@ public class AdMobNextGenPlugin extends Plugin {
     public void notifyPluginListeners(String eventName, JSObject data) {
         notifyListeners(eventName, data);
     }
+
+    @PluginMethod
+public void loadSqueezebackAd(PluginCall call) {
+    squeezebackExecutor.loadAd(call);
+}
+
+@PluginMethod
+public void showSqueezebackAd(PluginCall call) {
+    squeezebackExecutor.showAd(call);
+}
+
+@PluginMethod
+public void hideSqueezebackAd(PluginCall call) {
+    squeezebackExecutor.hideAd(call);
+}
+
+@PluginMethod
+public void destroySqueezebackAd(PluginCall call) {
+    squeezebackExecutor.destroyAd(call);
+}
 
 }

@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class AdMobNextGen {
 
-    public void initializeSDK(Context context, String appId, String maxRating, Boolean childTag, Boolean underAgeTag, Boolean isTesting, Runnable onComplete) {
+    public void initializeSDK(Context context, String appId, Boolean setCoarseLocationCollectionEnabled, String maxRating, Boolean childTag, Boolean underAgeTag, Boolean isTesting, Runnable onComplete) {
 
         RequestConfiguration.Builder configBuilder = new RequestConfiguration.Builder();
 
@@ -33,6 +33,10 @@ public class AdMobNextGen {
                 case "MA": configBuilder.setMaxAdContentRating(RequestConfiguration.MaxAdContentRating.MAX_AD_CONTENT_RATING_MA);
                     break;
             }
+        }
+
+        if (setCoarseLocationCollectionEnabled != null) {
+            configBuilder.setCoarseLocationCollectionEnabled(setCoarseLocationCollectionEnabled);
         }
 
         if (childTag != null && childTag) {
